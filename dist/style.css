@@ -1,0 +1,314 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  --swatch-interactive: LinkText;
+  --swatch-gray-background: #ccc;
+  --swatch-gray-text: #333;
+  --swatch-button-background: #666;
+  --swatch-button-text: #fff;
+  --unsaved-color: yellow;
+
+  &.theme--dark {
+    color-scheme: dark;
+    --swatch-interactive: deepskyblue;
+    --swatch-gray-background: #333;
+    --swatch-gray-text: #ccc;
+    --swatch-button-background: #666;
+    --swatch-button-text: #fff;
+  }
+
+  
+  &:has(dialog[open]) {
+    overflow: hidden;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: Canvas;
+  color: CanvasText;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+:focus {
+  outline: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--swatch-interactive);
+  outline-offset: 2px;
+}
+
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+a {
+  color: var(--swatch-interactive);
+}
+
+.container {
+  width: min(100% - 2rem, 960px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+nav {
+  margin-top: 1rem;
+}
+
+button {
+  padding: unset;
+  margin: unset;
+  border: unset;
+  border-radius: unset;
+  font: unset;
+  box-shadow: unset;
+  color: unset;
+  background: unset;
+  cursor: pointer;
+}
+
+.button {
+  padding: .5rem 1rem;
+  margin: 0;
+  border: 1px solid;
+  border-radius: 0;
+  font: inherit;
+  box-shadow: none;
+  background: var(--swatch-button-background);
+  color: var(--swatch-button-text);
+  text-decoration: none;
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  place-items: center;
+  place-content: center;
+
+  &[aria-disabled="true"] {
+    opacity: .667;
+    cursor: not-allowed;
+  }
+}
+
+.input {
+  margin: 0;
+  border: 1px solid;
+  padding: 1rem;
+  box-shadow: none;
+  border-radius: 0;
+  font: inherit;
+  background: Canvas;
+  color: CanvasText;
+  width: 100%;
+}
+
+.view {
+  width: 100%;
+  display: grid;
+  grid-template-columns: var(--grid-columns);
+  
+  & thead,tbody {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    column-gap: .5rem;
+  }
+
+  & tr {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    border-bottom: 1px solid;
+    padding: 0 .5rem;
+    position: relative;
+
+    &:has(input[type="checkbox"][name="completed"]:checked) {
+      background: var(--swatch-gray-background);
+      color: var(--swatch-gray-text);
+
+      & th,td {
+        text-decoration: line-through;
+      }
+    }
+  }
+
+  & th,td {
+    display: flex;
+    place-items: center;
+    padding: .5rem 0;
+
+    &.align-center {
+      place-content: center;
+    }
+
+    & label {
+      flex: 1;
+    }
+  }
+
+  & th {
+    text-align: start;
+  }
+}
+
+.no-bullet {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+}
+
+form {
+  display: contents;
+}
+
+table,
+tbody {
+  display: grid;
+}
+
+.input[type="checkbox"] {
+  margin: 0;
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  border: 1px solid;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.inline-form {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
+  & label {
+    flex: 1;
+  }
+}
+
+button svg {
+  height: 2rem;
+}
+
+button:has(svg:only-child) {
+  padding: 0;
+}
+
+[role="group"] {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 300px;
+
+  & label, .input {
+    flex: 1;
+  }
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+
+  & > * {
+    flex: 1;
+    display: flex;
+    margin: 0;
+    place-items: center;
+  }
+
+  & a[aria-current="page"] {
+    font-weight: bold;
+  }
+}
+
+dialog[open] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0;
+  margin: 0;
+  background: rgba(0, 0, 0, .5);
+  display: flex;
+  place-items: center;
+  max-height: 100%;
+  max-width: 100%;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  place-content: center;
+}
+
+.modal-dialog-body {
+  width: min(100% - 4rem, 480px);
+  max-height: min(100% - 4rem, 75vh);
+  max-height: max-content;
+  overflow: auto;
+  background: CanvasText;
+  color: Canvas;
+  padding: 1rem;
+  border: 1px solid;
+  border-radius: 1rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+}
+
+.close-dialog-form {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+
+  & button {
+    place-self: flex-start;
+  }
+}
+
+#close-dialog-button:after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+h1 {
+  margin: 0;
+}
+
+.modal-dialog-body h1 {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+
+.modal-dialog-content {
+  grid-row: 2 / 3;
+  grid-column: 1 / 3;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  place-items: center;
+  place-content: space-between;
+  gap: 1rem;
+}

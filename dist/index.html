@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: sans-serif;
+      font-size: 16px;
+    }
+
+    body {
+      margin: 0;
+    }
+
+    [role="status"] {
+      display: flex;
+      height: 100vh;
+      height: 100svh;
+      place-content: center;
+      place-items: center;
+    }
+  </style>
+  <div role="status">Loading...</div>
+  <script type="module">
+    window.addEventListener("DOMContentLoaded", (event) => {
+      navigator.serviceWorker.register("/app.js").then(
+        () => {
+          navigator.serviceWorker.ready.then(() => {
+            window.location.reload();
+          });
+        },
+        (err) => {
+          console.log("ServiceWorker registration failed: ", err);
+        }
+      );
+    });
+  </script>
+</html>

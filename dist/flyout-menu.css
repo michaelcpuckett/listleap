@@ -1,0 +1,52 @@
+* {
+  box-sizing: border-box;
+}
+
+
+summary {
+  list-style: none;
+  border-radius: 50%;
+  overflow: hidden;
+  color: CanvasText;
+  border: 2px solid;
+  background: Canvas;
+  padding: 8px 10px 6px 10px;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+details[open] {
+  position: relative;
+}
+
+details[open] summary:before {
+  content: '';
+  z-index: 1;
+  position: fixed;
+  inset: 0;
+}
+
+[role="menu"] {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  border: 1px solid;
+  list-style: none;
+  background: CanvasText;
+  color: Canvas;
+  padding: 1rem;
+  margin: 0;
+  position: absolute;
+  right: -1rem;
+  min-width: 300px;
+  z-index: 2;
+
+  & button,
+  & a {
+    display: flex;
+    width: 100%;
+  }
+}
+

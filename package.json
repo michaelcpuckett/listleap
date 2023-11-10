@@ -1,0 +1,39 @@
+{
+  "name": "swotion",
+  "version": "1.0.0",
+  "description": "Local Notion clone with Service Workers",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "parcel build --no-scope-hoist"
+  },
+  "app": "dist/app.js",
+  "client": "dist/client.js",
+  "targets": {
+    "app": {
+      "source": "./src/app/index.tsx",
+      "distDir": "./dist"
+    },
+    "client": {
+      "source": "./src/client/index.ts",
+      "distDir": "./dist"
+    }
+  },
+  "author": "Michael Puckett <michael@puckett.contact>",
+  "license": "ISC",
+  "dependencies": {
+    "escape-string-regexp": "^5.0.0",
+    "idb": "^7.1.1",
+    "path-to-regexp": "^6.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "uuid": "^9.0.1",
+    "yjs": "^13.6.8"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@types/uuid": "^9.0.7",
+    "parcel": "^2.10.2",
+    "typescript": "^5.2.2"
+  }
+}
