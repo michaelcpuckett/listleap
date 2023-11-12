@@ -49,6 +49,7 @@ interface BaseProperty {
 }
 
 export interface UntypedProperty extends BaseProperty {
+  index: number;
   type: string;
 }
 

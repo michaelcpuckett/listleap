@@ -10,6 +10,10 @@ import {
 import { ID } from "yjs";
 
 interface SwotionSchema extends DBSchema {
+  settings: {
+    key: string;
+    value: keyof Settings;
+  };
   databases: {
     key: string;
     value: PartialDatabase;
@@ -20,13 +24,11 @@ interface SwotionSchema extends DBSchema {
     keyPath: "index";
     indexes: { id: string; databaseId: string };
   };
-  settings: {
-    key: string;
-    value: keyof Settings;
-  };
   properties: {
-    key: string;
+    key: number;
     value: UntypedProperty;
+    keyPath: "index";
+    indexes: { id: string; databaseId: string };
   };
 }
 
@@ -42,19 +44,30 @@ export async function getIdb(): Promise<SwotionIDB> {
     });
 
     openRequest.addEventListener("upgradeneeded", () => {
+      openRequest.result.createObjectStore("settings");
+
       openRequest.result.createObjectStore("databases");
+
       const rowsObjectStore = openRequest.result.createObjectStore("rows", {
         keyPath: "index",
         autoIncrement: true,
       });
-
       rowsObjectStore.createIndex("id", "id", { unique: true });
       rowsObjectStore.createIndex("databaseId", "databaseId", {
         unique: false,
       });
 
-      openRequest.result.createObjectStore("settings");
-      openRequest.result.createObjectStore("properties");
+      const propertiesObjectStore = openRequest.result.createObjectStore(
+        "properties",
+        {
+          keyPath: "index",
+          autoIncrement: true,
+        }
+      );
+      propertiesObjectStore.createIndex("id", "id", { unique: true });
+      propertiesObjectStore.createIndex("databaseId", "databaseId", {
+        unique: false,
+      });
     });
 
     openRequest.addEventListener("error", (event) => {
@@ -87,11 +100,10 @@ function getTypeFromString(type: string) {
 export async function getPropertiesByDatabaseIdFromIndexedDb<
   Db extends Database<Property[]>
 >(databaseId: string, idb: SwotionIDB): Promise<Db["properties"]> {
-  const tx = idb.transaction("properties", "readwrite");
-  const store = tx.objectStore("properties");
-  const allUntypedProperties = await store.getAll();
-  const filteredUntypedProperties = allUntypedProperties.filter(
-    (property) => property.databaseId === databaseId
+  const filteredUntypedProperties = await idb.getAllFromIndex(
+    "properties",
+    "databaseId",
+    databaseId
   );
 
   if (filteredUntypedProperties.length) {
@@ -246,7 +258,7 @@ async function getRowByIdFromIndexedDb<Db extends Database<Property[]>>(
   id: string,
   idb: SwotionIDB
 ): Promise<Db["rows"][number]> {
-  const [row] = await idb.getAllFromIndex("rows", "id", id);
+  const row = await idb.getFromIndex("rows", "id", id);
 
   if (!row) {
     throw new Error("Row not found");
@@ -279,7 +291,7 @@ export async function addUntypedPropertyToIndexedDB(
 ): Promise<void> {
   const tx = idb.transaction("properties", "readwrite");
   const store = tx.objectStore("properties");
-  await store.add(untypedProperty, untypedProperty.id);
+  await store.add(untypedProperty);
   await tx.done;
 }
 
@@ -289,6 +301,6 @@ export async function editUntypedPropertyInIndexedDB(
 ): Promise<void> {
   const tx = idb.transaction("properties", "readwrite");
   const store = tx.objectStore("properties");
-  await store.put(untypedProperty, untypedProperty.id);
+  await store.put(untypedProperty);
   await tx.done;
 }

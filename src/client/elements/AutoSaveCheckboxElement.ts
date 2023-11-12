@@ -29,11 +29,7 @@ export class AutoSaveCheckboxElement extends BaseAutoSaveElement {
 
     if (["PUT", "PATCH"].includes(method)) {
       this.patch(formAction, value).then(() => {
-        if (isChecked) {
-          this.inputElement.setAttribute("checked", "");
-        } else {
-          this.inputElement.removeAttribute("checked");
-        }
+        window.location.reload();
       });
     } else {
       if (this.inputElement.checked !== this.inputElement.defaultChecked) {

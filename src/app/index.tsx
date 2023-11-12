@@ -311,6 +311,7 @@ self.addEventListener("fetch", function (event: Event) {
             }
 
             const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
+            redirectUrl.search = new URL(event.request.referrer).search;
 
             return new Response(null, {
               headers: {
