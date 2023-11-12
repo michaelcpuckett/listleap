@@ -18,7 +18,7 @@ interface SwotionSchema extends DBSchema {
     key: number;
     value: Row<Property[]>;
     keyPath: "index";
-    indexes: { index: number };
+    indexes: { id: string; databaseId: string };
   };
   settings: {
     key: string;
@@ -43,10 +43,16 @@ export async function getIdb(): Promise<SwotionIDB> {
 
     openRequest.addEventListener("upgradeneeded", () => {
       openRequest.result.createObjectStore("databases");
-      openRequest.result.createObjectStore("rows", {
+      const rowsObjectStore = openRequest.result.createObjectStore("rows", {
         keyPath: "index",
         autoIncrement: true,
       });
+
+      rowsObjectStore.createIndex("id", "id", { unique: true });
+      rowsObjectStore.createIndex("databaseId", "databaseId", {
+        unique: false,
+      });
+
       openRequest.result.createObjectStore("settings");
       openRequest.result.createObjectStore("properties");
     });
@@ -78,7 +84,7 @@ function getTypeFromString(type: string) {
   }
 }
 
-export async function getPropertiesFromIndexedDb<
+export async function getPropertiesByDatabaseIdFromIndexedDb<
   Db extends Database<Property[]>
 >(databaseId: string, idb: SwotionIDB): Promise<Db["properties"]> {
   const tx = idb.transaction("properties", "readwrite");
@@ -142,8 +148,8 @@ export async function getDatabaseFromIndexedDb<Db extends Database<Property[]>>(
     return null;
   }
 
-  const rows = await getRowsFromIndexedDb<Db>(id, idb);
-  const properties = await getPropertiesFromIndexedDb<Db>(id, idb);
+  const rows = await getRowsByDatabaseIdFromIndexedDb<Db>(id, idb);
+  const properties = await getPropertiesByDatabaseIdFromIndexedDb<Db>(id, idb);
 
   return {
     ...database,
@@ -161,14 +167,16 @@ export async function getPartialDatabasesFromIndexedDb(
   return databases;
 }
 
-export async function getRowsFromIndexedDb<Db extends Database<Property[]>>(
-  id: string,
-  idb: SwotionIDB
-): Promise<Db["rows"]> {
-  const tx = idb.transaction("rows", "readwrite");
-  const store = tx.objectStore("rows");
-  const rows = await store.getAll();
-  return rows.filter((row) => row.databaseId === id);
+export async function getRowsByDatabaseIdFromIndexedDb<
+  Db extends Database<Property[]>
+>(databaseId: string, idb: SwotionIDB): Promise<Db["rows"]> {
+  const rows = await idb.getAllFromIndex("rows", "databaseId", databaseId);
+
+  if (!rows.length) {
+    return [];
+  }
+
+  return rows;
 }
 
 export async function addRowToIndexedDb<Db extends Database<Property[]>>(
@@ -197,18 +205,71 @@ export async function editRowInIndexedDb<Db extends Database<Property[]>>(
 ): Promise<void> {
   const tx = idb.transaction("rows", "readwrite");
   const store = tx.objectStore("rows");
-  console.log(row);
   await store.put(row);
   await tx.done;
 }
 
-export async function deleteRowFromIndexedDb(
-  id: string,
+export async function reorderRowInIndexedDb(
+  oldIndex: number,
+  newIndex: number,
   idb: SwotionIDB
 ): Promise<void> {
   const tx = idb.transaction("rows", "readwrite");
   const store = tx.objectStore("rows");
-  await store.delete(id);
+  const rowToReorder = await store.get(oldIndex);
+  const rowToFlip = await store.get(newIndex);
+
+  if (!rowToReorder) {
+    throw new Error("Row to reorder not found");
+  }
+
+  if (rowToFlip) {
+    await store.delete(oldIndex);
+  }
+
+  await store.delete(newIndex);
+
+  if (rowToReorder) {
+    rowToReorder.index = newIndex;
+    await store.put(rowToReorder);
+  }
+
+  if (rowToFlip) {
+    rowToFlip.index = oldIndex;
+    await store.put(rowToFlip);
+  }
+
+  await tx.done;
+}
+
+async function getRowByIdFromIndexedDb<Db extends Database<Property[]>>(
+  id: string,
+  idb: SwotionIDB
+): Promise<Db["rows"][number]> {
+  const [row] = await idb.getAllFromIndex("rows", "id", id);
+
+  if (!row) {
+    throw new Error("Row not found");
+  }
+
+  return row;
+}
+
+export async function deleteRowByIdFromIndexedDb(
+  id: string,
+  idb: SwotionIDB
+): Promise<void> {
+  const existingRow = await getRowByIdFromIndexedDb(id, idb);
+  await deleteRowByIndexFromIndexedDb(existingRow.index, idb);
+}
+
+export async function deleteRowByIndexFromIndexedDb(
+  index: number,
+  idb: SwotionIDB
+): Promise<void> {
+  const tx = idb.transaction("rows", "readwrite");
+  const store = tx.objectStore("rows");
+  await store.delete(index);
   await tx.done;
 }
 

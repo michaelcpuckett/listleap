@@ -19,15 +19,13 @@ export function RowActionsFlyoutMenu(props: React.PropsWithChildren<{ row: AnyRo
 
       <ReorderRowUpForm
         row={props.row}
-        index={props.rows.findIndex((t) => t.id === props.filteredRows[props.filteredIndex - 1]?.id)}
-        isDisabled={!props.filteredRows[props.filteredIndex - 1]}
+        index={props.row.index - 1}
         role="menuitem"
         tabindex={0}
       />
       <ReorderRowDownForm
         row={props.row}
-        index={props.rows.findIndex((t) => t.id === props.filteredRows[props.filteredIndex + 1]?.id)}
-        isDisabled={!props.filteredRows[props.filteredIndex + 1]}
+        index={props.row.index + 1}
         role="menuitem"
         tabindex={-1}
       />

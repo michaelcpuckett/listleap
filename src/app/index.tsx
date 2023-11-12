@@ -1,6 +1,6 @@
 import { pathToRegexp, match, parse, compile } from "path-to-regexp";
 import { renderToString } from "react-dom/server";
-import { editPartialDatabaseInIndexedDb, deleteRowFromIndexedDb, addPartialDatabaseToIndexedDb, getDatabaseFromIndexedDb, getPartialDatabasesFromIndexedDb, getIdb, getSettingsFromIndexedDb, SwotionIDB, addRowToIndexedDb, editRowInIndexedDb } from "./utilities/idb";
+import { editPartialDatabaseInIndexedDb, deleteRowByIdFromIndexedDb, addPartialDatabaseToIndexedDb, getDatabaseFromIndexedDb, getPartialDatabasesFromIndexedDb, getIdb, getSettingsFromIndexedDb, SwotionIDB, addRowToIndexedDb, editRowInIndexedDb, reorderRowInIndexedDb } from "./utilities/idb";
 import {assertIsDatabase, guardIsChecklist, guardIsChecklistRow, guardIsTableRow} from "../shared/assertions";
 import { Row, Referrer, Settings, Property, Database, PartialDatabase, PartialRow, Checklist, ChecklistRow, Table, TableRow, GetRowByType } from "../shared/types";
 import { URLS_TO_CACHE } from "./utilities/urlsToCache";
@@ -276,7 +276,7 @@ self.addEventListener("fetch", function (event: Event) {
 
         switch (formData._method) {
           case 'DELETE': {
-            await deleteRowFromIndexedDb(id, idb);
+            await deleteRowByIdFromIndexedDb(id, idb);
 
             const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
 
@@ -296,15 +296,19 @@ self.addEventListener("fetch", function (event: Event) {
               });
             }
 
-            for (const [key, value] of Object.entries(formData)) {
-              if (['_method', '_redirect'].includes(key)) {
-                continue;
+            if (formData.index !== undefined) {
+              await reorderRowInIndexedDb(Number(rowToPatch.index), Number(formData.index), idb);
+            } else {
+              for (const [key, value] of Object.entries(formData)) {
+                if (['_method', '_redirect'].includes(key)) {
+                  continue;
+                }
+
+                rowToPatch[key] = value;
               }
 
-              rowToPatch[key] = value;
+              await editRowInIndexedDb<typeof database>(rowToPatch, idb);
             }
-
-            await editRowInIndexedDb<typeof database>(rowToPatch, idb);
 
             const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
 
