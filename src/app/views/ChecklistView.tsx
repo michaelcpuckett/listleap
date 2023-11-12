@@ -178,10 +178,8 @@ export function ChecklistView(
                   </form>
                   <RowActionsFlyoutMenu
                     row={row}
-                    rows={rows}
-                    index={index}
-                    filteredIndex={filteredIndex}
-                    filteredRows={filteredRows}
+                    previousRow={rows[filteredIndex - 1]}
+                    nextRow={rows[filteredIndex + 1]}
                     referrer={props.referrer}
                   />
                 </td>

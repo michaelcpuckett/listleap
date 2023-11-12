@@ -6,7 +6,7 @@ import { ReorderRowDownForm } from '../forms/ReorderRowDownForm';
 import {TriggerEditRowForm} from '../forms/TriggerEditRowForm';
 import {TriggerDeleteRowForm} from '../forms/TriggerDeleteRowForm';
 
-export function RowActionsFlyoutMenu(props: React.PropsWithChildren<{ row: AnyRow; rows: AnyRow[]; filteredRows: AnyRow[]; filteredIndex: number; index: number; referrer: Referrer; }>) {
+export function RowActionsFlyoutMenu(props: React.PropsWithChildren<{ row: AnyRow; previousRow?: AnyRow; nextRow?: AnyRow; referrer: Referrer; }>) {
   return (
     <flyout-menu>
       <template shadowrootmode="open">
@@ -16,16 +16,17 @@ export function RowActionsFlyoutMenu(props: React.PropsWithChildren<{ row: AnyRo
           label={props.row.title}
         />
       </template>
-
       <ReorderRowUpForm
         row={props.row}
-        index={props.row.index - 1}
+        index={props.previousRow ? props.previousRow.index : -1}
+        isDisabled={!props.previousRow}
         role="menuitem"
         tabindex={0}
       />
       <ReorderRowDownForm
         row={props.row}
-        index={props.row.index + 1}
+        index={props.nextRow ? props.nextRow.index : -1}
+        isDisabled={!props.nextRow}
         role="menuitem"
         tabindex={-1}
       />
@@ -37,7 +38,6 @@ export function RowActionsFlyoutMenu(props: React.PropsWithChildren<{ row: AnyRo
       />
       <TriggerDeleteRowForm
         row={props.row}
-        index={props.index}
         referrer={props.referrer}
         role="menuitem"
         tabindex={-1}
