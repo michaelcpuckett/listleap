@@ -7,6 +7,7 @@ import {
   Row,
   Settings,
 } from "../../shared/types";
+import { ID } from "yjs";
 
 interface SwotionSchema extends DBSchema {
   databases: {
@@ -14,8 +15,10 @@ interface SwotionSchema extends DBSchema {
     value: PartialDatabase;
   };
   rows: {
-    key: string;
+    key: number;
     value: Row<Property[]>;
+    keyPath: "index";
+    indexes: { index: number };
   };
   settings: {
     key: string;
@@ -40,7 +43,10 @@ export async function getIdb(): Promise<SwotionIDB> {
 
     openRequest.addEventListener("upgradeneeded", () => {
       openRequest.result.createObjectStore("databases");
-      openRequest.result.createObjectStore("rows");
+      openRequest.result.createObjectStore("rows", {
+        keyPath: "index",
+        autoIncrement: true,
+      });
       openRequest.result.createObjectStore("settings");
       openRequest.result.createObjectStore("properties");
     });
@@ -171,7 +177,7 @@ export async function addRowToIndexedDb<Db extends Database<Property[]>>(
 ): Promise<void> {
   const tx = idb.transaction("rows", "readwrite");
   const store = tx.objectStore("rows");
-  await store.add(row, row.id);
+  await store.add(row);
   await tx.done;
 }
 
@@ -191,7 +197,8 @@ export async function editRowInIndexedDb<Db extends Database<Property[]>>(
 ): Promise<void> {
   const tx = idb.transaction("rows", "readwrite");
   const store = tx.objectStore("rows");
-  await store.put(row, row.id);
+  console.log(row);
+  await store.put(row);
   await tx.done;
 }
 

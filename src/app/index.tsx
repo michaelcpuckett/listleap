@@ -262,6 +262,9 @@ self.addEventListener("fetch", function (event: Event) {
         const databaseId = matchesRow?.[1] || '';
         const id = matchesRow?.[2] || '';
         const database = await getDatabaseFromIndexedDb(databaseId, idb);
+        console.log({
+          database,
+        });
 
         if (!database) {
           return new Response("Not found", {
@@ -325,6 +328,7 @@ self.addEventListener("fetch", function (event: Event) {
 
             const rowToPut: Partial<TypedRow> = {
               id: existingRow.id,
+              index: existingRow.index,
               databaseId: database.id,
               title: formData.title,
             };
