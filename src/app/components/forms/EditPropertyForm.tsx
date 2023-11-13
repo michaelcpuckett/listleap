@@ -25,6 +25,12 @@ export function EditPropertyForm(
         name="name"
         value={props.property.name}
       />
+      <button
+        className="button"
+        type="submit"
+      >
+        Save
+      </button>
     </form>
   );
 }

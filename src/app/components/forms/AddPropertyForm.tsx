@@ -17,7 +17,7 @@ export function AddPropertyForm(
         value="String"
       />
       <label>
-        <span>Name</span>
+        <span>Property</span>
         <AutoSaveTextElement
           id={props.database.id + '-new-property'}
           label="Name"
