@@ -1,27 +1,36 @@
 import { Database, Property, GetRowByType, Row, Referrer } from 'shared/types';
 import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
-import { getIdb, getDatabaseFromIndexedDb, editRowInIndexedDb } from 'utilities/idb';
+import {
+  getIdb,
+  getDatabaseFromIndexedDb,
+  editRowInIndexedDb,
+} from 'utilities/idb';
 
-export async function PutDatabaseRow(event: FetchEvent, match: RegExpExecArray|null, formData: Record<string, string>, referrer: Referrer) {
+export async function PutDatabaseRow(
+  event: FetchEvent,
+  match: RegExpExecArray | null,
+  formData: Record<string, string>,
+  referrer: Referrer,
+) {
   const idb = await getIdb();
   const databaseId = match?.[1] || '';
   const id = match?.[2] || '';
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
-    return new Response("Not found", {
+    return new Response('Not found', {
       status: 404,
     });
   }
 
   const properties = database.properties || [];
 
-  type TypedRow = GetRowByType<typeof database['type']>;
+  type TypedRow = GetRowByType<(typeof database)['type']>;
 
-  const existingRow = database.rows.find(row => row.id === id);
+  const existingRow = database.rows.find((row) => row.id === id);
 
   if (!existingRow) {
-    return new Response("Not found", {
+    return new Response('Not found', {
       status: 404,
     });
   }
@@ -32,8 +41,11 @@ export async function PutDatabaseRow(event: FetchEvent, match: RegExpExecArray|n
     databaseId: database.id,
     title: formData.title,
   };
-  
-  function guardIsRowOfType<T extends Row<Property[]>>(row: Partial<Row<Property[]>>, database: Database<Property[]>): row is T {
+
+  function guardIsRowOfType<T extends Row<Property[]>>(
+    row: Partial<Row<Property[]>>,
+    database: Database<Property[]>,
+  ): row is T {
     return guardIsChecklistRow(row, database) || guardIsTableRow(row, database);
   }
 
@@ -68,7 +80,10 @@ export async function PutDatabaseRow(event: FetchEvent, match: RegExpExecArray|n
 
   await editRowInIndexedDb<typeof database>(rowToPut, idb);
 
-  const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
+  const redirectUrl = new URL(
+    formData._redirect || `/databases/${databaseId}`,
+    new URL(event.request.url).origin,
+  );
 
   return Response.redirect(redirectUrl.href, 303);
 }

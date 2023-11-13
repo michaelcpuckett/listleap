@@ -3,14 +3,22 @@ import { AnyRow, Referrer } from 'shared/types';
 import { FlyoutMenu } from 'components/elements/FlyoutMenu';
 import { ReorderRowUpForm } from 'components/forms/ReorderRowUpForm';
 import { ReorderRowDownForm } from 'components/forms/ReorderRowDownForm';
-import {TriggerEditRowForm} from 'components/forms/TriggerEditRowForm';
-import {TriggerDeleteRowForm} from 'components/forms/TriggerDeleteRowForm';
+import { TriggerEditRowForm } from 'components/forms/TriggerEditRowForm';
+import { TriggerDeleteRowForm } from 'components/forms/TriggerDeleteRowForm';
 
-export function RowActionsFlyoutMenu(props: React.PropsWithChildren<{ row: AnyRow; previousRow?: AnyRow; nextRow?: AnyRow; referrer: Referrer; }>) {
+export function RowActionsFlyoutMenu(
+  props: React.PropsWithChildren<{
+    row: AnyRow;
+    previousRow?: AnyRow;
+    nextRow?: AnyRow;
+    referrer: Referrer;
+  }>,
+) {
   return (
     <FlyoutMenu
       id={props.row.id}
-      label={props.row.title}>
+      label={props.row.title}
+    >
       <ReorderRowUpForm
         row={props.row}
         index={props.previousRow ? props.previousRow.index : -1}

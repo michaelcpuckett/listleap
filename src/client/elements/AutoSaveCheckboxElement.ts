@@ -1,33 +1,33 @@
-import escapeStringRegexp from "escape-string-regexp";
-import { BaseAutoSaveElement } from "elements/BaseAutoSaveElement";
+import escapeStringRegexp from 'escape-string-regexp';
+import { BaseAutoSaveElement } from 'elements/BaseAutoSaveElement';
 
 export class AutoSaveCheckboxElement extends BaseAutoSaveElement {
   connectedCallback() {
-    this.inputElement.addEventListener("input", this.boundInputHandler);
+    this.inputElement.addEventListener('input', this.boundInputHandler);
   }
 
   disconnectedCallback() {
-    this.inputElement.removeEventListener("input", this.boundInputHandler);
+    this.inputElement.removeEventListener('input', this.boundInputHandler);
   }
 
   override handleInput() {
     const isChecked = this.inputElement.checked;
-    const value = isChecked ? this.inputElement.value : "";
+    const value = isChecked ? this.inputElement.value : '';
     const formElement = this.inputElement.form;
 
     if (!formElement) {
       return;
     }
 
-    const formAction = formElement.getAttribute("action");
+    const formAction = formElement.getAttribute('action');
 
     if (!formAction) {
       return;
     }
 
-    const method = new FormData(formElement).get("_method")?.toString() || "";
+    const method = new FormData(formElement).get('_method')?.toString() || '';
 
-    if (["PUT", "PATCH"].includes(method)) {
+    if (['PUT', 'PATCH'].includes(method)) {
       this.patch(formAction, value).then(() => {
         window.location.reload();
       });
@@ -41,4 +41,4 @@ export class AutoSaveCheckboxElement extends BaseAutoSaveElement {
   }
 }
 
-window.customElements.define("auto-save-checkbox", AutoSaveCheckboxElement);
+window.customElements.define('auto-save-checkbox', AutoSaveCheckboxElement);

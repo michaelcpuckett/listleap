@@ -2,11 +2,25 @@ import React from 'react';
 import { Database, Property } from 'shared/types';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 
-export function AddPropertyForm(props: React.PropsWithChildren<{database: Database<Property[]>}>) {
+export function AddPropertyForm(
+  props: React.PropsWithChildren<{ database: Database<Property[]> }>,
+) {
   return (
-    <form noValidate action={`/databases/${props.database.id}/properties`} method="POST">
-      <input type="hidden" name="_method" value="POST" />
-      <input type="hidden" name="type" value="String" />
+    <form
+      noValidate
+      action={`/databases/${props.database.id}/properties`}
+      method="POST"
+    >
+      <input
+        type="hidden"
+        name="_method"
+        value="POST"
+      />
+      <input
+        type="hidden"
+        name="type"
+        value="String"
+      />
       <label>
         <span>Name</span>
         <AutoSaveTextElement
@@ -16,7 +30,12 @@ export function AddPropertyForm(props: React.PropsWithChildren<{database: Databa
           value=""
         />
       </label>
-      <button className="button" type="submit">Add</button>
+      <button
+        className="button"
+        type="submit"
+      >
+        Add
+      </button>
     </form>
   );
 }

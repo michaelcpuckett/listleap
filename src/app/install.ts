@@ -7,12 +7,12 @@ export function handleInstall(event: Event) {
 
   event.waitUntil(
     caches
-      .open("v1")
+      .open('v1')
       .then(function (cache) {
         return cache.addAll(URLS_TO_CACHE);
       })
       .catch(function (error) {
         console.error(error);
-      })
+      }),
   );
 }

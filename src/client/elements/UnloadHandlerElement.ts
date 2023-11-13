@@ -1,4 +1,4 @@
-export const DIRTY_ELEMENTS_KEY = "dirty-elements";
+export const DIRTY_ELEMENTS_KEY = 'dirty-elements';
 
 export class UnloadHandlerElement extends HTMLElement {
   constructor() {
@@ -6,11 +6,11 @@ export class UnloadHandlerElement extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["dirty-elements"];
+    return ['dirty-elements'];
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (name === "dirty-elements") {
+    if (name === 'dirty-elements') {
       if (newValue) {
         this.triggerBeforeUnload();
       } else {
@@ -35,10 +35,10 @@ export class UnloadHandlerElement extends HTMLElement {
     console.log(event);
     console.log(event.composedPath());
     event.preventDefault();
-    event.returnValue = "";
+    event.returnValue = '';
   }
 
   private boundBeforeUnloadHandler = this.handleBeforeUnload.bind(this);
 }
 
-window.customElements.define("unload-handler", UnloadHandlerElement);
+window.customElements.define('unload-handler', UnloadHandlerElement);

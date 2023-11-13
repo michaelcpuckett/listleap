@@ -1,17 +1,32 @@
-import React from "react";
-import { Referrer, Settings, Row, Property, Database, PartialChecklistRow, ChecklistRow, Checklist } from 'shared/types';
-import { guardIsChecklist, guardIsTable } from "shared/assertions";
+import React from 'react';
+import {
+  Referrer,
+  Settings,
+  Row,
+  Property,
+  Database,
+  PartialChecklistRow,
+  ChecklistRow,
+  Checklist,
+} from 'shared/types';
+import { guardIsChecklist, guardIsTable } from 'shared/assertions';
 import { PageShell } from 'components/pages/PageShell';
 import { ChecklistView } from 'components/views/ChecklistView';
-import {SearchRowsForm} from 'components/forms/SearchRowsForm';
-import {FilterRowsForm} from 'components/forms/FilterRowsForm';
-import {EditDatabaseForm} from 'components/forms/EditDatabaseForm';
-import { EditRowModalDialog } from "components/dialogs/EditRowModalDialog";
-import { DeleteRowModalDialog } from "components/dialogs/DeleteRowModalDialog";
-import { TriggerEditPropertiesForm } from "components/forms/TriggerEditPropertiesForm";
-import { EditPropertiesModalDialog } from "components/dialogs/EditPropertiesModalDialog";
+import { SearchRowsForm } from 'components/forms/SearchRowsForm';
+import { FilterRowsForm } from 'components/forms/FilterRowsForm';
+import { EditDatabaseForm } from 'components/forms/EditDatabaseForm';
+import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
+import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
+import { TriggerEditPropertiesForm } from 'components/forms/TriggerEditPropertiesForm';
+import { EditPropertiesModalDialog } from 'components/dialogs/EditPropertiesModalDialog';
 
-export function DatabasePage(props: React.PropsWithChildren<{ database: Database<Property[]>; referrer: Referrer; settings: Settings; }>) {
+export function DatabasePage(
+  props: React.PropsWithChildren<{
+    database: Database<Property[]>;
+    referrer: Referrer;
+    settings: Settings;
+  }>,
+) {
   const row = props.database.rows.find((row) => row.id === props.referrer.id);
   const isEditingRow = props.referrer.mode === 'EDIT_ROW' && !!row;
   const isDeletingRow = props.referrer.mode === 'DELETE_ROW' && !!row;
@@ -25,7 +40,10 @@ export function DatabasePage(props: React.PropsWithChildren<{ database: Database
   closeUrl.search = closeUrlSearchParams.toString();
 
   return (
-    <PageShell pageTitle={props.database.name} settings={props.settings}>
+    <PageShell
+      pageTitle={props.database.name}
+      settings={props.settings}
+    >
       {isEditingRow ? (
         <EditRowModalDialog
           row={row}
@@ -41,9 +59,15 @@ export function DatabasePage(props: React.PropsWithChildren<{ database: Database
         />
       ) : null}
       {isEditingProperties ? (
-        <EditPropertiesModalDialog database={props.database} closeUrl={closeUrl.href} />
+        <EditPropertiesModalDialog
+          database={props.database}
+          closeUrl={closeUrl.href}
+        />
       ) : null}
-      <div className="container" inert={isShowingModal ? '' : undefined}>
+      <div
+        className="container"
+        inert={isShowingModal ? '' : undefined}
+      >
         <nav>
           <a href="/">Home</a>
           <a href="/settings">Settings</a>
@@ -52,16 +76,25 @@ export function DatabasePage(props: React.PropsWithChildren<{ database: Database
           <header>
             <EditDatabaseForm database={props.database} />
             <em>{props.database.type}</em>
-            <TriggerEditPropertiesForm database={props.database} referrer={props.referrer} />
+            <TriggerEditPropertiesForm
+              database={props.database}
+              referrer={props.referrer}
+            />
           </header>
           <aside aria-label="Actions">
             <SearchRowsForm referrer={props.referrer} />
             {guardIsChecklist(props.database) ? (
-              <FilterRowsForm rows={props.database.rows} referrer={props.referrer} />
+              <FilterRowsForm
+                rows={props.database.rows}
+                referrer={props.referrer}
+              />
             ) : null}
           </aside>
           {guardIsChecklist(props.database) ? (
-            <ChecklistView database={props.database} referrer={props.referrer} />
+            <ChecklistView
+              database={props.database}
+              referrer={props.referrer}
+            />
           ) : null}
         </main>
       </div>

@@ -1,11 +1,24 @@
 import React from 'react';
-import {Database, Property, Row} from 'shared/types';
-import {guardIsChecklistRow} from 'shared/assertions';
+import { Database, Property, Row } from 'shared/types';
+import { guardIsChecklistRow } from 'shared/assertions';
 
-export function EditRowForm(props: React.PropsWithoutRef<{ row: Row<Property[]>; database: Database<Property[]>; }>) {
+export function EditRowForm(
+  props: React.PropsWithoutRef<{
+    row: Row<Property[]>;
+    database: Database<Property[]>;
+  }>,
+) {
   return (
-    <form action={`/databases/${props.row.databaseId}/rows/${props.row.id}`} method="POST" role="none">
-      <input type="hidden" name="_method" value="PUT" />
+    <form
+      action={`/databases/${props.row.databaseId}/rows/${props.row.id}`}
+      method="POST"
+      role="none"
+    >
+      <input
+        type="hidden"
+        name="_method"
+        value="PUT"
+      />
       {guardIsChecklistRow(props.row, props.database) ? (
         <input
           id={`edit-row-inline-form-field--${props.row.id}--completed`}
@@ -43,7 +56,10 @@ export function EditRowForm(props: React.PropsWithoutRef<{ row: Row<Property[]>;
           </label>
         );
       })}
-      <button className="button" type="submit">
+      <button
+        className="button"
+        type="submit"
+      >
         Save
       </button>
     </form>

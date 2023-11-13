@@ -1,4 +1,4 @@
-import { DIRTY_ELEMENTS_KEY } from "elements/UnloadHandlerElement";
+import { DIRTY_ELEMENTS_KEY } from 'elements/UnloadHandlerElement';
 
 export class PostFormElement extends HTMLElement {
   constructor() {
@@ -9,14 +9,14 @@ export class PostFormElement extends HTMLElement {
   private boundSubmitHandler = this.handleFormSubmit.bind(this);
 
   connectedCallback() {
-    const formElement = this.querySelector("form");
+    const formElement = this.querySelector('form');
 
     if (!(formElement instanceof HTMLFormElement)) {
-      throw new Error("PostFormElement must contain a form element");
+      throw new Error('PostFormElement must contain a form element');
     }
 
     this.formElement = formElement;
-    this.formElement.addEventListener("submit", this.boundSubmitHandler);
+    this.formElement.addEventListener('submit', this.boundSubmitHandler);
   }
 
   disconnectedCallback() {
@@ -24,7 +24,7 @@ export class PostFormElement extends HTMLElement {
       return;
     }
 
-    this.formElement.removeEventListener("submit", this.boundSubmitHandler);
+    this.formElement.removeEventListener('submit', this.boundSubmitHandler);
   }
 
   handleFormSubmit(event: Event) {
@@ -34,14 +34,14 @@ export class PostFormElement extends HTMLElement {
       return;
     }
 
-    const unloadHandler = window.document.querySelector("unload-handler");
+    const unloadHandler = window.document.querySelector('unload-handler');
 
     if (!unloadHandler) {
       return;
     }
 
-    const prev = unloadHandler.getAttribute(DIRTY_ELEMENTS_KEY) || "";
-    const dirtyElementsArray = !prev ? [] : prev.split(",");
+    const prev = unloadHandler.getAttribute(DIRTY_ELEMENTS_KEY) || '';
+    const dirtyElementsArray = !prev ? [] : prev.split(',');
 
     const formElements = Array.from(this.formElement.elements);
 
@@ -50,7 +50,7 @@ export class PostFormElement extends HTMLElement {
         const formElement = window.document.getElementById(id);
         return formElement && !formElements.includes(formElement);
       })
-      .join(",");
+      .join(',');
 
     unloadHandler.setAttribute(DIRTY_ELEMENTS_KEY, dirtyElementsString);
 
@@ -58,4 +58,4 @@ export class PostFormElement extends HTMLElement {
   }
 }
 
-window.customElements.define("post-form", PostFormElement);
+window.customElements.define('post-form', PostFormElement);

@@ -1,5 +1,5 @@
-import { getUniqueId } from "shared/getUniqueId";
-import { DIRTY_ELEMENTS_KEY } from "elements/UnloadHandlerElement";
+import { getUniqueId } from 'shared/getUniqueId';
+import { DIRTY_ELEMENTS_KEY } from 'elements/UnloadHandlerElement';
 
 export class BaseAutoSaveElement extends HTMLElement {
   protected inputElement: HTMLInputElement;
@@ -12,19 +12,19 @@ export class BaseAutoSaveElement extends HTMLElement {
     super();
 
     if (!this.shadowRoot) {
-      throw new Error("Declarative shadow root not supported");
+      throw new Error('Declarative shadow root not supported');
     }
 
-    const slotElement = this.shadowRoot.querySelector("slot");
+    const slotElement = this.shadowRoot.querySelector('slot');
 
     if (!(slotElement instanceof HTMLSlotElement)) {
-      throw new Error("No slot element provided");
+      throw new Error('No slot element provided');
     }
 
     const assignedNodes = slotElement.assignedNodes();
 
     if (!assignedNodes || !assignedNodes.length) {
-      throw new Error("No content provided");
+      throw new Error('No content provided');
     }
 
     function guardIsHTMLInputElement(node: Node): node is HTMLInputElement {
@@ -34,14 +34,14 @@ export class BaseAutoSaveElement extends HTMLElement {
     const inputElement = assignedNodes.find(guardIsHTMLInputElement);
 
     if (!inputElement) {
-      throw new Error("No input element provided");
+      throw new Error('No input element provided');
     }
 
     const unloadHandlerElement =
-      window.document.querySelector("unload-handler");
+      window.document.querySelector('unload-handler');
 
     if (!(unloadHandlerElement instanceof HTMLElement)) {
-      throw new Error("No unload handler element found");
+      throw new Error('No unload handler element found');
     }
 
     this.inputElement = inputElement;
@@ -57,43 +57,43 @@ export class BaseAutoSaveElement extends HTMLElement {
 
   protected markDirty() {
     const prev =
-      this.unloadHandlerElement.getAttribute(DIRTY_ELEMENTS_KEY) || "";
-    const dirtyElementsArray = !prev ? [] : prev.split(",");
+      this.unloadHandlerElement.getAttribute(DIRTY_ELEMENTS_KEY) || '';
+    const dirtyElementsArray = !prev ? [] : prev.split(',');
     dirtyElementsArray.push(this.inputId);
     const uniqueDirtyElementsArray = Array.from(new Set(dirtyElementsArray));
-    const dirtyElementsString = uniqueDirtyElementsArray.join(",");
+    const dirtyElementsString = uniqueDirtyElementsArray.join(',');
     this.unloadHandlerElement.setAttribute(
       DIRTY_ELEMENTS_KEY,
-      dirtyElementsString
+      dirtyElementsString,
     );
   }
 
   protected markClean() {
     const prev =
-      this.unloadHandlerElement.getAttribute(DIRTY_ELEMENTS_KEY) || "";
-    const dirtyElementsArray = !prev ? [] : prev.split(",");
+      this.unloadHandlerElement.getAttribute(DIRTY_ELEMENTS_KEY) || '';
+    const dirtyElementsArray = !prev ? [] : prev.split(',');
     const dirtyElementsString = dirtyElementsArray
       .filter((id) => id !== this.inputId)
-      .join(",");
+      .join(',');
     this.unloadHandlerElement.setAttribute(
       DIRTY_ELEMENTS_KEY,
-      dirtyElementsString
+      dirtyElementsString,
     );
   }
 
   protected async patch(url: string, value: string) {
     const formData = new FormData();
-    formData.append("_method", "PATCH");
+    formData.append('_method', 'PATCH');
     formData.append(this.inputElement.name, value);
 
     return window
       .fetch(url, {
-        method: "POST",
+        method: 'POST',
         body: formData,
       })
       .then((res) => {
         if (res.status === 404) {
-          throw new Error("Not found");
+          throw new Error('Not found');
         }
       })
       .catch((error) => {

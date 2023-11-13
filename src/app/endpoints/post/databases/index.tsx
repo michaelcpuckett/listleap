@@ -4,7 +4,12 @@ import { addPartialDatabaseToIndexedDb } from 'utilities/idb';
 import { assertIsDatabase } from 'shared/assertions';
 import { Referrer } from 'shared/types';
 
-export async function PostDatabase(event: FetchEvent, match: RegExpExecArray|null, formData: Record<string, string>, referrer: Referrer) {
+export async function PostDatabase(
+  event: FetchEvent,
+  match: RegExpExecArray | null,
+  formData: Record<string, string>,
+  referrer: Referrer,
+) {
   const idb = await getIdb();
   const id = getUniqueId();
 
@@ -22,6 +27,6 @@ export async function PostDatabase(event: FetchEvent, match: RegExpExecArray|nul
 
   const databaseUrl = `/databases/${id}`;
   const url = new URL(databaseUrl, new URL(event.request.url).origin);
-  
+
   return Response.redirect(url.href, 303);
 }

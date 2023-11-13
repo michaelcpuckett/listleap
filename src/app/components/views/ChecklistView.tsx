@@ -1,46 +1,57 @@
-import React from "react";
+import React from 'react';
 import { Property, Referrer, Checklist, ChecklistRow } from 'shared/types';
-import {RowActionsFlyoutMenu} from 'components/menus/RowActionsFlyoutMenu';
-import {AutoSaveTextElement} from 'components/elements/AutoSaveTextElement';
-import {NumericalContentEditable} from 'components/elements/NumericalContentEditable';
+import { RowActionsFlyoutMenu } from 'components/menus/RowActionsFlyoutMenu';
+import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
+import { NumericalContentEditable } from 'components/elements/NumericalContentEditable';
 // import {DateContentEditable} from 'components/elements/DateContentEditable';
-import {AutoSaveCheckboxElement} from 'components/elements/AutoSaveCheckboxElement';
-import {PostFormElement} from 'components/elements/PostFormElement';
+import { AutoSaveCheckboxElement } from 'components/elements/AutoSaveCheckboxElement';
+import { PostFormElement } from 'components/elements/PostFormElement';
 
 export function ChecklistView(
-  props: React.PropsWithoutRef<{ database: Checklist<Property[]>; referrer: Referrer; }>
+  props: React.PropsWithoutRef<{
+    database: Checklist<Property[]>;
+    referrer: Referrer;
+  }>,
 ) {
   const rows = props.database.rows;
   const properties = props.database.properties;
 
-  const queriedRows: ChecklistRow<Property[]>[] = rows.filter((row: ChecklistRow<Property[]>) => {
-    if (!props.referrer.query) {
-      return true;
-    }
-
-    interface StringProperty extends Property {
-      type: StringConstructor;
-    };
-
-    const guardIsStringProperty = (property: Property): property is StringProperty => {
-      return property.type === String;
-    };
-
-    const getPropertyId = (property: StringProperty) => property.id;
-
-    const allStringProperties = [
-      'title',
-      ...properties.filter(guardIsStringProperty).map(getPropertyId)
-    ] as Array<'title' | StringProperty['id']>;
-
-    return !!allStringProperties.find((stringPropertyId: StringProperty['id']) => {
+  const queriedRows: ChecklistRow<Property[]>[] = rows.filter(
+    (row: ChecklistRow<Property[]>) => {
       if (!props.referrer.query) {
-        return false;
+        return true;
       }
 
-      return (row[stringPropertyId] as string || '').toLowerCase().includes(props.referrer.query.toLowerCase());
-    });
-  });
+      interface StringProperty extends Property {
+        type: StringConstructor;
+      }
+
+      const guardIsStringProperty = (
+        property: Property,
+      ): property is StringProperty => {
+        return property.type === String;
+      };
+
+      const getPropertyId = (property: StringProperty) => property.id;
+
+      const allStringProperties = [
+        'title',
+        ...properties.filter(guardIsStringProperty).map(getPropertyId),
+      ] as Array<'title' | StringProperty['id']>;
+
+      return !!allStringProperties.find(
+        (stringPropertyId: StringProperty['id']) => {
+          if (!props.referrer.query) {
+            return false;
+          }
+
+          return ((row[stringPropertyId] as string) || '')
+            .toLowerCase()
+            .includes(props.referrer.query.toLowerCase());
+        },
+      );
+    },
+  );
 
   const filteredRows = queriedRows.filter((row) => {
     switch (props.referrer.filter) {
@@ -58,43 +69,44 @@ export function ChecklistView(
     databaseId: props.database.id,
     completed: false,
     title: '',
-    ...Object.fromEntries(props.database.properties.map((property: Property) => [
-      property.id,
-      property.type === Number ? 0 : property.type === Boolean ? false : '',
-    ])),
+    ...Object.fromEntries(
+      props.database.properties.map((property: Property) => [
+        property.id,
+        property.type === Number ? 0 : property.type === Boolean ? false : '',
+      ]),
+    ),
   } as ChecklistRow<Property[]>;
 
   rows.push(newRow);
 
-  const gridColumnsCss = `auto minmax(0, 1fr) ${properties.length ? `repeat(${properties.length}, minmax(0, 1fr))` : ''} auto`;
+  const gridColumnsCss = `auto minmax(0, 1fr) ${
+    properties.length ? `repeat(${properties.length}, minmax(0, 1fr))` : ''
+  } auto`;
 
   return (
-    <table className="view view--checklist" style={{
-      '--grid-columns': gridColumnsCss,
-    }}>
+    <table
+      className="view view--checklist"
+      style={{
+        '--grid-columns': gridColumnsCss,
+      }}
+    >
       <thead>
         <tr>
-          <th className="align-center">
-            Done
-          </th>
-          <th>
-            Title
-          </th>
+          <th className="align-center">Done</th>
+          <th>Title</th>
           {properties.map((property) => (
-            <th>
-              {property.name}
-            </th>
+            <th>{property.name}</th>
           ))}
-          <th className="align-center">
-            Actions
-          </th>
+          <th className="align-center">Actions</th>
         </tr>
       </thead>
       <tbody>
         {rows.map((row, index, { length }) => {
           const filteredIndex = filteredRows.findIndex((t) => t.id === row.id);
           const isBlankRow = index === length - 1;
-          const formId = isBlankRow ? 'add-row-inline-form' : `edit-row-inline-form--${row.id}`;
+          const formId = isBlankRow
+            ? 'add-row-inline-form'
+            : `edit-row-inline-form--${row.id}`;
 
           if (!isBlankRow && filteredIndex === -1) {
             return null;
@@ -157,22 +169,37 @@ export function ChecklistView(
                 <td className="align-center">
                   <PostFormElement
                     action={`/databases/${props.database.id}`}
-                    id="add-row-inline-form">
-                    <button className="button" type="submit">
+                    id="add-row-inline-form"
+                  >
+                    <button
+                      className="button"
+                      type="submit"
+                    >
                       Add
                     </button>
                   </PostFormElement>
                 </td>
               ) : (
-                <td className="align-center" aria-label={`Actions for ${row.title}`}>
+                <td
+                  className="align-center"
+                  aria-label={`Actions for ${row.title}`}
+                >
                   <form
                     noValidate
                     action={`/databases/${props.database.id}/rows/${row.id}`}
                     method="POST"
                     id={`edit-row-inline-form--${row.id}`}
-                    role="none">
-                    <input type="hidden" name="_method" value="PUT" />
-                    <button type="submit" hidden>
+                    role="none"
+                  >
+                    <input
+                      type="hidden"
+                      name="_method"
+                      value="PUT"
+                    />
+                    <button
+                      type="submit"
+                      hidden
+                    >
                       Update
                     </button>
                   </form>

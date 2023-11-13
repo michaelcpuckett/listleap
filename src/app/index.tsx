@@ -2,9 +2,9 @@ import { handleInstall } from './install';
 import { handleFetch } from './fetch';
 
 self.addEventListener('install', handleInstall);
-self.addEventListener("fetch", handleFetch);
+self.addEventListener('fetch', handleFetch);
 
-declare module "react" {
+declare module 'react' {
   interface HTMLAttributes<T>
     extends React.AriaAttributes,
       React.DOMAttributes<T> {
@@ -26,11 +26,11 @@ type CustomElement = React.DetailedHTMLProps<
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      "auto-save-text": CustomElement;
-      "auto-save-checkbox": CustomElement;
-      "flyout-menu": CustomElement;
-      "unload-handler": CustomElement;
-      "post-form": CustomElement;
+      'auto-save-text': CustomElement;
+      'auto-save-checkbox': CustomElement;
+      'flyout-menu': CustomElement;
+      'unload-handler': CustomElement;
+      'post-form': CustomElement;
     }
   }
 }
