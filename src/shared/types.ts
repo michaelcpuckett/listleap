@@ -45,12 +45,11 @@ interface BaseProperty {
   id: string;
   databaseId: string;
   name: string;
-  index: number;
 }
 
 export interface UntypedProperty extends BaseProperty {
-  index: number;
   type: string;
+  index: number;
 }
 
 export interface Property extends BaseProperty {

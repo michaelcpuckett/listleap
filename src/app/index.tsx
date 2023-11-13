@@ -1,8 +1,8 @@
 import { pathToRegexp, match, parse, compile } from "path-to-regexp";
 import { renderToString } from "react-dom/server";
-import { editPartialDatabaseInIndexedDb, deleteRowByIdFromIndexedDb, addPartialDatabaseToIndexedDb, getDatabaseFromIndexedDb, getPartialDatabasesFromIndexedDb, getIdb, getSettingsFromIndexedDb, SwotionIDB, addRowToIndexedDb, editRowInIndexedDb, reorderRowInIndexedDb } from "./utilities/idb";
+import { editPartialDatabaseInIndexedDb, deleteRowByIdFromIndexedDb, addPartialDatabaseToIndexedDb, getDatabaseFromIndexedDb, getPartialDatabasesFromIndexedDb, getIdb, getSettingsFromIndexedDb, SwotionIDB, addRowToIndexedDb, editRowInIndexedDb, reorderRowInIndexedDb, addUntypedPropertyToIndexedDB } from "./utilities/idb";
 import {assertIsDatabase, guardIsChecklist, guardIsChecklistRow, guardIsTableRow} from "../shared/assertions";
-import { Row, Referrer, Settings, Property, Database, PartialDatabase, PartialRow, Checklist, ChecklistRow, Table, TableRow, GetRowByType } from "../shared/types";
+import { Row, Referrer, Settings, Property, Database, PartialDatabase, PartialRow, Checklist, ChecklistRow, Table, TableRow, GetRowByType, UntypedProperty } from "../shared/types";
 import { URLS_TO_CACHE } from "./utilities/urlsToCache";
 import { getUniqueId } from "../shared/getUniqueId";
 
@@ -47,8 +47,9 @@ self.addEventListener("fetch", function (event: Event) {
     url: event.request.url,
   };
 
-  const matchesDatabase = pathToRegexp("/databases/:id").exec(pathname);
-  const matchesRow = pathToRegexp("/databases/:databaseId/rows/:id").exec(pathname);
+  const matchesDatabaseRows = pathToRegexp("/databases/:id").exec(pathname);
+  const matchesDatabaseRow = pathToRegexp("/databases/:databaseId/rows/:id").exec(pathname);
+  const matchesDatabaseProperties = pathToRegexp("/databases/:databaseId/properties").exec(pathname);
 
   if (event.request.method === "GET") {
     return event.respondWith(
@@ -71,10 +72,10 @@ self.addEventListener("fetch", function (event: Event) {
               headers: { "Content-Type": "text/html" },
             });
           }    
-          case !!matchesDatabase: {
+          case !!matchesDatabaseRows: {
             const idb = await getIdb();
-            const id = matchesDatabase?.[1] || '';
-            const database = await getDatabaseFromIndexedDb(id, idb);
+            const databaseId = matchesDatabaseRows?.[1] || '';
+            const database = await getDatabaseFromIndexedDb(databaseId, idb);
             
             if (!database) {
               return new Response("Not found", {
@@ -86,14 +87,27 @@ self.addEventListener("fetch", function (event: Event) {
 
             const renderResult = await renderDatabasePage(database, referrer, settings);
 
+            console.log('test', url.searchParams.get('query'), query);
+
+            if (url.searchParams.has('query') && !query) {
+              const redirectUrl = new URL(event.request.url);
+              const urlSearchParams = new URLSearchParams(redirectUrl.search);
+              urlSearchParams.delete('query');
+              redirectUrl.search = urlSearchParams.toString();
+
+              console.log(redirectUrl.href);
+
+              return Response.redirect(redirectUrl.href, 302);
+            }
+
             return new Response(`<!DOCTYPE html>${renderResult}`, {
               headers: { "Content-Type": "text/html" },
             });
           }
-          case !!matchesRow: {
+          case !!matchesDatabaseRow: {
             const idb = await getIdb();
-            const databaseId = matchesRow?.[1] || '';
-            const id = matchesRow?.[2] || '';
+            const databaseId = matchesDatabaseRow?.[1] || '';
+            const id = matchesDatabaseRow?.[2] || '';
 
             const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
@@ -114,6 +128,32 @@ self.addEventListener("fetch", function (event: Event) {
             const settings = await getSettingsFromIndexedDb(idb);
 
             const mode = url.searchParams.get('mode') || 'EDIT_ROW';
+
+            const renderResult = await renderDatabasePage(database, {
+              ...referrer,
+              id,
+              mode,
+            }, settings);
+
+            return new Response(`<!DOCTYPE html>${renderResult}`, {
+              headers: { "Content-Type": "text/html" },
+            });
+          }
+          case !!matchesDatabaseProperties: {
+            const idb = await getIdb();
+            const databaseId = matchesDatabaseProperties?.[1] || '';
+
+            const database = await getDatabaseFromIndexedDb(databaseId, idb);
+
+            if (!database) {
+              return new Response("Not found", {
+                status: 404,
+              });
+            }
+
+            const settings = await getSettingsFromIndexedDb(idb);
+
+            const mode = url.searchParams.get('mode') || 'EDIT_PROPERTIES';
 
             const renderResult = await renderDatabasePage(database, {
               ...referrer,
@@ -159,19 +199,14 @@ self.addEventListener("fetch", function (event: Event) {
  
             const databaseUrl = `/databases/${id}`;
             const url = new URL(databaseUrl, new URL(event.request.url).origin);
-  
-            return new Response(null, {
-              headers: {
-                "Location": url.href,
-              },
-              status: 303,
-            });
+            
+            return Response.redirect(url.href, 303);
           }
         }
       }
-      case !!matchesDatabase: {
+      case !!matchesDatabaseRows: {
         const idb = await getIdb();
-        const id = matchesDatabase?.[1] || '';
+        const id = matchesDatabaseRows?.[1] || '';
         const database = await getDatabaseFromIndexedDb(id, idb);
 
         if (!database) {
@@ -200,12 +235,7 @@ self.addEventListener("fetch", function (event: Event) {
               const url = new URL(event.request.referrer);
               url.searchParams.set('error', 'Invalid row');
 
-              return new Response(null, {
-                headers: {
-                  "Location": url.href,
-                },
-                status: 303,
-              });
+              return Response.redirect(url.href, 303);
             }
 
             if (guardIsChecklistRow(rowToAdd, database)) {
@@ -232,12 +262,7 @@ self.addEventListener("fetch", function (event: Event) {
 
             await addRowToIndexedDb<typeof database>(rowToAdd, idb);
             
-            return new Response(null, {
-              headers: {
-                "Location": event.request.referrer,
-              },
-              status: 303,
-            });
+            return Response.redirect(event.request.referrer, 303);
           }
           case 'PATCH': {
             const updatedDatabase: PartialDatabase = {
@@ -248,23 +273,15 @@ self.addEventListener("fetch", function (event: Event) {
 
             await editPartialDatabaseInIndexedDb(updatedDatabase, idb);
 
-            return new Response(null, {
-              headers: {
-                "Location": event.request.referrer,
-              },
-              status: 303,
-            });
+            return Response.redirect(event.request.url, 303);
           }
         }
       }
-      case !!matchesRow: {
+      case !!matchesDatabaseRow: {
         const idb = await getIdb();
-        const databaseId = matchesRow?.[1] || '';
-        const id = matchesRow?.[2] || '';
+        const databaseId = matchesDatabaseRow?.[1] || '';
+        const id = matchesDatabaseRow?.[2] || '';
         const database = await getDatabaseFromIndexedDb(databaseId, idb);
-        console.log({
-          database,
-        });
 
         if (!database) {
           return new Response("Not found", {
@@ -279,13 +296,7 @@ self.addEventListener("fetch", function (event: Event) {
             await deleteRowByIdFromIndexedDb(id, idb);
 
             const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
-
-            return new Response(null, {
-              headers: {
-                "Location": redirectUrl.href,
-              },
-              status: 303,
-            });
+            return Response.redirect(redirectUrl.href, 303);
           }
           case 'PATCH': {
             const rowToPatch = database.rows.find(row => row.id === id);
@@ -312,13 +323,7 @@ self.addEventListener("fetch", function (event: Event) {
 
             const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
             redirectUrl.search = new URL(event.request.referrer).search;
-
-            return new Response(null, {
-              headers: {
-                "Location": redirectUrl.href,
-              },
-              status: 303,
-            });
+            return Response.redirect(redirectUrl.href, 303);
           }
           case 'PUT': {
             type TypedRow = GetRowByType<typeof database['type']>;
@@ -346,12 +351,7 @@ self.addEventListener("fetch", function (event: Event) {
               const url = new URL(event.request.referrer);
               url.searchParams.set('error', 'Invalid row');
 
-              return new Response(null, {
-                headers: {
-                  "Location": url.href,
-                },
-                status: 303,
-              });
+              return Response.redirect(url.href, 303);
             }
 
             if (guardIsChecklistRow(rowToPut, database)) {
@@ -380,12 +380,37 @@ self.addEventListener("fetch", function (event: Event) {
 
             const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
 
-            return new Response(null, {
-              headers: {
-                "Location": redirectUrl.href,
-              },
-              status: 303,
-            });
+            return Response.redirect(redirectUrl.href, 303);
+          }
+        }
+      }
+      case !!matchesDatabaseProperties: {
+        const idb = await getIdb();
+        const databaseId = matchesDatabaseProperties?.[1] || '';
+
+        const database = await getDatabaseFromIndexedDb(databaseId, idb);
+
+        if (!database) {
+          return new Response("Not found", {
+            status: 404,
+          });
+        }
+
+        switch (formData._method) {
+          case 'POST': {
+            const propertyToAdd: UntypedProperty = {
+              index: -1,
+              id: getUniqueId(),
+              databaseId: database.id,
+              name: formData.name,
+              type: formData.type,
+            };
+
+            await addUntypedPropertyToIndexedDB(propertyToAdd, idb);
+
+            const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
+
+            return Response.redirect(redirectUrl.href, 303);
           }
         }
       }
