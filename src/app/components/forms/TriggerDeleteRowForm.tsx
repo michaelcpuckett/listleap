@@ -4,9 +4,10 @@ import { AnyRow, Referrer } from 'shared/types';
 export function TriggerDeleteRowForm(props: React.PropsWithChildren<{ row: AnyRow; referrer: Referrer; autofocus?: boolean; role?: string; tabindex?: number; }>) {
   const urlPathname = `/databases/${props.row.databaseId}/rows/${props.row.id}`;
   const url = new URL(props.referrer.url);
-  const urlSearchParams = new URLSearchParams(url.search);
-  url.searchParams.set('mode', 'DELETE_ROW');
   url.pathname = urlPathname;
+
+  const urlSearchParams = new URLSearchParams(url.search);
+  urlSearchParams.set('mode', 'DELETE_ROW');
   url.search = urlSearchParams.toString();
 
   return (

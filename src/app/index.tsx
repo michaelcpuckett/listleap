@@ -1,15 +1,18 @@
-import { pathToRegexp, match, parse, compile } from "path-to-regexp";
-import { renderToString } from "react-dom/server";
-import { editPartialDatabaseInIndexedDb, deleteRowByIdFromIndexedDb, addPartialDatabaseToIndexedDb, getDatabaseFromIndexedDb, getPartialDatabasesFromIndexedDb, getIdb, getSettingsFromIndexedDb, SwotionIDB, addRowToIndexedDb, editRowInIndexedDb, reorderRowInIndexedDb, addUntypedPropertyToIndexedDB } from "utilities/idb";
-import {assertIsDatabase, guardIsChecklist, guardIsChecklistRow, guardIsTableRow} from "shared/assertions";
-import { Row, Referrer, Settings, Property, Database, PartialDatabase, PartialRow, Checklist, ChecklistRow, Table, TableRow, GetRowByType, UntypedProperty } from "shared/types";
+import { Referrer } from "shared/types";
+import { pathToRegexp } from "path-to-regexp";
 import { URLS_TO_CACHE } from "utilities/urlsToCache";
-import { getUniqueId } from "shared/getUniqueId";
-import { DatabasePage } from "components/pages/DatabasePage";
+
 import { GetIndex } from "endpoints/get/index";
 import { GetDatabaseRows } from "endpoints/get/databases/rows";
 import { GetDatabaseRow } from "endpoints/get/databases/row";
 import { GetDatabaseProperties } from "endpoints/get/databases/properties";
+import { PostDatabase } from "endpoints/post/databases/index";
+import { PatchDatabase } from "endpoints/patch/databases/index";
+import { PostDatabaseRows } from "endpoints/post/databases/rows";
+import { DeleteDatabaseRow } from "endpoints/delete/databases/row";
+import { PatchDatabaseRow } from "endpoints/patch/databases/row";
+import { PutDatabaseRow } from "endpoints/put/databases/row";
+import { PostDatabaseProperties } from "endpoints/post/databases/properties";
 
 self.addEventListener("install", function (event: Event) {
   if (!(event instanceof ExtendableEvent)) {
@@ -49,7 +52,10 @@ self.addEventListener("fetch", function (event: Event) {
     url: event.request.url,
   };
 
-  const matchesDatabaseRows = pathToRegexp("/databases/:id").exec(pathname);
+  const matchesHome = pathToRegexp("/").exec(pathname);
+  const matchesDatabases = pathToRegexp("/databases").exec(pathname);
+  const matchesDatabase = pathToRegexp("/databases/:id").exec(pathname);
+  const matchesDatabaseRows = pathToRegexp("/databases/:databaseId/rows").exec(pathname);
   const matchesDatabaseRow = pathToRegexp("/databases/:databaseId/rows/:id").exec(pathname);
   const matchesDatabaseProperties = pathToRegexp("/databases/:databaseId/properties").exec(pathname);
 
@@ -66,11 +72,11 @@ self.addEventListener("fetch", function (event: Event) {
         }
 
         switch (true) {
-          case "/" === pathname: {
-            return await GetIndex(event, referrer);
-          }    
-          case !!matchesDatabaseRows: {
-            return await GetDatabaseRows(event, matchesDatabaseRows, referrer);
+          case !!matchesHome: {
+            return await GetIndex(event, matchesHome, referrer);
+          }
+          case !!matchesDatabase: {
+            return await GetDatabaseRows(event, matchesDatabase, referrer);
           }
           case !!matchesDatabaseRow: {
             return await GetDatabaseRow(event, matchesDatabaseRow, referrer);
@@ -92,238 +98,44 @@ self.addEventListener("fetch", function (event: Event) {
     const formData = Object.fromEntries(Array.from(rawFormData.entries()).map(([key, value]) => [key, value.toString()]));
     
     switch (true) {
-      case pathname === "/databases": {
+      case !!matchesDatabases: {
         switch (formData._method) {
           case 'POST': {
-            const idb = await getIdb();
-            const id = getUniqueId();
-
-            const database = {
-              id,
-              type: formData.type,
-              name: formData.name || '',
-              properties: [],
-              rows: [],
-            };
-
-            assertIsDatabase(database);
-  
-            await addPartialDatabaseToIndexedDb(database, idb);
- 
-            const databaseUrl = `/databases/${id}`;
-            const url = new URL(databaseUrl, new URL(event.request.url).origin);
-            
-            return Response.redirect(url.href, 303);
+            return PostDatabase(event, matchesDatabases, formData, referrer);
+          }
+        }
+      }
+      case !!matchesDatabase: {
+        switch (formData._method) {
+          case 'PATCH': {
+            return PatchDatabase(event, matchesDatabases, formData, referrer);
           }
         }
       }
       case !!matchesDatabaseRows: {
-        const idb = await getIdb();
-        const id = matchesDatabaseRows?.[1] || '';
-        const database = await getDatabaseFromIndexedDb(id, idb);
-
-        if (!database) {
-          return new Response("Not found", {
-            status: 404,
-          });
-        }
-
-        const properties = database.properties || [];
-
         switch (formData._method) {
           case 'POST': {
-            type TypedRow = GetRowByType<typeof database['type']>;
-
-            const rowToAdd: Partial<TypedRow> = {
-              id: getUniqueId(),
-              databaseId: database.id,
-              title: formData.title || '',
-            };
-            
-            function guardIsRowOfType<T extends Row<Property[]>>(row: Partial<Row<Property[]>>, database: Database<Property[]>): row is T {
-              return guardIsChecklistRow(row, database) || guardIsTableRow(row, database);
-            }
-
-            if (!guardIsRowOfType<TypedRow>(rowToAdd, database)) {
-              const url = new URL(event.request.referrer);
-              url.searchParams.set('error', 'Invalid row');
-
-              return Response.redirect(url.href, 303);
-            }
-
-            if (guardIsChecklistRow(rowToAdd, database)) {
-              rowToAdd.completed = formData.completed === 'on';
-            }
-
-            for (const property of properties) {
-              if (formData[property.id] === undefined) {
-                continue;
-              }
-
-              if (property.type === String) {
-                rowToAdd[property.id] = `${formData[property.id]}`;
-              }
-
-              if (property.type === Number) {
-                rowToAdd[property.id] = Number(formData[property.id]);
-              }
-
-              if (property.type === Boolean) {
-                rowToAdd[property.id] = formData[property.id] === 'on';
-              }
-            }
-
-            await addRowToIndexedDb<typeof database>(rowToAdd, idb);
-            
-            return Response.redirect(event.request.referrer, 303);
-          }
-          case 'PATCH': {
-            const updatedDatabase: PartialDatabase = {
-              id: database.id,
-              type: database.type,
-              name: typeof formData.name === 'string' ? formData.name : database.name,
-            };
-
-            await editPartialDatabaseInIndexedDb(updatedDatabase, idb);
-
-            return Response.redirect(event.request.url, 303);
+            return PostDatabaseRows(event, matchesDatabase, formData, referrer);
           }
         }
       }
       case !!matchesDatabaseRow: {
-        const idb = await getIdb();
-        const databaseId = matchesDatabaseRow?.[1] || '';
-        const id = matchesDatabaseRow?.[2] || '';
-        const database = await getDatabaseFromIndexedDb(databaseId, idb);
-
-        if (!database) {
-          return new Response("Not found", {
-            status: 404,
-          });
-        }
-
-        const properties = database.properties || [];
-
         switch (formData._method) {
           case 'DELETE': {
-            await deleteRowByIdFromIndexedDb(id, idb);
-
-            const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
-            return Response.redirect(redirectUrl.href, 303);
+            return DeleteDatabaseRow(event, matchesDatabaseRow, formData, referrer);
           }
           case 'PATCH': {
-            const rowToPatch = database.rows.find(row => row.id === id);
-
-            if (!rowToPatch) {
-              return new Response("Not found", {
-                status: 404,
-              });
-            }
-
-            if (formData.index !== undefined) {
-              await reorderRowInIndexedDb(Number(rowToPatch.index), Number(formData.index), idb);
-            } else {
-              for (const [key, value] of Object.entries(formData)) {
-                if (['_method', '_redirect'].includes(key)) {
-                  continue;
-                }
-
-                rowToPatch[key] = value;
-              }
-
-              await editRowInIndexedDb<typeof database>(rowToPatch, idb);
-            }
-
-            const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
-            redirectUrl.search = new URL(event.request.referrer).search;
-            return Response.redirect(redirectUrl.href, 303);
+            return PatchDatabaseRow(event, matchesDatabaseRow, formData, referrer);
           }
           case 'PUT': {
-            type TypedRow = GetRowByType<typeof database['type']>;
-
-            const existingRow = database.rows.find(row => row.id === id);
-
-            if (!existingRow) {
-              return new Response("Not found", {
-                status: 404,
-              });
-            }
-
-            const rowToPut: Partial<TypedRow> = {
-              id: existingRow.id,
-              index: existingRow.index,
-              databaseId: database.id,
-              title: formData.title,
-            };
-            
-            function guardIsRowOfType<T extends Row<Property[]>>(row: Partial<Row<Property[]>>, database: Database<Property[]>): row is T {
-              return guardIsChecklistRow(row, database) || guardIsTableRow(row, database);
-            }
-
-            if (!guardIsRowOfType<TypedRow>(rowToPut, database)) {
-              const url = new URL(event.request.referrer);
-              url.searchParams.set('error', 'Invalid row');
-
-              return Response.redirect(url.href, 303);
-            }
-
-            if (guardIsChecklistRow(rowToPut, database)) {
-              rowToPut.completed = formData.completed === 'on';
-            }
-
-            for (const property of properties) {
-              if (formData[property.id] === undefined) {
-                continue;
-              }
-
-              if (property.type === String) {
-                rowToPut[property.id] = `${formData[property.id]}`;
-              }
-
-              if (property.type === Number) {
-                rowToPut[property.id] = Number(formData[property.id]);
-              }
-
-              if (property.type === Boolean) {
-                rowToPut[property.id] = formData[property.id] === 'on';
-              }
-            }
-
-            await editRowInIndexedDb<typeof database>(rowToPut, idb);
-
-            const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
-
-            return Response.redirect(redirectUrl.href, 303);
+            return PutDatabaseRow(event, matchesDatabaseRow, formData, referrer);
           }
         }
       }
       case !!matchesDatabaseProperties: {
-        const idb = await getIdb();
-        const databaseId = matchesDatabaseProperties?.[1] || '';
-
-        const database = await getDatabaseFromIndexedDb(databaseId, idb);
-
-        if (!database) {
-          return new Response("Not found", {
-            status: 404,
-          });
-        }
-
         switch (formData._method) {
           case 'POST': {
-            const propertyToAdd: UntypedProperty = {
-              index: -1,
-              id: getUniqueId(),
-              databaseId: database.id,
-              name: formData.name,
-              type: formData.type,
-            };
-
-            await addUntypedPropertyToIndexedDB(propertyToAdd, idb);
-
-            const redirectUrl = new URL(formData._redirect || `/databases/${databaseId}`, new URL(event.request.url).origin);
-
-            return Response.redirect(redirectUrl.href, 303);
+            return PostDatabaseProperties(event, matchesDatabaseProperties, formData, referrer);
           }
         }
       }

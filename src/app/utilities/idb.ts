@@ -285,7 +285,7 @@ export async function deleteRowByIndexFromIndexedDb(
   await tx.done;
 }
 
-export async function addUntypedPropertyToIndexedDB(
+export async function addUntypedPropertyToIndexedDb(
   untypedProperty: UntypedProperty,
   idb: SwotionIDB
 ): Promise<void> {
@@ -295,7 +295,7 @@ export async function addUntypedPropertyToIndexedDB(
   await tx.done;
 }
 
-export async function editUntypedPropertyInIndexedDB(
+export async function editUntypedPropertyInIndexedDb(
   untypedProperty: UntypedProperty,
   idb: SwotionIDB
 ): Promise<void> {
