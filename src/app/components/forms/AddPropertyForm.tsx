@@ -9,7 +9,7 @@ export function AddPropertyForm(
   return (
     <PostFormElement
       action={`/databases/${props.database.id}/properties`}
-      id="add-row-inline-form"
+      id="add-row-form"
     >
       <input
         type="hidden"

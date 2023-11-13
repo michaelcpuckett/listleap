@@ -7,6 +7,7 @@ export function PostFormElement(
     <post-form>
       <form
         noValidate
+        autoComplete="off"
         action={props.action}
         method="POST"
         id={props.id}
