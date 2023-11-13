@@ -46,14 +46,19 @@ export interface PartialProperty {
   id: string;
   databaseId: string;
   name: string;
-  type: StringConstructor | NumberConstructor | BooleanConstructor;
+}
+
+export interface UntypedProperty extends PartialProperty {
+  index: number;
+  type: string;
 }
 
 export interface Property extends PartialProperty {
   index: number;
+  type: StringConstructor | NumberConstructor | BooleanConstructor;
 }
 
-type DynamicPropertyKeyValuePair<Properties> = {
+type DynamicPropertyKeyValuePair<Properties extends Property[]> = {
   [K in keyof Properties]: Properties[K] extends StringConstructor
     ? string
     : Properties[K] extends NumberConstructor

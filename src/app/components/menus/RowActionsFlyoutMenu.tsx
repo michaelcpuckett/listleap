@@ -21,13 +21,13 @@ export function RowActionsFlyoutMenu(
     >
       <ReorderRowUpForm
         row={props.row}
-        index={props.previousRow ? props.previousRow.index : -1}
+        index={(props.previousRow ? props.previousRow.index : null) ?? -1}
         isDisabled={!props.previousRow}
         role="menuitem"
       />
       <ReorderRowDownForm
         row={props.row}
-        index={props.nextRow ? props.nextRow.index : -1}
+        index={(props.nextRow ? props.nextRow.index : null) ?? -1}
         isDisabled={!props.nextRow}
         role="menuitem"
       />

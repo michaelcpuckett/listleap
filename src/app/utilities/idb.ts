@@ -1,11 +1,12 @@
 import { DBSchema, IDBPDatabase, wrap } from 'idb';
 import {
+  AnyRow,
   Database,
   PartialDatabase,
   Property,
-  UntypedProperty,
   Row,
   Settings,
+  UntypedProperty,
 } from 'shared/types';
 import { ID } from 'yjs';
 
@@ -20,13 +21,13 @@ interface SwotionSchema extends DBSchema {
   };
   rows: {
     key: number;
-    value: Row<Property[]>;
+    value: Omit<Row<Property[]>, 'index'>;
     keyPath: 'index';
     indexes: { id: string; databaseId: string };
   };
   properties: {
     key: number;
-    value: Property;
+    value: Omit<UntypedProperty, 'index'>;
     keyPath: 'index';
     indexes: { id: string; databaseId: string };
   };
@@ -79,13 +80,14 @@ export async function getIdb(): Promise<SwotionIDB> {
 export async function getSettingsFromIndexedDb(
   idb: SwotionIDB,
 ): Promise<Settings> {
-  const tx = idb.transaction('settings', 'readwrite');
+  const tx = idb.transaction('settings', 'readonly');
   const store = tx.objectStore('settings');
   const theme = (await store.get('theme')) || '';
+  await tx.done;
   return { theme };
 }
 
-export function getTypeFromString(type: string) {
+export function getPropertyTypeFromString(type: string) {
   switch (type) {
     case 'Number':
       return Number;
@@ -97,14 +99,66 @@ export function getTypeFromString(type: string) {
   }
 }
 
+export function getStringFromPropertyType(
+  type: NumberConstructor | BooleanConstructor | StringConstructor,
+) {
+  switch (type) {
+    case Number:
+      return 'Number';
+    case Boolean:
+      return 'Boolean';
+    case String:
+    default:
+      return 'String';
+  }
+}
+
 export async function getPropertiesByDatabaseIdFromIndexedDb<
   Db extends Database<Property[]>,
 >(databaseId: string, idb: SwotionIDB): Promise<Db['properties']> {
-  const filteredProperties = await idb.getAllFromIndex(
+  const filteredUntypedProperties = await idb.getAllFromIndex(
     'properties',
     'databaseId',
     databaseId,
   );
+
+  const convertType = (
+    property: Omit<UntypedProperty, 'index'>,
+  ): Omit<Property, 'index'> => {
+    const { type, ...rest } = property;
+    const typedProperty = {
+      ...rest,
+      type: getPropertyTypeFromString(type),
+    };
+
+    return typedProperty;
+  };
+
+  function guardIsProperty(property: unknown): property is Property {
+    if (typeof (property as Property).index !== 'number') {
+      return false;
+    }
+
+    function isStringType(
+      type: Property['type'] | UntypedProperty['type'],
+    ): type is UntypedProperty['type'] {
+      return typeof (property as UntypedProperty).type === 'string';
+    }
+
+    if (isStringType((property as UntypedProperty).type)) {
+      return false;
+    }
+
+    const isValidType = [Number, Boolean, String].includes(
+      (property as Property).type,
+    );
+
+    return isValidType;
+  }
+
+  const filteredProperties = filteredUntypedProperties
+    .map(convertType)
+    .filter(guardIsProperty);
 
   return filteredProperties;
 }
@@ -146,6 +200,7 @@ export async function getDatabaseFromIndexedDb<Db extends Database<Property[]>>(
   const tx = idb.transaction('databases', 'readwrite');
   const store = tx.objectStore('databases');
   const database = await store.get(id);
+  await tx.done;
 
   if (!database) {
     return null;
@@ -167,6 +222,7 @@ export async function getPartialDatabasesFromIndexedDb(
   const tx = idb.transaction('databases', 'readwrite');
   const store = tx.objectStore('databases');
   const databases = await store.getAll();
+  await tx.done;
   return databases;
 }
 
@@ -179,7 +235,11 @@ export async function getRowsByDatabaseIdFromIndexedDb<
     return [];
   }
 
-  return rows;
+  function guardIsRow(row: unknown): row is AnyRow {
+    return typeof (row as AnyRow).index === 'number';
+  }
+
+  return rows.filter(guardIsRow);
 }
 
 export async function addRowToIndexedDb<Db extends Database<Property[]>>(
@@ -217,41 +277,80 @@ export async function reorderRowInIndexedDb(
   newIndex: number,
   idb: SwotionIDB,
 ): Promise<void> {
-  const tx = idb.transaction('rows', 'readwrite');
-  const store = tx.objectStore('rows');
-  const rowToReorder = await store.get(oldIndex);
-  const rowToFlip = await store.get(newIndex);
+  const rowToReorder = await getRowByIndexFromIndexedDb(oldIndex, idb);
+  const rowToFlip = await getRowByIndexFromIndexedDb(newIndex, idb);
 
-  if (!rowToReorder) {
+  if (rowToReorder) {
+    const tx = idb.transaction('rows', 'readwrite');
+    const store = tx.objectStore('rows');
+    await store.delete(newIndex);
+    await tx.done;
+  } else {
     throw new Error('Row to reorder not found');
   }
 
   if (rowToFlip) {
+    const tx = idb.transaction('rows', 'readwrite');
+    const store = tx.objectStore('rows');
     await store.delete(oldIndex);
+    await tx.done;
   }
 
-  await store.delete(newIndex);
-
   if (rowToReorder) {
+    const tx = idb.transaction('rows', 'readwrite');
+    const store = tx.objectStore('rows');
     rowToReorder.index = newIndex;
     await store.put(rowToReorder);
+    await tx.done;
   }
 
   if (rowToFlip) {
+    const tx = idb.transaction('rows', 'readwrite');
+    const store = tx.objectStore('rows');
     rowToFlip.index = oldIndex;
     await store.put(rowToFlip);
+    await tx.done;
   }
-
-  await tx.done;
 }
 
-async function getRowByIdFromIndexedDb<Db extends Database<Property[]>>(
+export async function getRowByIndexFromIndexedDb<
+  Db extends Database<Property[]>,
+>(index: number, idb: SwotionIDB): Promise<Db['rows'][number] | null> {
+  const tx = idb.transaction('rows', 'readwrite');
+  const store = tx.objectStore('rows');
+  const row = await store.get(index);
+  await tx.done;
+
+  if (!row) {
+    return null;
+  }
+
+  function guardIsRow(row: unknown): row is AnyRow {
+    return typeof (row as AnyRow).index === 'number';
+  }
+
+  if (!guardIsRow(row)) {
+    return null;
+  }
+
+  return row;
+}
+
+export async function getRowByIdFromIndexedDb<Db extends Database<Property[]>>(
   id: string,
   idb: SwotionIDB,
 ): Promise<Db['rows'][number]> {
   const row = await idb.getFromIndex('rows', 'id', id);
 
   if (!row) {
+    throw new Error('Row not found');
+  }
+
+  function guardIsRow(row: unknown): row is AnyRow {
+    return typeof (row as AnyRow).index === 'number';
+  }
+
+  if (!guardIsRow(row)) {
     throw new Error('Row not found');
   }
 
@@ -263,6 +362,11 @@ export async function deleteRowByIdFromIndexedDb(
   idb: SwotionIDB,
 ): Promise<void> {
   const existingRow = await getRowByIdFromIndexedDb(id, idb);
+
+  if (!existingRow?.index) {
+    throw new Error('Row not found');
+  }
+
   await deleteRowByIndexFromIndexedDb(existingRow.index, idb);
 }
 
@@ -277,21 +381,28 @@ export async function deleteRowByIndexFromIndexedDb(
 }
 
 export async function addPropertyToIndexedDb<Db extends Database<Property[]>>(
-  property: Db['properties'][number],
+  property: Omit<Db['properties'][number], 'index'>,
   idb: SwotionIDB,
 ): Promise<void> {
   const tx = idb.transaction('properties', 'readwrite');
   const store = tx.objectStore('properties');
-  await store.add(property);
+  const untypedProperty = {
+    ...property,
+    type: getStringFromPropertyType(property.type),
+  };
+  await store.add(untypedProperty);
   await tx.done;
 }
 
-export async function editUntypedPropertyInIndexedDb(
-  untypedProperty: UntypedProperty,
-  idb: SwotionIDB,
-): Promise<void> {
+export async function editUntypedPropertyInIndexedDb<
+  Db extends Database<Property[]>,
+>(property: Db['properties'][number], idb: SwotionIDB): Promise<void> {
   const tx = idb.transaction('properties', 'readwrite');
   const store = tx.objectStore('properties');
+  const untypedProperty = {
+    ...property,
+    type: getStringFromPropertyType(property.type),
+  };
   await store.put(untypedProperty);
   await tx.done;
 }

@@ -45,6 +45,7 @@ export function DatabasePage(
   closeUrlSearchParams.delete('error');
   closeUrl.pathname = closeUrlPathname;
   closeUrl.search = closeUrlSearchParams.toString();
+  const closeUrlHref = closeUrl.href.replace(closeUrl.origin, '');
 
   return (
     <PageShell
@@ -55,7 +56,7 @@ export function DatabasePage(
         <ModalDialog
           open
           heading={<>Error</>}
-          closeUrl={closeUrl.href}
+          closeUrl={closeUrlHref}
         >
           <p>{ERROR_MESSAGES[props.referrer.error]}</p>
         </ModalDialog>
@@ -64,20 +65,20 @@ export function DatabasePage(
         <EditRowModalDialog
           row={row}
           database={props.database}
-          closeUrl={closeUrl.href}
+          closeUrl={closeUrlHref}
         />
       ) : null}
       {isDeletingRow ? (
         <DeleteRowModalDialog
           row={row}
           database={props.database}
-          closeUrl={closeUrl.href}
+          closeUrl={closeUrlHref}
         />
       ) : null}
       {isEditingProperties ? (
         <PropertiesModalDialog
           database={props.database}
-          closeUrl={closeUrl.href}
+          closeUrl={closeUrlHref}
         />
       ) : null}
       <div

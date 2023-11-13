@@ -13,9 +13,22 @@ export function DeleteRowModalDialog(
   return (
     <ModalDialog
       open
-      heading={<>Edit Row</>}
+      heading={<>Delete Row</>}
       closeUrl={props.closeUrl}
     >
+      <p>Are you sure you want to delete this row?</p>
+      <dl>
+        <React.Fragment key="title">
+          <dt>Title</dt>
+          <dd>{props.row.title}</dd>
+        </React.Fragment>
+        {props.database.properties.map((property) => (
+          <React.Fragment key={property.id}>
+            <dt>{property.name}</dt>
+            <dd>{props.row[property.id]}</dd>
+          </React.Fragment>
+        ))}
+      </dl>
       <DeleteRowForm
         row={props.row}
         database={props.database}
