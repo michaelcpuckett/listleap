@@ -1,5 +1,5 @@
 import React from 'react';
-import {Database, Property, Row} from '../../shared/types';
+import {Database, Property, Row} from 'shared/types';
 
 export function DeleteRowForm(props: React.PropsWithoutRef<{ row: Row<Property[]>; database: Database<Property[]>; }>) {
   return (

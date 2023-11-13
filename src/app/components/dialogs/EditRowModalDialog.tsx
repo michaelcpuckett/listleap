@@ -1,7 +1,7 @@
 import React from "react";
-import {Property, Database, Row} from '../../shared/types';
-import {ModalDialog} from './ModalDialog';
-import {EditRowForm} from '../forms/EditRowForm';
+import {Property, Database, Row} from 'shared/types';
+import { ModalDialog } from 'components/dialogs/ModalDialog';
+import {EditRowForm} from 'components/forms/EditRowForm';
 
 export function EditRowModalDialog(props: React.PropsWithChildren<{ row: Row<Property[]>; database: Database<Property[]>; closeUrl: string; }>) {
   return (

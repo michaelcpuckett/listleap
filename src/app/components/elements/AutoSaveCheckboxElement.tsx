@@ -1,5 +1,5 @@
 import React from "react";
-import { UnsavedIndicator } from "./UnsavedIndicator";
+import { UnsavedIndicator } from "components/elements/UnsavedIndicator";
 
 export function AutoSaveCheckboxElement(props: React.PropsWithChildren<{ form: string; name: string; label: string; id: string; checked: boolean; }>) {
   return (

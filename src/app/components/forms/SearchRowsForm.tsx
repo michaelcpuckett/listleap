@@ -1,5 +1,5 @@
 import React from 'react';
-import {Referrer} from '../../shared/types';
+import {Referrer} from 'shared/types';
 
 export function SearchRowsForm(props: React.PropsWithoutRef<{ referrer: Referrer }>) {
   const referrerUrl = new URL(props.referrer.url);

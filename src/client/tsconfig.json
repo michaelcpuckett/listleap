@@ -12,7 +12,11 @@
     "noLib": false,
     "lib": ["ESNext", "DOM"],
     "target": "ESNext",
-    "outDir": "./"
+    "outDir": "./",
+    "paths": {
+      "elements/*": ["./elements/*"],
+      "shared/*": ["../shared/*"],
+    }
   },
   "exclude": [
     "../../node_modules"

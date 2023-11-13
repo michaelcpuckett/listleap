@@ -1,4 +1,4 @@
-import { DIRTY_ELEMENTS_KEY } from "./UnloadHandlerElement";
+import { DIRTY_ELEMENTS_KEY } from "elements/UnloadHandlerElement";
 
 export class PostFormElement extends HTMLElement {
   constructor() {

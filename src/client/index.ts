@@ -1,7 +1,7 @@
-import "./elements/AutoSaveTextElement";
-import "./elements/AutoSaveCheckboxElement";
-import "./elements/UnloadHandlerElement";
-import "./elements/PostFormElement";
+import "elements/AutoSaveTextElement";
+import "elements/AutoSaveCheckboxElement";
+import "elements/UnloadHandlerElement";
+import "elements/PostFormElement";
 
 const SCROLL_STORAGE_KEY = "scroll-position-y";
 const FOCUS_STORAGE_KEY = "focus-element-id";

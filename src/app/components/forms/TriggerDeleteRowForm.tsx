@@ -1,5 +1,5 @@
 import React from 'react';
-import { AnyRow, Referrer } from '../../shared/types';
+import { AnyRow, Referrer } from 'shared/types';
 
 export function TriggerDeleteRowForm(props: React.PropsWithChildren<{ row: AnyRow; referrer: Referrer; autofocus?: boolean; role?: string; tabindex?: number; }>) {
   const urlPathname = `/databases/${props.row.databaseId}/rows/${props.row.id}`;

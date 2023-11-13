@@ -1,10 +1,10 @@
 import React from 'react';
-import { AnyRow, Referrer } from '../../shared/types';
-import { FlyoutMenu } from './FlyoutMenu';
-import { ReorderRowUpForm } from '../forms/ReorderRowUpForm';
-import { ReorderRowDownForm } from '../forms/ReorderRowDownForm';
-import {TriggerEditRowForm} from '../forms/TriggerEditRowForm';
-import {TriggerDeleteRowForm} from '../forms/TriggerDeleteRowForm';
+import { AnyRow, Referrer } from 'shared/types';
+import { FlyoutMenu } from 'components/menus/FlyoutMenu';
+import { ReorderRowUpForm } from 'components/forms/ReorderRowUpForm';
+import { ReorderRowDownForm } from 'components/forms/ReorderRowDownForm';
+import {TriggerEditRowForm} from 'components/forms/TriggerEditRowForm';
+import {TriggerDeleteRowForm} from 'components/forms/TriggerDeleteRowForm';
 
 export function RowActionsFlyoutMenu(props: React.PropsWithChildren<{ row: AnyRow; previousRow?: AnyRow; nextRow?: AnyRow; referrer: Referrer; }>) {
   return (

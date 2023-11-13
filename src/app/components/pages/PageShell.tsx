@@ -1,5 +1,5 @@
 import React from "react";
-import { Settings } from "../../shared/types";
+import { Settings } from "shared/types";
 
 export function PageShell(props: React.PropsWithChildren<{ pageTitle: string; settings: Settings }>) {
   return (

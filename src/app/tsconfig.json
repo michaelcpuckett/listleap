@@ -13,7 +13,13 @@
     "noLib": false,
     "lib": ["ESNext", "webworker", "DOM.Iterable"],
     "target": "ESNext",
-    "outDir": "./"
+    "outDir": "./",
+    "paths": {
+      "components/*": ["./components/*"],
+      "endpoints/*": ["./endpoints/*"],
+      "utilities/*": ["./utilities/*"],
+      "shared/*": ["../shared/*"],
+    }
   },
   "exclude": [
     "../../node_modules"

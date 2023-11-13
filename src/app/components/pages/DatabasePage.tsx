@@ -1,15 +1,15 @@
 import React from "react";
-import { Referrer, Settings, Row, Property, Database, PartialChecklistRow, ChecklistRow, Checklist } from '../../shared/types';
-import { PageShell } from './PageShell';
-import { ChecklistView } from '../views/ChecklistView';
-import {SearchRowsForm} from '../forms/SearchRowsForm';
-import {FilterRowsForm} from '../forms/FilterRowsForm';
-import {EditDatabaseForm} from '../forms/EditDatabaseForm';
-import { guardIsChecklist, guardIsTable } from "../../shared/assertions";
-import { EditRowModalDialog } from "../dialogs/EditRowModalDialog";
-import { DeleteRowModalDialog } from "../dialogs/DeleteRowModalDialog";
-import { TriggerEditPropertiesForm } from "../forms/TriggerEditPropertiesForm";
-import { EditPropertiesModalDialog } from "../dialogs/EditPropertiesModalDialog";
+import { Referrer, Settings, Row, Property, Database, PartialChecklistRow, ChecklistRow, Checklist } from 'shared/types';
+import { guardIsChecklist, guardIsTable } from "shared/assertions";
+import { PageShell } from 'components/pages/PageShell';
+import { ChecklistView } from 'components/views/ChecklistView';
+import {SearchRowsForm} from 'components/forms/SearchRowsForm';
+import {FilterRowsForm} from 'components/forms/FilterRowsForm';
+import {EditDatabaseForm} from 'components/forms/EditDatabaseForm';
+import { EditRowModalDialog } from "components/dialogs/EditRowModalDialog";
+import { DeleteRowModalDialog } from "components/dialogs/DeleteRowModalDialog";
+import { TriggerEditPropertiesForm } from "components/forms/TriggerEditPropertiesForm";
+import { EditPropertiesModalDialog } from "components/dialogs/EditPropertiesModalDialog";
 
 export function DatabasePage(props: React.PropsWithChildren<{ database: Database<Property[]>; referrer: Referrer; settings: Settings; }>) {
   const row = props.database.rows.find((row) => row.id === props.referrer.id);

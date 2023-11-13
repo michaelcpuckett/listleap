@@ -1,6 +1,6 @@
 import React from 'react';
-import { AnyDatabase } from '../../shared/types';
-import { AutoSaveTextElement } from '../elements/AutoSaveTextElement';
+import { AnyDatabase } from 'shared/types';
+import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 
 export function EditDatabaseForm(props: React.PropsWithChildren<{ database: AnyDatabase; }>) {
   return (

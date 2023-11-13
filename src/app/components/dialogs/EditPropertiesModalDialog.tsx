@@ -1,8 +1,8 @@
 import React from 'react';
-import { AnyDatabase, Database, Property } from '../../shared/types';
-import { ModalDialog } from './ModalDialog';
-import { AddPropertyForm } from '../forms/AddPropertyForm';
-import { EditPropertyForm } from '../forms/EditPropertyForm';
+import { AnyDatabase, Database, Property } from 'shared/types';
+import { ModalDialog } from 'components/dialogs/ModalDialog';
+import { AddPropertyForm } from 'components/forms/AddPropertyForm';
+import { EditPropertyForm } from 'components/forms/EditPropertyForm';
 
 export function EditPropertiesModalDialog(props: React.PropsWithChildren<{ database: AnyDatabase; closeUrl: string; }>) {
   const properties = props.database.properties || [];

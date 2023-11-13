@@ -1,5 +1,5 @@
 import escapeStringRegexp from "escape-string-regexp";
-import { BaseAutoSaveElement } from "./BaseAutoSaveElement";
+import { BaseAutoSaveElement } from "elements/BaseAutoSaveElement";
 
 export class AutoSaveCheckboxElement extends BaseAutoSaveElement {
   connectedCallback() {

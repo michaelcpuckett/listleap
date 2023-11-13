@@ -1,5 +1,5 @@
 import React from 'react';
-import { AnyRow } from '../../shared/types';
+import { AnyRow } from 'shared/types';
 
 export function ReorderRowDownForm(props: React.PropsWithoutRef<{ row: AnyRow; index: number; autofocus?: boolean; isDisabled?: boolean; role?: string; tabindex?: number; }>) {
   return (

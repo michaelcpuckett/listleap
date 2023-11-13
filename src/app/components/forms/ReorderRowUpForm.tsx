@@ -1,5 +1,5 @@
 import React from "react";
-import { AnyRow } from "../../shared/types";
+import { AnyRow } from "shared/types";
 
 export function ReorderRowUpForm(props: React.PropsWithChildren<{ row: AnyRow; index: number; isDisabled?: boolean; autofocus?: boolean; role?: string; tabindex?: number; }>) {
   return (

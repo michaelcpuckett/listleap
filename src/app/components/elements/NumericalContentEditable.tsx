@@ -1,5 +1,5 @@
 import React from 'react';
-import { UnsavedIndicator } from './UnsavedIndicator';
+import { UnsavedIndicator } from "components/elements/UnsavedIndicator";
 
 export function NumericalContentEditable(props: React.PropsWithChildren<{ form: string; id: string; label: string; name: string; value: number; }>) {
   return <>

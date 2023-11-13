@@ -1,5 +1,5 @@
 import React from 'react';
-import {Referrer, Property, ChecklistRow} from '../../shared/types';
+import {Referrer, Property, ChecklistRow} from 'shared/types';
 
 export function FilterRowsForm(props: React.PropsWithoutRef<{ rows: ChecklistRow<Property[]>[]; referrer: Referrer }>) {
   const allRowsUrl = new URL(props.referrer.url);

@@ -1,6 +1,6 @@
 import React from 'react';
-import {Database, Property, Row} from '../../shared/types';
-import {guardIsChecklistRow} from '../../shared/assertions';
+import {Database, Property, Row} from 'shared/types';
+import {guardIsChecklistRow} from 'shared/assertions';
 
 export function EditRowForm(props: React.PropsWithoutRef<{ row: Row<Property[]>; database: Database<Property[]>; }>) {
   return (

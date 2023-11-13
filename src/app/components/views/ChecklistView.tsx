@@ -1,11 +1,11 @@
 import React from "react";
-import { Property, Referrer, Checklist, ChecklistRow } from '../../shared/types';
-import {RowActionsFlyoutMenu} from '../menus/RowActionsFlyoutMenu';
-import {AutoSaveTextElement} from '../elements/AutoSaveTextElement';
-import {NumericalContentEditable} from '../elements/NumericalContentEditable';
-// import {DateContentEditable} from '../elements/DateContentEditable';
-import {AutoSaveCheckboxElement} from '../elements/AutoSaveCheckboxElement';
-import {PostFormElement} from '../elements/PostFormElement';
+import { Property, Referrer, Checklist, ChecklistRow } from 'shared/types';
+import {RowActionsFlyoutMenu} from 'components/menus/RowActionsFlyoutMenu';
+import {AutoSaveTextElement} from 'components/elements/AutoSaveTextElement';
+import {NumericalContentEditable} from 'components/elements/NumericalContentEditable';
+// import {DateContentEditable} from 'components/elements/DateContentEditable';
+import {AutoSaveCheckboxElement} from 'components/elements/AutoSaveCheckboxElement';
+import {PostFormElement} from 'components/elements/PostFormElement';
 
 export function ChecklistView(
   props: React.PropsWithoutRef<{ database: Checklist<Property[]>; referrer: Referrer; }>

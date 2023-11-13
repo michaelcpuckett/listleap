@@ -1,7 +1,7 @@
 import React from 'react';
-import { PartialDatabase, Referrer, Settings, Property } from '../../shared/types';
-import { PageShell } from './PageShell';
-import { AddDatabaseForm } from '../forms/AddDatabaseForm';
+import { PartialDatabase, Referrer, Settings, Property } from 'shared/types';
+import { PageShell } from 'components/pages/PageShell';
+import { AddDatabaseForm } from 'components/forms/AddDatabaseForm';
 
 export function HomePage(props: React.PropsWithChildren<{
   databases: PartialDatabase[];

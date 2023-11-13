@@ -1,6 +1,6 @@
 import React from 'react';
-import { Database, Property } from '../../shared/types';
-import { AutoSaveTextElement } from '../elements/AutoSaveTextElement';
+import { Database, Property } from 'shared/types';
+import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 
 export function AddPropertyForm(props: React.PropsWithChildren<{database: Database<Property[]>}>) {
   return (

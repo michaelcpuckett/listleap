@@ -1,5 +1,5 @@
-import { getUniqueId } from "../../shared/getUniqueId";
-import { DIRTY_ELEMENTS_KEY } from "./UnloadHandlerElement";
+import { getUniqueId } from "shared/getUniqueId";
+import { DIRTY_ELEMENTS_KEY } from "elements/UnloadHandlerElement";
 
 export class BaseAutoSaveElement extends HTMLElement {
   protected inputElement: HTMLInputElement;

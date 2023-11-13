@@ -1,7 +1,7 @@
 import React from 'react';
-import { Row, Referrer, Property, Database } from '../../shared/types';
-import { ModalDialog } from './ModalDialog';
-import { DeleteRowForm } from '../forms/DeleteRowForm';
+import { Row, Referrer, Property, Database } from 'shared/types';
+import { ModalDialog } from 'components/dialogs/ModalDialog';
+import { DeleteRowForm } from 'components/forms/DeleteRowForm';
 
 export function DeleteRowModalDialog(props: React.PropsWithChildren<{ row: Row<Property[]>; database: Database<Property[]>; closeUrl: string; }>) {
   return (

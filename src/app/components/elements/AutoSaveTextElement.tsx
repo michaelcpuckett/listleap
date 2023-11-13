@@ -1,6 +1,6 @@
 import React from 'react';
 import escapeStringRegexp from 'escape-string-regexp';
-import { UnsavedIndicator } from './UnsavedIndicator';
+import { UnsavedIndicator } from "components/elements/UnsavedIndicator";
 
 export function AutoSaveTextElement(props: React.PropsWithChildren<{ form?: string; id: string; label: string; name: string; value: string; }>) {
   return (

@@ -6,7 +6,7 @@ import {
   UntypedProperty,
   Row,
   Settings,
-} from "../../shared/types";
+} from "shared/types";
 import { ID } from "yjs";
 
 interface SwotionSchema extends DBSchema {

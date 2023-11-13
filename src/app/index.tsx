@@ -1,13 +1,12 @@
 import { pathToRegexp, match, parse, compile } from "path-to-regexp";
 import { renderToString } from "react-dom/server";
-import { editPartialDatabaseInIndexedDb, deleteRowByIdFromIndexedDb, addPartialDatabaseToIndexedDb, getDatabaseFromIndexedDb, getPartialDatabasesFromIndexedDb, getIdb, getSettingsFromIndexedDb, SwotionIDB, addRowToIndexedDb, editRowInIndexedDb, reorderRowInIndexedDb, addUntypedPropertyToIndexedDB } from "./utilities/idb";
-import {assertIsDatabase, guardIsChecklist, guardIsChecklistRow, guardIsTableRow} from "../shared/assertions";
-import { Row, Referrer, Settings, Property, Database, PartialDatabase, PartialRow, Checklist, ChecklistRow, Table, TableRow, GetRowByType, UntypedProperty } from "../shared/types";
+import { editPartialDatabaseInIndexedDb, deleteRowByIdFromIndexedDb, addPartialDatabaseToIndexedDb, getDatabaseFromIndexedDb, getPartialDatabasesFromIndexedDb, getIdb, getSettingsFromIndexedDb, SwotionIDB, addRowToIndexedDb, editRowInIndexedDb, reorderRowInIndexedDb, addUntypedPropertyToIndexedDB } from "utilities/idb";
+import {assertIsDatabase, guardIsChecklist, guardIsChecklistRow, guardIsTableRow} from "shared/assertions";
+import { Row, Referrer, Settings, Property, Database, PartialDatabase, PartialRow, Checklist, ChecklistRow, Table, TableRow, GetRowByType, UntypedProperty } from "shared/types";
 import { URLS_TO_CACHE } from "./utilities/urlsToCache";
-import { getUniqueId } from "../shared/getUniqueId";
-
-import { HomePage } from "./pages/HomePage";
-import { DatabasePage } from "./pages/DatabasePage";
+import { getUniqueId } from "shared/getUniqueId";
+import { HomePage } from "components/pages/HomePage";
+import { DatabasePage } from "components/pages/DatabasePage";
 
 self.addEventListener("install", function (event: Event) {
   if (!(event instanceof ExtendableEvent)) {
@@ -87,15 +86,11 @@ self.addEventListener("fetch", function (event: Event) {
 
             const renderResult = await renderDatabasePage(database, referrer, settings);
 
-            console.log('test', url.searchParams.get('query'), query);
-
             if (url.searchParams.has('query') && !query) {
               const redirectUrl = new URL(event.request.url);
               const urlSearchParams = new URLSearchParams(redirectUrl.search);
               urlSearchParams.delete('query');
               redirectUrl.search = urlSearchParams.toString();
-
-              console.log(redirectUrl.href);
 
               return Response.redirect(redirectUrl.href, 302);
             }
