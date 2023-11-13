@@ -125,6 +125,7 @@ export function ChecklistView(
               </td>
               <td>
                 <AutoSaveTextElement
+                  inline
                   form={formId}
                   id={row.id}
                   label="Title"
@@ -137,6 +138,7 @@ export function ChecklistView(
                   <td>
                     {property.type === String ? (
                       <AutoSaveTextElement
+                        inline
                         form={formId}
                         id={row.id}
                         label={property.name}

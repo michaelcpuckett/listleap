@@ -18,6 +18,7 @@ export function EditDatabaseForm(
       />
       <h1>
         <AutoSaveTextElement
+          inline
           name="name"
           label="Name"
           value={props.database.name}

@@ -6,6 +6,7 @@ import { getUniqueId } from 'shared/getUniqueId';
 export function AutoSaveTextElement(
   props: React.PropsWithChildren<{
     form?: string;
+    inline?: boolean;
     id: string;
     label: string;
     name: string;
@@ -13,7 +14,10 @@ export function AutoSaveTextElement(
   }>,
 ) {
   return (
-    <auto-save-text id={getUniqueId()}>
+    <auto-save-text
+      id={getUniqueId()}
+      data-inline={props.inline ? '' : undefined}
+    >
       <template
         shadowrootmode="open"
         shadowrootdelegatesfocus

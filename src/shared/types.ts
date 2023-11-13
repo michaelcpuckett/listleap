@@ -5,6 +5,7 @@ export type Referrer = {
   id?: string;
   query?: string;
   filter?: string;
+  error?: string;
 };
 
 export interface Settings {
@@ -41,19 +42,15 @@ export type Table<P extends Property[]> = PartialTable & {
   properties: P;
 };
 
-interface BaseProperty {
+export interface PartialProperty {
   id: string;
   databaseId: string;
   name: string;
-}
-
-export interface UntypedProperty extends BaseProperty {
-  type: string;
-  index: number;
-}
-
-export interface Property extends BaseProperty {
   type: StringConstructor | NumberConstructor | BooleanConstructor;
+}
+
+export interface Property extends PartialProperty {
+  index: number;
 }
 
 type DynamicPropertyKeyValuePair<Properties> = {

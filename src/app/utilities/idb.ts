@@ -26,7 +26,7 @@ interface SwotionSchema extends DBSchema {
   };
   properties: {
     key: number;
-    value: UntypedProperty;
+    value: Property;
     keyPath: 'index';
     indexes: { id: string; databaseId: string };
   };
@@ -85,7 +85,7 @@ export async function getSettingsFromIndexedDb(
   return { theme };
 }
 
-function getTypeFromString(type: string) {
+export function getTypeFromString(type: string) {
   switch (type) {
     case 'Number':
       return Number;
@@ -100,22 +100,13 @@ function getTypeFromString(type: string) {
 export async function getPropertiesByDatabaseIdFromIndexedDb<
   Db extends Database<Property[]>,
 >(databaseId: string, idb: SwotionIDB): Promise<Db['properties']> {
-  const filteredUntypedProperties = await idb.getAllFromIndex(
+  const filteredProperties = await idb.getAllFromIndex(
     'properties',
     'databaseId',
     databaseId,
   );
 
-  if (filteredUntypedProperties.length) {
-    return filteredUntypedProperties.map(
-      (untypedProperty): Property => ({
-        ...untypedProperty,
-        type: getTypeFromString(untypedProperty.type),
-      }),
-    );
-  }
-
-  return [];
+  return filteredProperties;
 }
 
 export async function addPartialDatabaseToIndexedDb(
@@ -285,13 +276,13 @@ export async function deleteRowByIndexFromIndexedDb(
   await tx.done;
 }
 
-export async function addUntypedPropertyToIndexedDb(
-  untypedProperty: UntypedProperty,
+export async function addPropertyToIndexedDb<Db extends Database<Property[]>>(
+  property: Db['properties'][number],
   idb: SwotionIDB,
 ): Promise<void> {
   const tx = idb.transaction('properties', 'readwrite');
   const store = tx.objectStore('properties');
-  await store.add(untypedProperty);
+  await store.add(property);
   await tx.done;
 }
 

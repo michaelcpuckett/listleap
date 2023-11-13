@@ -26,11 +26,13 @@ export function handleFetch(event: Event) {
   const mode = url.searchParams.get('mode') || '';
   const filter = url.searchParams.get('filter') || '';
   const query = url.searchParams.get('query') || '';
+  const error = url.searchParams.get('error') || '';
   const referrer: Referrer = {
     filter,
     query,
     mode,
     index,
+    error,
     id,
     url: event.request.url,
   };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Database, Property, Row } from 'shared/types';
 import { guardIsChecklistRow } from 'shared/assertions';
+import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 
 export function EditRowForm(
   props: React.PropsWithoutRef<{
@@ -30,27 +31,21 @@ export function EditRowForm(
       ) : null}
       <label>
         <span>Title</span>
-        <input
-          autoComplete="off"
-          data-auto-focus="true"
-          required
-          type="text"
+        <AutoSaveTextElement
+          id={'edit-' + props.row.id + '-title'}
           name="title"
-          placeholder="Title"
-          className="input"
+          label="Title"
           value={props.row.title}
         />
       </label>
       {props.database.properties.map((property) => {
         return (
-          <label>
+          <label key={property.id}>
             <span>{property.name}</span>
-            <input
-              key={property.id}
-              type="text"
-              className="input"
-              name={`${property.id}`}
-              placeholder={property.name}
+            <AutoSaveTextElement
+              id={'edit-' + props.row.id + '-' + property.id}
+              name={property.id}
+              label={property.name}
               value={`${props.row[property.id] || ''}`}
             />
           </label>

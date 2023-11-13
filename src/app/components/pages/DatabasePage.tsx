@@ -19,6 +19,8 @@ import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
 import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
 import { TriggerEditPropertiesForm } from 'components/forms/TriggerEditPropertiesForm';
 import { PropertiesModalDialog } from 'components/dialogs/PropertiesModalDialog';
+import { ModalDialog } from 'components/dialogs/ModalDialog';
+import { ERROR_MESSAGES } from 'utilities/errors';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
@@ -28,14 +30,19 @@ export function DatabasePage(
   }>,
 ) {
   const row = props.database.rows.find((row) => row.id === props.referrer.id);
-  const isEditingRow = props.referrer.mode === 'EDIT_ROW' && !!row;
-  const isDeletingRow = props.referrer.mode === 'DELETE_ROW' && !!row;
-  const isEditingProperties = props.referrer.mode === 'EDIT_PROPERTIES';
-  const isShowingModal = isEditingRow || isDeletingRow || isEditingProperties;
+  const hasError = !!props.referrer.error;
+  const isEditingRow = !hasError && props.referrer.mode === 'EDIT_ROW' && !!row;
+  const isDeletingRow =
+    !hasError && props.referrer.mode === 'DELETE_ROW' && !!row;
+  const isEditingProperties =
+    !hasError && props.referrer.mode === 'EDIT_PROPERTIES';
+  const isShowingModal =
+    hasError || isEditingRow || isDeletingRow || isEditingProperties;
   const closeUrlPathname = `/databases/${props.database.id}`;
   const closeUrl = new URL(props.referrer.url);
   const closeUrlSearchParams = new URLSearchParams(closeUrl.search);
   closeUrlSearchParams.delete('mode');
+  closeUrlSearchParams.delete('error');
   closeUrl.pathname = closeUrlPathname;
   closeUrl.search = closeUrlSearchParams.toString();
 
@@ -44,6 +51,15 @@ export function DatabasePage(
       pageTitle={props.database.name}
       settings={props.settings}
     >
+      {props.referrer.error ? (
+        <ModalDialog
+          open
+          heading={<>Error</>}
+          closeUrl={closeUrl.href}
+        >
+          <p>{ERROR_MESSAGES[props.referrer.error]}</p>
+        </ModalDialog>
+      ) : null}
       {isEditingRow ? (
         <EditRowModalDialog
           row={row}

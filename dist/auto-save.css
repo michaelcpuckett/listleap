@@ -9,14 +9,21 @@
 ::slotted(input) {
   padding: .5rem 0;
   margin: 0;
-  border: 1px solid transparent;
+  border: 1px solid;
   border-radius: 0;
   box-shadow: none;
   font: inherit;
   color: inherit;
   width: 100%;
   display: flex;
+  background: CanvasText;
+  color: Canvas;
+}
+
+:host([data-inline]) ::slotted(input) {
   background: transparent;
+  border: 1px solid transparent;
+  color: CanvasText;
 }
 
 ::slotted(input[type="checkbox"]) {

@@ -1,23 +1,18 @@
 import React from 'react';
+import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
+import { PostFormElement } from 'components/elements/PostFormElement';
 
 export function AddDatabaseForm() {
   return (
-    <form
+    <PostFormElement
+      id="new-database"
       action="/databases"
-      method="POST"
-      role="none"
     >
-      <input
-        type="hidden"
-        name="_method"
-        value="POST"
-      />
-      <input
-        className="input"
-        type="text"
+      <AutoSaveTextElement
         name="name"
-        placeholder="Name"
-        required
+        label="Name"
+        value=""
+        id="new-database-name"
       />
       <select
         className="input"
@@ -25,10 +20,14 @@ export function AddDatabaseForm() {
         required
       >
         <option value="CHECKLIST">Checklist</option>
-        <option value="TABLE">Table</option>
-        <option value="LIST">List</option>
-        <option value="CALENDAR">Calendar</option>
-        <option value="BOARD">Board</option>
+        {null && (
+          <>
+            <option value="TABLE">Table</option>
+            <option value="LIST">List</option>
+            <option value="CALENDAR">Calendar</option>
+            <option value="BOARD">Board</option>
+          </>
+        )}
       </select>
       <button
         type="submit"
@@ -36,6 +35,6 @@ export function AddDatabaseForm() {
       >
         Add Database
       </button>
-    </form>
+    </PostFormElement>
   );
 }

@@ -19,15 +19,12 @@ export function EditPropertyForm(
         name="_method"
         value="PATCH"
       />
-      <label>
-        <span>Name</span>
-        <AutoSaveTextElement
-          id={props.property.id}
-          label="Name"
-          name="name"
-          value={props.property.name}
-        />
-      </label>
+      <AutoSaveTextElement
+        id={props.property.id}
+        label="Name"
+        name="name"
+        value={props.property.name}
+      />
     </form>
   );
 }
