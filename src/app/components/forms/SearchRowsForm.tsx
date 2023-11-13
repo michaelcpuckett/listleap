@@ -6,12 +6,9 @@ export function SearchRowsForm(props: React.PropsWithoutRef<{ referrer: Referrer
   const searchParams = new URLSearchParams(referrerUrl.search);
   searchParams.delete('query');
   const searchParamEntries = Array.from(searchParams.entries());
-  const actionUrl = new URL(referrerUrl.pathname, referrerUrl.origin);
-  actionUrl.search = searchParams.toString();
-  const action = actionUrl.href.replace(actionUrl.origin, '');
 
   return (
-    <form action={action} method="GET" role="none" data-auto-submit="delay">
+    <form action={referrerUrl.pathname} method="GET" role="none" data-auto-submit="delay">
       {searchParamEntries.map(([key, value]) => (
         <input key={key} type="hidden" name={key} value={value} />
       ))}
