@@ -3,10 +3,11 @@ import { renderToString } from "react-dom/server";
 import { editPartialDatabaseInIndexedDb, deleteRowByIdFromIndexedDb, addPartialDatabaseToIndexedDb, getDatabaseFromIndexedDb, getPartialDatabasesFromIndexedDb, getIdb, getSettingsFromIndexedDb, SwotionIDB, addRowToIndexedDb, editRowInIndexedDb, reorderRowInIndexedDb, addUntypedPropertyToIndexedDB } from "utilities/idb";
 import {assertIsDatabase, guardIsChecklist, guardIsChecklistRow, guardIsTableRow} from "shared/assertions";
 import { Row, Referrer, Settings, Property, Database, PartialDatabase, PartialRow, Checklist, ChecklistRow, Table, TableRow, GetRowByType, UntypedProperty } from "shared/types";
-import { URLS_TO_CACHE } from "./utilities/urlsToCache";
+import { URLS_TO_CACHE } from "utilities/urlsToCache";
 import { getUniqueId } from "shared/getUniqueId";
 import { HomePage } from "components/pages/HomePage";
 import { DatabasePage } from "components/pages/DatabasePage";
+import { GetIndex } from "endpoints/get/index";
 
 self.addEventListener("install", function (event: Event) {
   if (!(event instanceof ExtendableEvent)) {
@@ -64,12 +65,7 @@ self.addEventListener("fetch", function (event: Event) {
 
         switch (true) {
           case "/" === pathname: {
-            const idb = await getIdb();
-            const renderResult = await renderHomePage(idb, referrer);
-
-            return new Response(`<!DOCTYPE html>${renderResult}`, {
-              headers: { "Content-Type": "text/html" },
-            });
+            return await GetIndex(referrer);
           }    
           case !!matchesDatabaseRows: {
             const idb = await getIdb();
@@ -423,19 +419,6 @@ async function renderDatabasePage(database: Database<Property[]>, referrer: Refe
       database={database}
       referrer={referrer}
       settings={settings}
-    />
-  );
-}
-
-async function renderHomePage(idb: SwotionIDB, referrer: Referrer) {
-  const databases = await getPartialDatabasesFromIndexedDb(idb);
-  const settings = await getSettingsFromIndexedDb(idb);
-
-  return renderToString(
-    <HomePage
-      databases={databases}
-      settings={settings}
-      referrer={referrer}
     />
   );
 }
