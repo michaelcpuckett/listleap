@@ -5,9 +5,10 @@ import {assertIsDatabase, guardIsChecklist, guardIsChecklistRow, guardIsTableRow
 import { Row, Referrer, Settings, Property, Database, PartialDatabase, PartialRow, Checklist, ChecklistRow, Table, TableRow, GetRowByType, UntypedProperty } from "shared/types";
 import { URLS_TO_CACHE } from "utilities/urlsToCache";
 import { getUniqueId } from "shared/getUniqueId";
-import { HomePage } from "components/pages/HomePage";
 import { DatabasePage } from "components/pages/DatabasePage";
 import { GetIndex } from "endpoints/get/index";
+import { GetDatabaseRows } from "endpoints/get/databases/rows";
+import { GetDatabaseRow } from "endpoints/get/databases/row";
 
 self.addEventListener("install", function (event: Event) {
   if (!(event instanceof ExtendableEvent)) {
@@ -68,67 +69,10 @@ self.addEventListener("fetch", function (event: Event) {
             return await GetIndex(referrer);
           }    
           case !!matchesDatabaseRows: {
-            const idb = await getIdb();
-            const databaseId = matchesDatabaseRows?.[1] || '';
-            const database = await getDatabaseFromIndexedDb(databaseId, idb);
-            
-            if (!database) {
-              return new Response("Not found", {
-                status: 404,
-              });
-            }
-
-            const settings = await getSettingsFromIndexedDb(idb);
-
-            const renderResult = await renderDatabasePage(database, referrer, settings);
-
-            if (url.searchParams.has('query') && !query) {
-              const redirectUrl = new URL(event.request.url);
-              const urlSearchParams = new URLSearchParams(redirectUrl.search);
-              urlSearchParams.delete('query');
-              redirectUrl.search = urlSearchParams.toString();
-
-              return Response.redirect(redirectUrl.href, 302);
-            }
-
-            return new Response(`<!DOCTYPE html>${renderResult}`, {
-              headers: { "Content-Type": "text/html" },
-            });
+            return await GetDatabaseRows(matchesDatabaseRows, referrer);
           }
           case !!matchesDatabaseRow: {
-            const idb = await getIdb();
-            const databaseId = matchesDatabaseRow?.[1] || '';
-            const id = matchesDatabaseRow?.[2] || '';
-
-            const database = await getDatabaseFromIndexedDb(databaseId, idb);
-
-            if (!database) {
-              return new Response("Not found", {
-                status: 404,
-              });
-            }
-
-            const row = database.rows.find(row => row.id === id);
-
-            if (!row) {
-              return new Response("Not found", {
-                status: 404,
-              });
-            }
-
-            const settings = await getSettingsFromIndexedDb(idb);
-
-            const mode = url.searchParams.get('mode') || 'EDIT_ROW';
-
-            const renderResult = await renderDatabasePage(database, {
-              ...referrer,
-              id,
-              mode,
-            }, settings);
-
-            return new Response(`<!DOCTYPE html>${renderResult}`, {
-              headers: { "Content-Type": "text/html" },
-            });
+            return await GetDatabaseRow(matchesDatabaseRow, referrer);
           }
           case !!matchesDatabaseProperties: {
             const idb = await getIdb();
@@ -146,11 +90,17 @@ self.addEventListener("fetch", function (event: Event) {
 
             const mode = url.searchParams.get('mode') || 'EDIT_PROPERTIES';
 
-            const renderResult = await renderDatabasePage(database, {
-              ...referrer,
-              id,
-              mode,
-            }, settings);
+            const renderResult = renderToString(
+              <DatabasePage
+                database={database}
+                settings={settings}
+                referrer={{
+                  ...referrer,
+                  id,
+                  mode,
+                }}
+              />
+            );
 
             return new Response(`<!DOCTYPE html>${renderResult}`, {
               headers: { "Content-Type": "text/html" },
@@ -412,16 +362,6 @@ self.addEventListener("fetch", function (event: Event) {
     });
   })());
 });
-
-async function renderDatabasePage(database: Database<Property[]>, referrer: Referrer, settings: Settings) {
-  return renderToString(
-    <DatabasePage
-      database={database}
-      referrer={referrer}
-      settings={settings}
-    />
-  );
-}
 
 declare module "react" {
   interface HTMLAttributes<T>
