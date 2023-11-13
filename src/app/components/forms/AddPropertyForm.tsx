@@ -1,21 +1,16 @@
 import React from 'react';
 import { Database, Property } from 'shared/types';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
+import { PostFormElement } from 'components/elements/PostFormElement';
 
 export function AddPropertyForm(
   props: React.PropsWithChildren<{ database: Database<Property[]> }>,
 ) {
   return (
-    <form
-      noValidate
+    <PostFormElement
       action={`/databases/${props.database.id}/properties`}
-      method="POST"
+      id="add-row-inline-form"
     >
-      <input
-        type="hidden"
-        name="_method"
-        value="POST"
-      />
       <input
         type="hidden"
         name="type"
@@ -36,6 +31,6 @@ export function AddPropertyForm(
       >
         Add
       </button>
-    </form>
+    </PostFormElement>
   );
 }

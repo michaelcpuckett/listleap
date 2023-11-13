@@ -4,7 +4,7 @@ import { ModalDialog } from 'components/dialogs/ModalDialog';
 import { AddPropertyForm } from 'components/forms/AddPropertyForm';
 import { EditPropertyForm } from 'components/forms/EditPropertyForm';
 
-export function EditPropertiesModalDialog(
+export function PropertiesModalDialog(
   props: React.PropsWithChildren<{ database: AnyDatabase; closeUrl: string }>,
 ) {
   const properties = props.database.properties || [];

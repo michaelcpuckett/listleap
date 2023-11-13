@@ -18,7 +18,7 @@ import { EditDatabaseForm } from 'components/forms/EditDatabaseForm';
 import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
 import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
 import { TriggerEditPropertiesForm } from 'components/forms/TriggerEditPropertiesForm';
-import { EditPropertiesModalDialog } from 'components/dialogs/EditPropertiesModalDialog';
+import { PropertiesModalDialog } from 'components/dialogs/PropertiesModalDialog';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
@@ -59,7 +59,7 @@ export function DatabasePage(
         />
       ) : null}
       {isEditingProperties ? (
-        <EditPropertiesModalDialog
+        <PropertiesModalDialog
           database={props.database}
           closeUrl={closeUrl.href}
         />
