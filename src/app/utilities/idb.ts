@@ -394,9 +394,10 @@ export async function addPropertyToIndexedDb<Db extends Database<Property[]>>(
   await tx.done;
 }
 
-export async function editUntypedPropertyInIndexedDb<
-  Db extends Database<Property[]>,
->(property: Db['properties'][number], idb: SwotionIDB): Promise<void> {
+export async function editPropertyInIndexedDb<Db extends Database<Property[]>>(
+  property: Db['properties'][number],
+  idb: SwotionIDB,
+): Promise<void> {
   const tx = idb.transaction('properties', 'readwrite');
   const store = tx.objectStore('properties');
   const untypedProperty = {

@@ -13,6 +13,8 @@ import { DeleteDatabaseRow } from 'endpoints/delete/databases/row';
 import { PatchDatabaseRow } from 'endpoints/patch/databases/row';
 import { PutDatabaseRow } from 'endpoints/put/databases/row';
 import { PostDatabaseProperties } from 'endpoints/post/databases/properties';
+import { PatchDatabaseProperty } from 'endpoints/patch/databases/property';
+import { PutDatabaseProperty } from 'endpoints/put/databases/property';
 
 export function handleFetch(event: Event) {
   if (!(event instanceof FetchEvent)) {
@@ -48,6 +50,9 @@ export function handleFetch(event: Event) {
   ).exec(pathname);
   const matchesDatabaseProperties = pathToRegexp(
     '/databases/:databaseId/properties',
+  ).exec(pathname);
+  const matchesDatabaseProperty = pathToRegexp(
+    '/databases/:databaseId/properties/:id',
   ).exec(pathname);
 
   if (event.request.method === 'GET') {
@@ -159,6 +164,26 @@ export function handleFetch(event: Event) {
               return PostDatabaseProperties(
                 event,
                 matchesDatabaseProperties,
+                formData,
+                referrer,
+              );
+            }
+          }
+        }
+        case !!matchesDatabaseProperty: {
+          switch (formData._method) {
+            case 'PATCH': {
+              return PatchDatabaseProperty(
+                event,
+                matchesDatabaseProperty,
+                formData,
+                referrer,
+              );
+            }
+            case 'PUT': {
+              return PutDatabaseProperty(
+                event,
+                matchesDatabaseProperty,
                 formData,
                 referrer,
               );
