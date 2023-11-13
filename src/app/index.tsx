@@ -152,6 +152,7 @@ declare module "react" {
     extends React.AriaAttributes,
       React.DOMAttributes<T> {
     shadowrootmode?: string;
+    shadowrootdelegatesfocus?: boolean;
     inert?: string;
   }
 

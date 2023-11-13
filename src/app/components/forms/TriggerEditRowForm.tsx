@@ -8,10 +8,11 @@ export function TriggerEditRowForm(props: React.PropsWithChildren<{ row: AnyRow;
   urlSearchParams.delete('mode');
   url.pathname = urlPathname;
   url.search = urlSearchParams.toString();
+  const href = url.href.replace(url.origin, '');
   
   return (
     <a
-      href={url.href}
+      href={href}
       className="button"
       tabIndex={props.tabindex}
       role={props.role || 'button'}

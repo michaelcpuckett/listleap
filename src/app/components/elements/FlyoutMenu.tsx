@@ -1,6 +1,23 @@
 import React from 'react';
+import { getUniqueId } from 'shared/getUniqueId';
 
-export function FlyoutMenu(props: React.PropsWithChildren<{ id: string; label: string; autofocus?: boolean; }>) {
+export function FlyoutMenu(props: React.PropsWithChildren<{ id: string; label: string; }>) {
+  return (
+    <flyout-menu id={getUniqueId()}>
+      <template shadowrootmode="open" shadowrootdelegatesfocus>
+        <link rel="stylesheet" href="/flyout-menu.css" />
+        <FlyoutMenuDSD
+          id={`${props.id}`}
+          label={props.label}
+        />
+      </template>
+      {props.children}
+    </flyout-menu>
+  );
+}
+
+
+function FlyoutMenuDSD(props: React.PropsWithChildren<{ id: string; label: string; autofocus?: boolean; }>) {
   return (
     <details role="none">
       <summary

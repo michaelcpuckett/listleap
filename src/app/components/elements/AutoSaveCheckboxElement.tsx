@@ -1,10 +1,11 @@
 import React from "react";
 import { UnsavedIndicator } from "components/elements/UnsavedIndicator";
+import { getUniqueId } from "shared/getUniqueId";
 
 export function AutoSaveCheckboxElement(props: React.PropsWithChildren<{ form: string; name: string; label: string; id: string; checked: boolean; }>) {
   return (
-    <auto-save-checkbox>
-      <template shadowrootmode='open'>
+    <auto-save-checkbox id={getUniqueId()}>
+      <template shadowrootmode='open' shadowrootdelegatesfocus>
         <link rel="stylesheet" href="/auto-save.css" />
         <slot></slot>
         <UnsavedIndicator />
