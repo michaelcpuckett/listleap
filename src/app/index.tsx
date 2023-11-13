@@ -9,6 +9,7 @@ import { DatabasePage } from "components/pages/DatabasePage";
 import { GetIndex } from "endpoints/get/index";
 import { GetDatabaseRows } from "endpoints/get/databases/rows";
 import { GetDatabaseRow } from "endpoints/get/databases/row";
+import { GetDatabaseProperties } from "endpoints/get/databases/properties";
 
 self.addEventListener("install", function (event: Event) {
   if (!(event instanceof ExtendableEvent)) {
@@ -66,45 +67,16 @@ self.addEventListener("fetch", function (event: Event) {
 
         switch (true) {
           case "/" === pathname: {
-            return await GetIndex(referrer);
+            return await GetIndex(event, referrer);
           }    
           case !!matchesDatabaseRows: {
-            return await GetDatabaseRows(matchesDatabaseRows, referrer);
+            return await GetDatabaseRows(event, matchesDatabaseRows, referrer);
           }
           case !!matchesDatabaseRow: {
-            return await GetDatabaseRow(matchesDatabaseRow, referrer);
+            return await GetDatabaseRow(event, matchesDatabaseRow, referrer);
           }
           case !!matchesDatabaseProperties: {
-            const idb = await getIdb();
-            const databaseId = matchesDatabaseProperties?.[1] || '';
-
-            const database = await getDatabaseFromIndexedDb(databaseId, idb);
-
-            if (!database) {
-              return new Response("Not found", {
-                status: 404,
-              });
-            }
-
-            const settings = await getSettingsFromIndexedDb(idb);
-
-            const mode = url.searchParams.get('mode') || 'EDIT_PROPERTIES';
-
-            const renderResult = renderToString(
-              <DatabasePage
-                database={database}
-                settings={settings}
-                referrer={{
-                  ...referrer,
-                  id,
-                  mode,
-                }}
-              />
-            );
-
-            return new Response(`<!DOCTYPE html>${renderResult}`, {
-              headers: { "Content-Type": "text/html" },
-            });
+            return await GetDatabaseProperties(event, matchesDatabaseProperties, referrer);
           }
         }
 
