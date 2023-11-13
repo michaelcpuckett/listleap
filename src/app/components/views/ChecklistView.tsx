@@ -11,58 +11,11 @@ export function ChecklistView(
   props: React.PropsWithoutRef<{
     database: Checklist<Property[]>;
     referrer: Referrer;
+    filteredRows: ChecklistRow<Property[]>[];
   }>,
 ) {
   const rows = props.database.rows;
   const properties = props.database.properties;
-
-  const queriedRows: ChecklistRow<Property[]>[] = rows.filter(
-    (row: ChecklistRow<Property[]>) => {
-      if (!props.referrer.query) {
-        return true;
-      }
-
-      interface StringProperty extends Property {
-        type: StringConstructor;
-      }
-
-      const guardIsStringProperty = (
-        property: Property,
-      ): property is StringProperty => {
-        return property.type === String;
-      };
-
-      const getPropertyId = (property: StringProperty) => property.id;
-
-      const allStringProperties = [
-        'title',
-        ...properties.filter(guardIsStringProperty).map(getPropertyId),
-      ] as Array<'title' | StringProperty['id']>;
-
-      return !!allStringProperties.find(
-        (stringPropertyId: StringProperty['id']) => {
-          if (!props.referrer.query) {
-            return false;
-          }
-
-          return ((row[stringPropertyId] as string) || '')
-            .toLowerCase()
-            .includes(props.referrer.query.toLowerCase());
-        },
-      );
-    },
-  );
-
-  const filteredRows = queriedRows.filter((row) => {
-    switch (props.referrer.filter) {
-      case 'completed':
-        return row.completed;
-      case 'incompleted':
-        return !row.completed;
-      default:
-        return true;
-    }
-  });
 
   const newRow = {
     id: 'new-row',
@@ -85,6 +38,7 @@ export function ChecklistView(
 
   return (
     <table
+      aria-rowcount={rows.length}
       className="view view--checklist"
       style={{
         '--grid-columns': gridColumnsCss,
@@ -102,7 +56,9 @@ export function ChecklistView(
       </thead>
       <tbody>
         {rows.map((row, index, { length }) => {
-          const filteredIndex = filteredRows.findIndex((t) => t.id === row.id);
+          const filteredIndex = props.filteredRows.findIndex(
+            (t) => t.id === row.id,
+          );
           const isBlankRow = index === length - 1;
           const formId = isBlankRow
             ? 'add-row-inline-form'
@@ -113,7 +69,10 @@ export function ChecklistView(
           }
 
           return (
-            <tr aria-label={row.title || 'New Row'}>
+            <tr
+              aria-label={row.title || 'New Row'}
+              aria-rowindex={rows.indexOf(row) + 1}
+            >
               <td className="align-center">
                 <AutoSaveCheckboxElement
                   form={formId}
@@ -207,8 +166,8 @@ export function ChecklistView(
                   </form>
                   <RowActionsFlyoutMenu
                     row={row}
-                    previousRow={filteredRows[filteredIndex - 1]}
-                    nextRow={filteredRows[filteredIndex + 1]}
+                    previousRow={props.filteredRows[filteredIndex - 1]}
+                    nextRow={props.filteredRows[filteredIndex + 1]}
                     referrer={props.referrer}
                   />
                 </td>

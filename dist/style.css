@@ -324,3 +324,15 @@ dt {
 dd {
   margin: 0;
 }
+
+.notice {
+  background-color: var(--unsaved-color);
+  color: black;
+  padding: .5rem;
+  margin: .5rem 0;
+  display: flex;
+  place-items: center;
+  place-content: center;
+  font-weight: bold;
+  font-size: .95rem;
+}

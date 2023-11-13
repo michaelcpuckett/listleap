@@ -8,8 +8,13 @@ import {
   PartialChecklistRow,
   ChecklistRow,
   Checklist,
+  AnyRow,
 } from 'shared/types';
-import { guardIsChecklist, guardIsTable } from 'shared/assertions';
+import {
+  guardIsChecklist,
+  guardIsChecklistRow,
+  guardIsTable,
+} from 'shared/assertions';
 import { PageShell } from 'components/pages/PageShell';
 import { ChecklistView } from 'components/views/ChecklistView';
 import { SearchRowsForm } from 'components/forms/SearchRowsForm';
@@ -46,6 +51,60 @@ export function DatabasePage(
   closeUrl.pathname = closeUrlPathname;
   closeUrl.search = closeUrlSearchParams.toString();
   const closeUrlHref = closeUrl.href.replace(closeUrl.origin, '');
+
+  const queriedRows: AnyRow[] = props.database.rows.filter((row: AnyRow) => {
+    if (!props.referrer.query) {
+      return true;
+    }
+
+    interface StringProperty extends Property {
+      type: StringConstructor;
+    }
+
+    const guardIsStringProperty = (
+      property: Property,
+    ): property is StringProperty => {
+      return property.type === String;
+    };
+
+    const getPropertyId = (property: StringProperty) => property.id;
+
+    const allStringProperties = [
+      'title',
+      ...props.database.properties
+        .filter(guardIsStringProperty)
+        .map(getPropertyId),
+    ] as Array<'title' | StringProperty['id']>;
+
+    return !!allStringProperties.find(
+      (stringPropertyId: StringProperty['id']) => {
+        if (!props.referrer.query) {
+          return false;
+        }
+
+        return ((row[stringPropertyId] as string) || '')
+          .toLowerCase()
+          .includes(props.referrer.query.toLowerCase());
+      },
+    );
+  });
+
+  const checklistRows = queriedRows.filter(
+    (row): row is ChecklistRow<Property[]> => {
+      return guardIsChecklistRow(row, props.database);
+    },
+  );
+
+  const filteredRows = checklistRows.filter((row) => {
+    switch (props.referrer.filter) {
+      case 'completed':
+        return row.completed;
+      case 'incompleted':
+        return !row.completed;
+      default:
+        return true;
+    }
+  });
 
   return (
     <PageShell
@@ -108,10 +167,19 @@ export function DatabasePage(
             ) : null}
           </aside>
           {guardIsChecklist(props.database) ? (
-            <ChecklistView
-              database={props.database}
-              referrer={props.referrer}
-            />
+            <>
+              <ChecklistView
+                database={props.database}
+                referrer={props.referrer}
+                filteredRows={filteredRows}
+              />
+              {props.database.rows.length - filteredRows.length > 0 ? (
+                <p className="notice">
+                  Not showing {props.database.rows.length - filteredRows.length}{' '}
+                  rows due to search or filters.
+                </p>
+              ) : null}
+            </>
           ) : null}
         </main>
       </div>
