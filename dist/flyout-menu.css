@@ -50,6 +50,7 @@ details[open] summary:before {
   & a {
     display: flex;
     width: 100%;
+    max-width: none;
   }
 }
 

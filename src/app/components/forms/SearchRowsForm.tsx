@@ -10,33 +10,36 @@ export function SearchRowsForm(
   const searchParamEntries = Array.from(searchParams.entries());
 
   return (
-    <form
-      action={referrerUrl.pathname}
-      method="GET"
-      role="none"
-      data-auto-submit="delay"
-    >
-      {searchParamEntries.map(([key, value]) => (
-        <input
-          key={key}
-          type="hidden"
-          name={key}
-          value={value}
-        />
-      ))}
-      <input
-        className="input"
-        id="search-rows-input"
-        type="search"
-        name="query"
-        value={props.referrer.query ?? ''}
-      />
-      <button
-        className="button"
-        type="submit"
+    <details open={!!props.referrer.query}>
+      <summary>Search</summary>
+      <form
+        action={referrerUrl.pathname}
+        method="GET"
+        role="none"
+        data-auto-submit="delay"
       >
-        Search
-      </button>
-    </form>
+        {searchParamEntries.map(([key, value]) => (
+          <input
+            key={key}
+            type="hidden"
+            name={key}
+            value={value}
+          />
+        ))}
+        <input
+          className="input"
+          id="search-rows-input"
+          type="search"
+          name="query"
+          value={props.referrer.query ?? ''}
+        />
+        <button
+          className="button"
+          type="submit"
+        >
+          Search
+        </button>
+      </form>
+    </details>
   );
 }

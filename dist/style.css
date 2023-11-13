@@ -96,11 +96,16 @@ button {
   display: flex;
   place-items: center;
   place-content: center;
+  max-width: max-content;
 
   &[aria-disabled="true"] {
     opacity: .667;
     cursor: not-allowed;
   }
+}
+
+flyout-menu .button {
+  max-width: none;
 }
 
 .input {
