@@ -114,7 +114,7 @@ export function handleFetch(event: Event) {
         case !!matchesDatabase: {
           switch (formData._method) {
             case 'PATCH': {
-              return PatchDatabase(event, matchesDatabases, formData, referrer);
+              return PatchDatabase(event, matchesDatabase, formData, referrer);
             }
           }
         }
