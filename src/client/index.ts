@@ -1,5 +1,7 @@
 import 'elements/AutoSaveTextElement';
 import 'elements/AutoSaveCheckboxElement';
+import 'elements/AutoSaveSearchElement';
+import 'elements/ClearSearchElement';
 import 'elements/UnloadHandlerElement';
 import 'elements/PostFormElement';
 
@@ -14,15 +16,21 @@ const autofocusElement = window.document.querySelector(
 );
 const focusElementId = sessionStorage.getItem(FOCUS_STORAGE_KEY) || '';
 const focusElement = window.document.getElementById(focusElementId);
+const elementToAutoFocus = autofocusElement || focusElement;
 
-if (autofocusElement instanceof HTMLElement) {
-  autofocusElement.focus({
+if (elementToAutoFocus instanceof HTMLElement) {
+  elementToAutoFocus.focus({
     preventScroll: true,
   });
-} else if (focusElement instanceof HTMLElement) {
-  focusElement.focus({
-    preventScroll: true,
-  });
+
+  if (
+    elementToAutoFocus instanceof HTMLInputElement &&
+    elementToAutoFocus.value.length > 0 &&
+    (elementToAutoFocus.type === 'text' || elementToAutoFocus.type === 'search')
+  ) {
+    elementToAutoFocus.selectionStart = elementToAutoFocus.selectionEnd =
+      elementToAutoFocus.value.length;
+  }
 }
 
 const handleScroll = () => {

@@ -22,17 +22,6 @@ export async function GetDatabaseRows(
     });
   }
 
-  const url = new URL(event.request.url);
-
-  if (url.searchParams.has('query') && !url.searchParams.get('query')) {
-    const redirectUrl = new URL(event.request.url);
-    const urlSearchParams = new URLSearchParams(redirectUrl.search);
-    urlSearchParams.delete('query');
-    redirectUrl.search = urlSearchParams.toString();
-
-    return Response.redirect(redirectUrl.href, 302);
-  }
-
   const settings = await getSettingsFromIndexedDb(idb);
 
   const renderResult = renderToString(

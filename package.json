@@ -22,6 +22,7 @@
   "author": "Michael Puckett <michael@puckett.contact>",
   "license": "ISC",
   "dependencies": {
+    "debounce": "^1.2.1",
     "escape-string-regexp": "^5.0.0",
     "idb": "^7.1.1",
     "path-to-regexp": "^6.2.1",
@@ -31,6 +32,7 @@
     "yjs": "^13.6.8"
   },
   "devDependencies": {
+    "@types/debounce": "^1.2.4",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@types/uuid": "^9.0.7",

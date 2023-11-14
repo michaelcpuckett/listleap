@@ -1,5 +1,7 @@
 import React from 'react';
 import { Referrer } from 'shared/types';
+import { AutoSaveSearchElement } from 'components/elements/AutoSaveSearchElement';
+import { ClearSearchElement } from 'components/elements/ClearSearchElement';
 
 export function SearchRowsForm(
   props: React.PropsWithoutRef<{ referrer: Referrer }>,
@@ -10,13 +12,12 @@ export function SearchRowsForm(
   const searchParamEntries = Array.from(searchParams.entries());
 
   return (
-    <details open={!!props.referrer.query}>
+    <details open={referrerUrl.searchParams.has('query')}>
       <summary>Search</summary>
       <form
         action={referrerUrl.pathname}
         method="GET"
         role="none"
-        data-auto-submit="delay"
       >
         {searchParamEntries.map(([key, value]) => (
           <input
@@ -26,11 +27,10 @@ export function SearchRowsForm(
             value={value}
           />
         ))}
-        <input
-          className="input"
+        <AutoSaveSearchElement
           id="search-rows-input"
-          type="search"
           name="query"
+          label="Search"
           value={props.referrer.query ?? ''}
         />
         <button
@@ -39,6 +39,7 @@ export function SearchRowsForm(
         >
           Search
         </button>
+        <ClearSearchElement />
       </form>
     </details>
   );

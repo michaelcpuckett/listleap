@@ -31,12 +31,11 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
         const pattern = !value ? '^$' : '^' + escapeStringRegexp(value) + '$';
         this.inputElement.setAttribute('pattern', pattern);
       });
-    } else {
-      if (this.inputElement.validity.patternMismatch) {
-        this.markDirty();
-      } else {
-        this.markClean();
-      }
+    } else if (
+      method === 'POST' &&
+      this.inputElement.validity.patternMismatch
+    ) {
+      formElement.submit();
     }
   }
 }

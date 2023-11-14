@@ -15,10 +15,6 @@ export async function PatchDatabase(
   const databaseId = match?.[1] || '';
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
-  console.log({
-    database,
-  });
-
   if (!database) {
     return new Response('Not found', {
       status: 404,

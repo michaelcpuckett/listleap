@@ -28,6 +28,8 @@ declare global {
     interface IntrinsicElements {
       'auto-save-text': CustomElement;
       'auto-save-checkbox': CustomElement;
+      'auto-save-search': CustomElement;
+      'clear-search': CustomElement;
       'flyout-menu': CustomElement;
       'unload-handler': CustomElement;
       'post-form': CustomElement;

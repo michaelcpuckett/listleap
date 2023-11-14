@@ -1,10 +1,6 @@
 import { DIRTY_ELEMENTS_KEY } from 'elements/UnloadHandlerElement';
 
 export class PostFormElement extends HTMLElement {
-  constructor() {
-    super();
-  }
-
   private formElement?: HTMLFormElement;
   private boundSubmitHandler = this.handleFormSubmit.bind(this);
 
