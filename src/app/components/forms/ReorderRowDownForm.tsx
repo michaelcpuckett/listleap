@@ -4,7 +4,7 @@ import { AnyRow } from 'shared/types';
 export function ReorderRowDownForm(
   props: React.PropsWithoutRef<{
     row: AnyRow;
-    index: number;
+    nextRow?: AnyRow;
     autofocus?: boolean;
     isDisabled?: boolean;
     role?: string;
@@ -22,11 +22,13 @@ export function ReorderRowDownForm(
         name="_method"
         value="PATCH"
       />
-      <input
-        type="hidden"
-        name="index"
-        value={props.index}
-      />
+      {props.nextRow ? (
+        <input
+          type="hidden"
+          name="position"
+          value={props.nextRow.position}
+        />
+      ) : null}
       <button
         className="button"
         tabIndex={props.tabindex}

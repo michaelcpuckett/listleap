@@ -17,21 +17,6 @@ export function ChecklistView(
   const rows = props.database.rows;
   const properties = props.database.properties;
 
-  const newRow = {
-    id: 'new-row',
-    databaseId: props.database.id,
-    completed: false,
-    title: '',
-    ...Object.fromEntries(
-      props.database.properties.map((property: Property) => [
-        property.id,
-        property.type === Number ? 0 : property.type === Boolean ? false : '',
-      ]),
-    ),
-  } as ChecklistRow<Property[]>;
-
-  rows.push(newRow);
-
   const gridColumnsCss = `auto minmax(0, 1fr) ${
     properties.length ? `repeat(${properties.length}, minmax(0, 1fr))` : ''
   } auto`;
@@ -59,14 +44,12 @@ export function ChecklistView(
           const filteredIndex = props.filteredRows.findIndex(
             (t) => t.id === row.id,
           );
-          const isBlankRow = index === length - 1;
-          const formId = isBlankRow
-            ? 'add-row-inline-form'
-            : `edit-row-inline-form--${row.id}`;
 
-          if (!isBlankRow && filteredIndex === -1) {
+          if (filteredIndex === -1) {
             return null;
           }
+
+          const formId = `edit-row-inline-form--${row.id}`;
 
           return (
             <tr
@@ -126,55 +109,54 @@ export function ChecklistView(
                   </td>
                 );
               })}
-              {isBlankRow ? (
-                <td className="align-center">
-                  <PostFormElement
-                    action={`/databases/${props.database.id}`}
-                    id="add-row-inline-form"
-                  >
-                    <button
-                      className="button"
-                      type="submit"
-                    >
-                      Add
-                    </button>
-                  </PostFormElement>
-                </td>
-              ) : (
-                <td
-                  className="align-center"
-                  aria-label={`Actions for ${row.title}`}
+              <td
+                className="align-center"
+                aria-label={`Actions for ${row.title}`}
+              >
+                <form
+                  noValidate
+                  action={`/databases/${props.database.id}/rows/${row.id}`}
+                  method="POST"
+                  id={`edit-row-inline-form--${row.id}`}
+                  role="none"
                 >
-                  <form
-                    noValidate
-                    action={`/databases/${props.database.id}/rows/${row.id}`}
-                    method="POST"
-                    id={`edit-row-inline-form--${row.id}`}
-                    role="none"
-                  >
-                    <input
-                      type="hidden"
-                      name="_method"
-                      value="PUT"
-                    />
-                    <button
-                      type="submit"
-                      hidden
-                    >
-                      Update
-                    </button>
-                  </form>
-                  <RowActionsFlyoutMenu
-                    row={row}
-                    previousRow={props.filteredRows[filteredIndex - 1]}
-                    nextRow={props.filteredRows[filteredIndex + 1]}
-                    referrer={props.referrer}
+                  <input
+                    type="hidden"
+                    name="_method"
+                    value="PUT"
                   />
-                </td>
-              )}
+                  <button
+                    type="submit"
+                    hidden
+                  >
+                    Update
+                  </button>
+                </form>
+                <RowActionsFlyoutMenu
+                  row={row}
+                  previousRow={props.filteredRows[filteredIndex - 1]}
+                  nextRow={props.filteredRows[filteredIndex + 1]}
+                  referrer={props.referrer}
+                />
+              </td>
             </tr>
           );
         })}
+        <tr>
+          <td
+            colSpan={properties.length + 4}
+            style={{
+              gridColumn: '1 / -1',
+            }}
+          >
+            <PostFormElement
+              action={`/databases/${props.database.id}/rows`}
+              id="add-row-form"
+            >
+              <button type="submit">Add New</button>
+            </PostFormElement>
+          </td>
+        </tr>
       </tbody>
     </table>
   );

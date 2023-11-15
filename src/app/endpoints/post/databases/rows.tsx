@@ -5,7 +5,10 @@ import {
   getIdb,
   getDatabaseFromIndexedDb,
   addRowToIndexedDb,
+  reorderRowInIndexedDb,
+  getRowByIdFromIndexedDb,
 } from 'utilities/idb';
+import { LexoRank } from 'lexorank';
 
 export async function PostDatabaseRows(
   event: FetchEvent,
@@ -66,6 +69,18 @@ export async function PostDatabaseRows(
 
     if (property.type === Boolean) {
       rowToAdd[property.id] = formData[property.id] === 'on';
+    }
+  }
+
+  if (formData.position !== undefined) {
+    rowToAdd.position = formData.position;
+  } else {
+    const lastRow = database.rows[database.rows.length - 1];
+
+    if (lastRow) {
+      rowToAdd.position = LexoRank.parse(lastRow.position).genNext().toString();
+    } else {
+      rowToAdd.position = LexoRank.min().toString();
     }
   }
 

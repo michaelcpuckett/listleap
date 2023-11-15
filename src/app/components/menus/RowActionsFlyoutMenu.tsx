@@ -5,6 +5,7 @@ import { ReorderRowUpForm } from 'components/forms/ReorderRowUpForm';
 import { ReorderRowDownForm } from 'components/forms/ReorderRowDownForm';
 import { TriggerEditRowForm } from 'components/forms/TriggerEditRowForm';
 import { TriggerDeleteRowForm } from 'components/forms/TriggerDeleteRowForm';
+import { TriggerNewRowBelowForm } from 'components/forms/TriggerNewRowBelowForm';
 
 export function RowActionsFlyoutMenu(
   props: React.PropsWithChildren<{
@@ -21,14 +22,20 @@ export function RowActionsFlyoutMenu(
     >
       <ReorderRowUpForm
         row={props.row}
-        index={(props.previousRow ? props.previousRow.index : null) ?? -1}
+        prevRow={props.previousRow}
         isDisabled={!props.previousRow}
         role="menuitem"
       />
       <ReorderRowDownForm
         row={props.row}
-        index={(props.nextRow ? props.nextRow.index : null) ?? -1}
+        nextRow={props.nextRow}
         isDisabled={!props.nextRow}
+        role="menuitem"
+      />
+      <TriggerNewRowBelowForm
+        row={props.row}
+        prevPosition={props.row.position}
+        nextPosition={props.nextRow ? props.nextRow.position : undefined}
         role="menuitem"
       />
       <TriggerEditRowForm

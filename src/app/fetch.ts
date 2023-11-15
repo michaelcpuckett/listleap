@@ -123,7 +123,7 @@ export function handleFetch(event: Event) {
             case 'POST': {
               return PostDatabaseRows(
                 event,
-                matchesDatabase,
+                matchesDatabaseRows,
                 formData,
                 referrer,
               );

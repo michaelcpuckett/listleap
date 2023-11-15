@@ -3,6 +3,7 @@ import {
   getDatabaseFromIndexedDb,
   reorderRowInIndexedDb,
   editRowInIndexedDb,
+  getRowByPositionFromIndexedDb,
 } from 'utilities/idb';
 import { Referrer } from 'shared/types';
 
@@ -23,7 +24,6 @@ export async function PatchDatabaseRow(
     });
   }
 
-  const properties = database.properties || [];
   const rowToPatch = database.rows.find((row) => row.id === id);
 
   if (!rowToPatch) {
@@ -32,23 +32,23 @@ export async function PatchDatabaseRow(
     });
   }
 
-  if (formData.index !== undefined) {
-    await reorderRowInIndexedDb(
-      Number(rowToPatch.index),
-      Number(formData.index),
+  if (formData.position !== undefined) {
+    const rowToReorder = await getRowByPositionFromIndexedDb(
+      formData.position,
       idb,
     );
-  } else {
-    for (const [key, value] of Object.entries(formData)) {
-      if (['_method', '_redirect'].includes(key)) {
-        continue;
-      }
+    await reorderRowInIndexedDb(rowToPatch, rowToReorder, idb);
+  }
 
-      rowToPatch[key] = value;
+  for (const [key, value] of Object.entries(formData)) {
+    if (['_method', '_redirect'].includes(key)) {
+      continue;
     }
 
-    await editRowInIndexedDb<typeof database>(rowToPatch, idb);
+    rowToPatch[key] = value;
   }
+
+  await editRowInIndexedDb<typeof database>(rowToPatch, idb);
 
   const redirectUrl = new URL(
     formData._redirect || `/databases/${databaseId}`,

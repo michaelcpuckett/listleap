@@ -18,13 +18,16 @@
       "components/*": ["./components/*"],
       "endpoints/*": ["./endpoints/*"],
       "utilities/*": ["./utilities/*"],
-      "shared/*": ["../shared/*"],
+      "shared/*": ["../shared/*"]
     }
   },
-  "exclude": [
-    "../../node_modules"
-  ],
+  "exclude": ["../../node_modules"],
   "include": [
-    "index.tsx"
+    "index.tsx",
+    "fetch.ts",
+    "install.ts",
+    "components/**/*",
+    "endpoints/**/*",
+    "utilities/**/*"
   ]
 }

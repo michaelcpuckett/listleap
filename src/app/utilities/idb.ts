@@ -8,6 +8,7 @@ import {
   Settings,
   UntypedProperty,
 } from 'shared/types';
+import { LexoRank } from 'lexorank/lib/lexoRank';
 import { ID } from 'yjs';
 
 interface SwotionSchema extends DBSchema {
@@ -20,10 +21,10 @@ interface SwotionSchema extends DBSchema {
     value: PartialDatabase;
   };
   rows: {
-    key: number;
-    value: Omit<Row<Property[]>, 'index'>;
-    keyPath: 'index';
-    indexes: { id: string; databaseId: string };
+    key: string;
+    value: Row<Property[]>;
+    keyPath: 'id';
+    indexes: { id: string; position: string; databaseId: string };
   };
   properties: {
     key: number;
@@ -50,10 +51,10 @@ export async function getIdb(): Promise<SwotionIDB> {
       openRequest.result.createObjectStore('databases');
 
       const rowsObjectStore = openRequest.result.createObjectStore('rows', {
-        keyPath: 'index',
-        autoIncrement: true,
+        keyPath: 'id',
+        autoIncrement: false,
       });
-      rowsObjectStore.createIndex('id', 'id', { unique: true });
+      rowsObjectStore.createIndex('position', 'position', { unique: true });
       rowsObjectStore.createIndex('databaseId', 'databaseId', {
         unique: false,
       });
@@ -236,10 +237,12 @@ export async function getRowsByDatabaseIdFromIndexedDb<
   }
 
   function guardIsRow(row: unknown): row is AnyRow {
-    return typeof (row as AnyRow).index === 'number';
+    return typeof (row as AnyRow).position === 'string';
   }
 
-  return rows.filter(guardIsRow);
+  return rows.filter(guardIsRow).sort((a, b) => {
+    return a.position > b.position ? 1 : -1;
+  });
 }
 
 export async function addRowToIndexedDb<Db extends Database<Property[]>>(
@@ -273,64 +276,51 @@ export async function editRowInIndexedDb<Db extends Database<Property[]>>(
 }
 
 export async function reorderRowInIndexedDb(
-  oldIndex: number,
-  newIndex: number,
+  rowToReorder: AnyRow,
+  rowToFlip: AnyRow | undefined,
   idb: SwotionIDB,
 ): Promise<void> {
-  const rowToReorder = await getRowByIndexFromIndexedDb(oldIndex, idb);
-  const rowToFlip = await getRowByIndexFromIndexedDb(newIndex, idb);
-
-  if (rowToReorder) {
+  if (rowToReorder && rowToFlip) {
     const tx = idb.transaction('rows', 'readwrite');
     const store = tx.objectStore('rows');
-    await store.delete(newIndex);
+    const { position: oldPosition } = rowToReorder;
+    const { position: newPosition } = rowToFlip;
+    rowToReorder.position = newPosition;
+    rowToFlip.position = oldPosition;
+    await store.delete(rowToReorder.id);
+    await store.delete(rowToFlip.id);
+    await store.put(rowToReorder);
+    await store.put(rowToFlip);
     await tx.done;
   } else {
-    throw new Error('Row to reorder not found');
-  }
-
-  if (rowToFlip) {
     const tx = idb.transaction('rows', 'readwrite');
     const store = tx.objectStore('rows');
-    await store.delete(oldIndex);
-    await tx.done;
-  }
 
-  if (rowToReorder) {
-    const tx = idb.transaction('rows', 'readwrite');
-    const store = tx.objectStore('rows');
-    rowToReorder.index = newIndex;
+    const rows = await getRowsByDatabaseIdFromIndexedDb(
+      rowToReorder.databaseId,
+      idb,
+    );
+    const lastRow = rows[rows.length - 1];
+
+    if (lastRow && lastRow !== rowToReorder) {
+      rowToReorder.position = LexoRank.parse(lastRow.position)
+        .genNext()
+        .toString();
+    } else {
+      rowToReorder.position = LexoRank.min().toString();
+    }
     await store.put(rowToReorder);
-    await tx.done;
-  }
-
-  if (rowToFlip) {
-    const tx = idb.transaction('rows', 'readwrite');
-    const store = tx.objectStore('rows');
-    rowToFlip.index = oldIndex;
-    await store.put(rowToFlip);
     await tx.done;
   }
 }
 
-export async function getRowByIndexFromIndexedDb<
+export async function getRowByPositionFromIndexedDb<
   Db extends Database<Property[]>,
->(index: number, idb: SwotionIDB): Promise<Db['rows'][number] | null> {
-  const tx = idb.transaction('rows', 'readwrite');
-  const store = tx.objectStore('rows');
-  const row = await store.get(index);
-  await tx.done;
+>(position: string, idb: SwotionIDB): Promise<Db['rows'][number]> {
+  const row = await idb.getFromIndex('rows', 'position', position);
 
   if (!row) {
-    return null;
-  }
-
-  function guardIsRow(row: unknown): row is AnyRow {
-    return typeof (row as AnyRow).index === 'number';
-  }
-
-  if (!guardIsRow(row)) {
-    return null;
+    throw new Error('Row not found');
   }
 
   return row;
@@ -346,14 +336,6 @@ export async function getRowByIdFromIndexedDb<Db extends Database<Property[]>>(
     throw new Error('Row not found');
   }
 
-  function guardIsRow(row: unknown): row is AnyRow {
-    return typeof (row as AnyRow).index === 'number';
-  }
-
-  if (!guardIsRow(row)) {
-    throw new Error('Row not found');
-  }
-
   return row;
 }
 
@@ -361,22 +343,9 @@ export async function deleteRowByIdFromIndexedDb(
   id: string,
   idb: SwotionIDB,
 ): Promise<void> {
-  const existingRow = await getRowByIdFromIndexedDb(id, idb);
-
-  if (!existingRow?.index) {
-    throw new Error('Row not found');
-  }
-
-  await deleteRowByIndexFromIndexedDb(existingRow.index, idb);
-}
-
-export async function deleteRowByIndexFromIndexedDb(
-  index: number,
-  idb: SwotionIDB,
-): Promise<void> {
   const tx = idb.transaction('rows', 'readwrite');
   const store = tx.objectStore('rows');
-  await store.delete(index);
+  await store.delete(id);
   await tx.done;
 }
 

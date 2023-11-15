@@ -25,6 +25,7 @@
     "debounce": "^1.2.1",
     "escape-string-regexp": "^5.0.0",
     "idb": "^7.1.1",
+    "lexorank": "^1.0.5",
     "path-to-regexp": "^6.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

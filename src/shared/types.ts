@@ -81,7 +81,7 @@ export interface PartialChecklistRow extends PartialRow {
 }
 
 export type Row<Properties extends Property[]> = PartialRow & {
-  index: number;
+  position: string;
 } & DynamicPropertyKeyValuePair<Properties>;
 
 export type ChecklistRow<Properties extends Property[]> = Row<Properties> &

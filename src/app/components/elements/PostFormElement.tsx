@@ -5,6 +5,13 @@ export function PostFormElement(
 ) {
   return (
     <post-form>
+      <template shadowrootmode="open">
+        <link
+          rel="stylesheet"
+          href="/post-form.css"
+        />
+        <slot></slot>
+      </template>
       <form
         noValidate
         autoComplete="off"

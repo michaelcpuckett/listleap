@@ -4,7 +4,7 @@ import { AnyRow } from 'shared/types';
 export function ReorderRowUpForm(
   props: React.PropsWithChildren<{
     row: AnyRow;
-    index: number;
+    prevRow?: AnyRow;
     isDisabled?: boolean;
     autofocus?: boolean;
     role?: string;
@@ -22,11 +22,13 @@ export function ReorderRowUpForm(
         name="_method"
         value="PATCH"
       />
-      <input
-        type="hidden"
-        name="index"
-        value={props.index}
-      />
+      {props.prevRow ? (
+        <input
+          type="hidden"
+          name="position"
+          value={props.prevRow.position}
+        />
+      ) : null}
       <button
         className="button"
         tabIndex={props.tabindex}
