@@ -5,8 +5,18 @@ import {
   Row,
   Referrer,
   NormalizedFormData,
+  DynamicPropertyKey,
+  AnyDatabase,
+  AnyProperty,
+  AnyRow,
 } from 'shared/types';
-import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
+import {
+  guardIsBooleanDynamicPropertyType,
+  guardIsChecklistRow,
+  guardIsNumberDynamicPropertyType,
+  guardIsStringDynamicPropertyType,
+  guardIsTableRow,
+} from 'shared/assertions';
 import {
   getIdb,
   getDatabaseFromIndexedDb,
@@ -27,7 +37,10 @@ export async function PutDatabaseRow(
   const idb = await getIdb();
   const databaseId = match?.[1] || '';
   const id = match?.[2] || '';
-  const database = await getDatabaseFromIndexedDb(databaseId, idb);
+  const database: AnyDatabase | null = await getDatabaseFromIndexedDb(
+    databaseId,
+    idb,
+  );
 
   if (!database) {
     return new Response('Not found', {
@@ -35,9 +48,7 @@ export async function PutDatabaseRow(
     });
   }
 
-  const properties = database.properties || [];
-
-  type TypedRow = GetRowByType<(typeof database)['type']>;
+  type TypedRow = GetRowByType<typeof database>;
 
   const existingRow = database.rows.find((row) => row.id === id);
 
@@ -50,16 +61,16 @@ export async function PutDatabaseRow(
   const isLastRow =
     database.rows.indexOf(existingRow) === database.rows.length - 1;
 
-  const rowToPut: Partial<TypedRow> = {
+  const rowToPut = {
     id: existingRow.id,
     position: existingRow.position,
     databaseId: database.id,
-    title: formData.title,
+    title: formData.title || '',
   };
 
-  function guardIsRowOfType<T extends Row<Property[]>>(
-    row: Partial<Row<Property[]>>,
-    database: Database<Property[]>,
+  function guardIsRowOfType<T extends AnyProperty>(
+    row: unknown,
+    database: AnyDatabase,
   ): row is T {
     return guardIsChecklistRow(row, database) || guardIsTableRow(row, database);
   }
@@ -71,24 +82,28 @@ export async function PutDatabaseRow(
     return Response.redirect(url.href, 303);
   }
 
-  if (guardIsChecklistRow(rowToPut, database)) {
-    rowToPut.completed = formData.completed === 'on';
-  }
+  // if (guardIsChecklistRow(rowToPut, database)) {
+  //   rowToPut.completed = formData.completed === 'on';
+  // }
+
+  const properties: AnyProperty[] = database.properties || [];
 
   for (const property of properties) {
     if (formData[property.id] === undefined) {
       continue;
     }
 
-    if (property.type === String) {
-      rowToPut[property.id] = `${formData[property.id]}`;
+    const key: DynamicPropertyKey<typeof property> = property.id;
+
+    if (guardIsStringDynamicPropertyType(property)) {
+      rowToPut[key] = `${formData[property.id]}`;
     }
 
-    if (property.type === Number) {
+    if (guardIsNumberDynamicPropertyType(property)) {
       rowToPut[property.id] = Number(formData[property.id]);
     }
 
-    if (property.type === Boolean) {
+    if (guardIsBooleanDynamicPropertyType(property)) {
       rowToPut[property.id] = formData[property.id] === 'on';
     }
   }

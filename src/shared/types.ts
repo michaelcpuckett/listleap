@@ -21,7 +21,7 @@ export interface PartialDatabase {
 export interface Database<Properties extends AnyProperty[]>
   extends PartialDatabase {
   properties: Properties;
-  rows: Row<Properties>[];
+  rows: Row<AnyDatabase>[];
 }
 
 export interface PartialChecklist extends PartialDatabase {
@@ -32,15 +32,19 @@ export interface PartialTable extends PartialDatabase {
   type: 'TABLE';
 }
 
-export type Checklist<P extends AnyProperty[]> = PartialChecklist & {
-  rows: ChecklistRow<P>[];
-  properties: P;
+export type Checklist<Db extends AnyDatabase> = PartialChecklist & {
+  rows: ChecklistRow<Db>[];
+  properties: Db['properties'];
 };
 
-export type Table<P extends AnyProperty[]> = PartialTable & {
-  rows: TableRow<P>[];
-  properties: P;
+export type AnyChecklist = Checklist<AnyDatabase>;
+
+export type Table<Db extends AnyDatabase> = PartialTable & {
+  rows: TableRow<Db>[];
+  properties: Db['properties'];
 };
+
+export type AnyTable = Table<AnyDatabase>;
 
 export interface PartialProperty {
   id: string;
@@ -97,32 +101,36 @@ export interface PartialChecklistRow extends PartialRow {
   completed: boolean;
 }
 
-export type Row<Properties extends AnyProperty[]> = PartialRow & {
+export type Row<Db extends AnyDatabase> = PartialRow & {
   position: string;
-} & DynamicPropertyKeyValuePairs<Properties>;
+} & DynamicPropertyKeyValuePairs<Db['properties']>;
 
-export type ChecklistRow<Properties extends AnyProperty[]> = Row<Properties> &
+export type ChecklistRow<Db extends AnyDatabase> = Row<Db> &
   PartialChecklistRow;
 
-export type TableRow<Properties extends AnyProperty[]> = Row<Properties> &
-  PartialTableRow;
+export type AnyChecklistRow = ChecklistRow<AnyDatabase>;
 
-export type AnyRow = Row<AnyProperty[]>;
+export type TableRow<Db extends AnyDatabase> = Row<Db> & PartialTableRow;
+
+export type AnyTableRow = TableRow<AnyDatabase>;
+
+export type AnyRow = Row<AnyDatabase>;
 
 export type AnyDatabase = Database<AnyProperty[]>;
 
-export type IsChecklist<T extends Database<AnyProperty[]>['type']> =
-  T extends Checklist<AnyProperty[]>['type'] ? T : never;
+export type IsChecklist<Db extends AnyDatabase> = Db['type'] extends 'CHECKLIST'
+  ? Db
+  : never;
 
-export type IsTable<T extends Database<AnyProperty[]>['type']> =
-  T extends Table<AnyProperty[]>['type'] ? T : never;
+export type IsTable<Db extends AnyDatabase> = Db['type'] extends 'TABLE'
+  ? Db
+  : never;
 
-export type GetRowByType<T extends Database<AnyProperty[]>['type']> =
-  T extends IsChecklist<T>
-    ? ChecklistRow<AnyProperty[]>
-    : T extends IsTable<T>
-      ? TableRow<AnyProperty[]>
-      : never;
+export type GetRowByType<Db extends AnyDatabase> = IsTable<Db> extends Db
+  ? TableRow<Db>
+  : IsChecklist<Db> extends Db
+    ? ChecklistRow<Db>
+    : never;
 
 interface FormDataWithArrayValue {
   [key: `${string}[]`]: string[] | undefined;

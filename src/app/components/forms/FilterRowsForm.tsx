@@ -1,9 +1,9 @@
 import React from 'react';
-import { Referrer, Property, ChecklistRow } from 'shared/types';
+import { Referrer, Property, AnyChecklistRow } from 'shared/types';
 
 export function FilterRowsForm(
   props: React.PropsWithoutRef<{
-    rows: ChecklistRow<Property[]>[];
+    rows: AnyChecklistRow[];
     referrer: Referrer;
   }>,
 ) {

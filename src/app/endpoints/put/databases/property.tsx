@@ -38,13 +38,15 @@ export async function PutDatabaseProperty(
     });
   }
 
-  const updatedProperty: Property = {
+  const updatedPropertyType = getPropertyTypeFromString(
+    typeof formData.type === 'string' ? database.type : database.name,
+  );
+
+  const updatedProperty: Property<typeof updatedPropertyType> = {
     index: property.index,
     id: property.id,
     databaseId: database.id,
-    type: getPropertyTypeFromString(
-      typeof formData.type === 'string' ? database.type : database.name,
-    ),
+    type: updatedPropertyType,
     name: typeof formData.name === 'string' ? formData.name : database.name,
   };
 

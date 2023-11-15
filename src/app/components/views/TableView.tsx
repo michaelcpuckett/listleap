@@ -1,5 +1,12 @@
 import React from 'react';
-import { Property, Referrer, Table, TableRow } from 'shared/types';
+import {
+  AnyTable,
+  AnyTableRow,
+  Property,
+  Referrer,
+  Table,
+  TableRow,
+} from 'shared/types';
 import { RowActionsFlyoutMenu } from 'components/menus/RowActionsFlyoutMenu';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 import { NumericalContentEditable } from 'components/elements/NumericalContentEditable';
@@ -10,9 +17,9 @@ import { PropertyActionsFlyoutMenu } from 'components/menus/PropertyActionsFlyou
 
 export function TableView(
   props: React.PropsWithoutRef<{
-    database: Table<Property[]>;
+    database: AnyTable;
     referrer: Referrer;
-    queriedRows: TableRow<Property[]>[];
+    queriedRows: AnyTableRow[];
   }>,
 ) {
   const rows = props.database.rows;

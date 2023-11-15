@@ -54,15 +54,15 @@ export async function PatchDatabaseRow(
       continue;
     }
 
-    if (guardIsStringDynamicPropertyType<typeof database>(property)) {
+    if (guardIsStringDynamicPropertyType(property)) {
       rowToPatch[property.id] = `${formData[property.id]}`;
     }
 
-    if (guardIsBooleanDynamicPropertyType<typeof database>(property)) {
+    if (guardIsBooleanDynamicPropertyType(property)) {
       rowToPatch[property.id] = formData[property.id] === 'on';
     }
 
-    if (guardIsNumberDynamicPropertyType<typeof database>(property)) {
+    if (guardIsNumberDynamicPropertyType(property)) {
       rowToPatch[property.id] = Number(formData[property.id]);
     }
   }

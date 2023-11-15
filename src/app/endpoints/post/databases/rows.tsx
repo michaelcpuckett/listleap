@@ -6,6 +6,8 @@ import {
   Referrer,
   NormalizedFormData,
   AnyProperty,
+  AnyRow,
+  AnyDatabase,
 } from 'shared/types';
 import {
   guardIsBooleanDynamicPropertyType,
@@ -63,7 +65,7 @@ export async function PostDatabaseRows(
 
   const properties = database.properties || [];
 
-  type TypedRow = GetRowByType<(typeof database)['type']>;
+  type TypedRow = GetRowByType<typeof database>;
 
   const rowToAdd: Partial<TypedRow> = {
     id: getUniqueId(),
@@ -71,9 +73,9 @@ export async function PostDatabaseRows(
     title: formData.title || '',
   };
 
-  function guardIsRowOfType<T extends Row<AnyProperty[]>>(
-    row: Partial<Row<AnyProperty[]>>,
-    database: Database<AnyProperty[]>,
+  function guardIsRowOfType<T extends AnyRow>(
+    row: Partial<AnyRow>,
+    database: AnyDatabase,
   ): row is T {
     return guardIsChecklistRow(row, database) || guardIsTableRow(row, database);
   }
