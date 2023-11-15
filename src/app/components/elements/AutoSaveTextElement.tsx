@@ -37,9 +37,6 @@ export function AutoSaveTextElement(
         type="text"
         name={props.name}
         value={props.value}
-        pattern={
-          !props.value ? '^$' : '^' + escapeStringRegexp(props.value) + '$'
-        }
       />
     </auto-save-text>
   );

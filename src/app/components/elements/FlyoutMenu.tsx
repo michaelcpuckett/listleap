@@ -34,6 +34,7 @@ function FlyoutMenuDSD(
   return (
     <details role="none">
       <summary
+        part="button"
         id={`rows-actions-menu-trigger--${props.id}`}
         aria-controls={`rows-actions-menu--${props.id}`}
         role="button"

@@ -66,6 +66,7 @@ export class BaseAutoSaveElement extends HTMLElement {
       DIRTY_ELEMENTS_KEY,
       dirtyElementsString,
     );
+    this.inputElement.setAttribute('data-dirty', '');
   }
 
   protected markClean() {
@@ -79,6 +80,7 @@ export class BaseAutoSaveElement extends HTMLElement {
       DIRTY_ELEMENTS_KEY,
       dirtyElementsString,
     );
+    this.inputElement.removeAttribute('data-dirty');
   }
 
   protected async patch(url: string, value: string) {

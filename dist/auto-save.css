@@ -7,7 +7,7 @@
 }
 
 ::slotted(input) {
-  padding: .5rem 0;
+  padding: 0.5rem 0;
   margin: 0;
   border: 1px solid;
   border-radius: 0;
@@ -26,14 +26,12 @@
   color: CanvasText;
 }
 
-::slotted(input[type="checkbox"]) {
+::slotted(input[type='checkbox']) {
   width: 1.5rem;
   height: 1.5rem;
 }
 
-::slotted(input:invalid:not(:focus)),
-::slotted(input[checked]:not(:checked):not(:focus)),
-::slotted(input:not([checked]):checked:not(:focus)) {
+::slotted(input[data-dirty]:not(:focus)) {
   outline: 1px solid var(--unsaved-color);
   outline-offset: 2px;
 }
@@ -42,6 +40,6 @@ svg {
   display: none;
 }
 
-::slotted(:invalid) + svg {
+::slotted([data-dirty]) + svg {
   display: block;
 }

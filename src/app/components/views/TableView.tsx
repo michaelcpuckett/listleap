@@ -6,6 +6,7 @@ import { NumericalContentEditable } from 'components/elements/NumericalContentEd
 // import {DateContentEditable} from 'components/elements/DateContentEditable';
 import { AutoSaveCheckboxElement } from 'components/elements/AutoSaveCheckboxElement';
 import { PostFormElement } from 'components/elements/PostFormElement';
+import { PropertyActionsFlyoutMenu } from 'components/menus/PropertyActionsFlyoutMenu';
 
 export function TableView(
   props: React.PropsWithoutRef<{
@@ -31,12 +32,19 @@ export function TableView(
     >
       <thead>
         <tr>
-          <th className="align-center">Select</th>
+          <th className="align-center">
+            <span className="visually-hidden">Select</span>
+          </th>
           <th>Title</th>
           {properties.map((property) => (
-            <th>{property.name}</th>
+            <th>
+              {property.name}
+              <PropertyActionsFlyoutMenu property={property} />
+            </th>
           ))}
-          <th className="align-center">Actions</th>
+          <th className="align-center">
+            <span className="visually-hidden">Actions</span>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -159,7 +167,12 @@ export function TableView(
               action={`/databases/${props.database.id}/rows`}
               id="add-row-form"
             >
-              <button type="submit">Add New Row</button>
+              <button
+                className="button--full-width"
+                type="submit"
+              >
+                Add New Row
+              </button>
             </PostFormElement>
           </td>
         </tr>

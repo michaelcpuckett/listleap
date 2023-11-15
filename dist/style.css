@@ -110,6 +110,11 @@ flyout-menu .button {
   max-width: none;
 }
 
+.button--full-width {
+  max-width: none;
+  width: 100%;
+}
+
 .input {
   margin: 0;
   border: 1px solid;
@@ -157,7 +162,41 @@ flyout-menu .button {
   td {
     display: flex;
     place-items: center;
-    padding: 0.5rem;
+
+    & input[type='text'] {
+      height: 100%;
+      padding: 1rem;
+    }
+
+    & input[type='checkbox'] {
+      margin: 1rem;
+      position: relative;
+    }
+
+    & input[type='checkbox']:after {
+      content: '';
+      height: 100%;
+      width: 100%;
+      inset: -1rem;
+      position: absolute;
+      padding: 1rem;
+      box-sizing: content-box;
+    }
+
+    & flyout-menu::part(button) {
+      margin: 0.5rem;
+      position: relative;
+    }
+
+    & flyout-menu::part(button):after {
+      content: '';
+      height: 100%;
+      width: 100%;
+      inset: -0.5rem;
+      position: absolute;
+      padding: 0.5rem;
+      box-sizing: content-box;
+    }
 
     &:not(:last-child) {
       border-right: 1px solid;

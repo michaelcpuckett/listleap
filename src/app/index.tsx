@@ -10,6 +10,7 @@ declare module 'react' {
       React.DOMAttributes<T> {
     shadowrootmode?: string;
     shadowrootdelegatesfocus?: boolean;
+    part?: string;
     inert?: string;
   }
 

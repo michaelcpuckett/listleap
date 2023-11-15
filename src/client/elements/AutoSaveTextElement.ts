@@ -28,8 +28,7 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
 
     if (['PUT', 'PATCH'].includes(method)) {
       this.patch(formAction, value).then(() => {
-        const pattern = !value ? '^$' : '^' + escapeStringRegexp(value) + '$';
-        this.inputElement.setAttribute('pattern', pattern);
+        this.inputElement.setAttribute('value', value);
       });
     }
   }
