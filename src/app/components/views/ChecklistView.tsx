@@ -125,6 +125,11 @@ export function ChecklistView(
                     name="_method"
                     value="PUT"
                   />
+                  <input
+                    type="hidden"
+                    name="position"
+                    value={row.position}
+                  />
                   <button
                     type="submit"
                     hidden

@@ -11,6 +11,7 @@ export function EditRowForm(
 ) {
   return (
     <form
+      noValidate
       action={`/databases/${props.row.databaseId}/rows/${props.row.id}`}
       method="POST"
       role="none"

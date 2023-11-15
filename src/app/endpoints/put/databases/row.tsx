@@ -4,6 +4,8 @@ import {
   getIdb,
   getDatabaseFromIndexedDb,
   editRowInIndexedDb,
+  getRowByPositionFromIndexedDb,
+  reorderRowInIndexedDb,
 } from 'utilities/idb';
 
 export async function PutDatabaseRow(
@@ -37,7 +39,7 @@ export async function PutDatabaseRow(
 
   const rowToPut: Partial<TypedRow> = {
     id: existingRow.id,
-    index: existingRow.index,
+    position: existingRow.position,
     databaseId: database.id,
     title: formData.title,
   };
@@ -76,6 +78,14 @@ export async function PutDatabaseRow(
     if (property.type === Boolean) {
       rowToPut[property.id] = formData[property.id] === 'on';
     }
+  }
+
+  if (formData.position && formData.position !== existingRow.position) {
+    const rowToReorder = await getRowByPositionFromIndexedDb(
+      formData.position,
+      idb,
+    );
+    await reorderRowInIndexedDb(rowToPut, rowToReorder, idb);
   }
 
   await editRowInIndexedDb<typeof database>(rowToPut, idb);
