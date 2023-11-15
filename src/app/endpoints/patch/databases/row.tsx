@@ -6,6 +6,11 @@ import {
   getRowByPositionFromIndexedDb,
 } from 'utilities/idb';
 import { Referrer, NormalizedFormData } from 'shared/types';
+import {
+  guardIsBooleanDynamicPropertyType,
+  guardIsNumberDynamicPropertyType,
+  guardIsStringDynamicPropertyType,
+} from 'shared/assertions';
 
 export async function PatchDatabaseRow(
   event: FetchEvent,
@@ -40,12 +45,26 @@ export async function PatchDatabaseRow(
     await reorderRowInIndexedDb(rowToPatch, rowToReorder, idb);
   }
 
-  for (const [key, value] of Object.entries(formData)) {
-    if (['_method', '_redirect'].includes(key)) {
+  if (formData.title !== undefined) {
+    rowToPatch.title = formData.title;
+  }
+
+  for (const property of database.properties) {
+    if (formData[property.id] === undefined) {
       continue;
     }
 
-    rowToPatch[key] = value;
+    if (guardIsStringDynamicPropertyType<typeof database>(property)) {
+      rowToPatch[property.id] = `${formData[property.id]}`;
+    }
+
+    if (guardIsBooleanDynamicPropertyType<typeof database>(property)) {
+      rowToPatch[property.id] = formData[property.id] === 'on';
+    }
+
+    if (guardIsNumberDynamicPropertyType<typeof database>(property)) {
+      rowToPatch[property.id] = Number(formData[property.id]);
+    }
   }
 
   await editRowInIndexedDb<typeof database>(rowToPatch, idb);

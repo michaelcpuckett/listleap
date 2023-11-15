@@ -5,8 +5,15 @@ import {
   Row,
   Referrer,
   NormalizedFormData,
+  AnyProperty,
 } from 'shared/types';
-import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
+import {
+  guardIsBooleanDynamicPropertyType,
+  guardIsChecklistRow,
+  guardIsNumberDynamicPropertyType,
+  guardIsStringDynamicPropertyType,
+  guardIsTableRow,
+} from 'shared/assertions';
 import { getUniqueId } from 'shared/getUniqueId';
 import {
   getIdb,
@@ -64,9 +71,9 @@ export async function PostDatabaseRows(
     title: formData.title || '',
   };
 
-  function guardIsRowOfType<T extends Row<Property[]>>(
-    row: Partial<Row<Property[]>>,
-    database: Database<Property[]>,
+  function guardIsRowOfType<T extends Row<AnyProperty[]>>(
+    row: Partial<Row<AnyProperty[]>>,
+    database: Database<AnyProperty[]>,
   ): row is T {
     return guardIsChecklistRow(row, database) || guardIsTableRow(row, database);
   }
@@ -87,15 +94,15 @@ export async function PostDatabaseRows(
       continue;
     }
 
-    if (property.type === String) {
+    if (guardIsStringDynamicPropertyType(property)) {
       rowToAdd[property.id] = `${formData[property.id]}`;
     }
 
-    if (property.type === Number) {
+    if (guardIsNumberDynamicPropertyType(property)) {
       rowToAdd[property.id] = Number(formData[property.id]);
     }
 
-    if (property.type === Boolean) {
+    if (guardIsBooleanDynamicPropertyType(property)) {
       rowToAdd[property.id] = formData[property.id] === 'on';
     }
   }

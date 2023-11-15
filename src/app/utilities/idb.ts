@@ -15,6 +15,11 @@ import {
 import { LexoRank } from 'lexorank/lib/lexoRank';
 import { ID } from 'yjs';
 import { getUniqueId } from 'shared/getUniqueId';
+import {
+  guardIsBooleanDynamicPropertyType,
+  guardIsNumberDynamicPropertyType,
+  guardIsStringDynamicPropertyType,
+} from 'shared/assertions';
 
 interface SwotionSchema extends DBSchema {
   settings: {
@@ -387,33 +392,15 @@ export async function addBlankRowToIndexedDb<Db extends Database<Property[]>>(
   const dynamicPropertyKeyPairEntries = properties.map((property: Property) => {
     const key: DynamicPropertyKey<Db['properties'][number]> = property.id;
 
-    function guardIsBooleanType(
-      t: Db['properties'][number]['type'],
-    ): t is BooleanConstructor {
-      return t === Boolean;
-    }
-
-    function guardIsNumberType(
-      t: Db['properties'][number]['type'],
-    ): t is NumberConstructor {
-      return t === Number;
-    }
-
-    function guardIsStringType(
-      t: Db['properties'][number]['type'],
-    ): t is StringConstructor {
-      return t === String;
-    }
-
-    if (guardIsStringType(property.type)) {
+    if (guardIsStringDynamicPropertyType<Db>(property)) {
       return [key, ''];
     }
 
-    if (guardIsBooleanType(property.type)) {
+    if (guardIsBooleanDynamicPropertyType<Db>(property)) {
       return [key, false];
     }
 
-    if (guardIsNumberType(property.type)) {
+    if (guardIsNumberDynamicPropertyType<Db>(property)) {
       return [key, 0];
     }
 

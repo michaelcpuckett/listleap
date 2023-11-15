@@ -18,7 +18,7 @@ export interface PartialDatabase {
   name: string;
 }
 
-export interface Database<Properties extends Property[]>
+export interface Database<Properties extends AnyProperty[]>
   extends PartialDatabase {
   properties: Properties;
   rows: Row<Properties>[];
@@ -32,12 +32,12 @@ export interface PartialTable extends PartialDatabase {
   type: 'TABLE';
 }
 
-export type Checklist<P extends Property[]> = PartialChecklist & {
+export type Checklist<P extends AnyProperty[]> = PartialChecklist & {
   rows: ChecklistRow<P>[];
   properties: P;
 };
 
-export type Table<P extends Property[]> = PartialTable & {
+export type Table<P extends AnyProperty[]> = PartialTable & {
   rows: TableRow<P>[];
   properties: P;
 };
@@ -53,15 +53,22 @@ export interface UntypedProperty extends PartialProperty {
   type: string;
 }
 
-export interface Property extends PartialProperty {
+export type PropertyTypes =
+  | StringConstructor
+  | NumberConstructor
+  | BooleanConstructor;
+
+export interface Property<T extends PropertyTypes> extends PartialProperty {
   index: number;
-  type: StringConstructor | NumberConstructor | BooleanConstructor;
+  type: T;
 }
 
-export type DynamicPropertyKey<P extends Property> = P['id'];
+export type AnyProperty = Property<PropertyTypes>;
+
+export type DynamicPropertyKey<P extends AnyProperty> = P['id'];
 
 // Infers the type using `infer` keyword
-export type DynamicPropertyValue<P extends Property> =
+export type DynamicPropertyValue<P extends AnyProperty> =
   P['type'] extends StringConstructor
     ? string
     : P['type'] extends NumberConstructor
@@ -70,11 +77,11 @@ export type DynamicPropertyValue<P extends Property> =
         ? boolean
         : never;
 
-export type DynamicPropertyKeyValuePair<P extends Property> = {
+export type DynamicPropertyKeyValuePair<P extends AnyProperty> = {
   [K in DynamicPropertyKey<P>]: DynamicPropertyValue<P>;
 };
 
-export type DynamicPropertyKeyValuePairs<P extends Property[]> = {
+export type DynamicPropertyKeyValuePairs<P extends AnyProperty[]> = {
   [K in DynamicPropertyKey<P[number]>]: DynamicPropertyValue<P[number]>;
 };
 
@@ -90,34 +97,31 @@ export interface PartialChecklistRow extends PartialRow {
   completed: boolean;
 }
 
-export type Row<Properties extends Property[]> = PartialRow & {
+export type Row<Properties extends AnyProperty[]> = PartialRow & {
   position: string;
 } & DynamicPropertyKeyValuePairs<Properties>;
 
-export type ChecklistRow<Properties extends Property[]> = Row<Properties> &
+export type ChecklistRow<Properties extends AnyProperty[]> = Row<Properties> &
   PartialChecklistRow;
 
-export type TableRow<Properties extends Property[]> = Row<Properties> &
+export type TableRow<Properties extends AnyProperty[]> = Row<Properties> &
   PartialTableRow;
 
-export type AnyRow = Row<Property[]>;
+export type AnyRow = Row<AnyProperty[]>;
 
-export type AnyDatabase = Database<Property[]>;
+export type AnyDatabase = Database<AnyProperty[]>;
 
-export type IsChecklist<T extends Database<Property[]>['type']> =
-  T extends Checklist<Property[]>['type'] ? T : never;
+export type IsChecklist<T extends Database<AnyProperty[]>['type']> =
+  T extends Checklist<AnyProperty[]>['type'] ? T : never;
 
-export type IsTable<T extends Database<Property[]>['type']> = T extends Table<
-  Property[]
->['type']
-  ? T
-  : never;
+export type IsTable<T extends Database<AnyProperty[]>['type']> =
+  T extends Table<AnyProperty[]>['type'] ? T : never;
 
-export type GetRowByType<T extends Database<Property[]>['type']> =
+export type GetRowByType<T extends Database<AnyProperty[]>['type']> =
   T extends IsChecklist<T>
-    ? ChecklistRow<Property[]>
+    ? ChecklistRow<AnyProperty[]>
     : T extends IsTable<T>
-      ? TableRow<Property[]>
+      ? TableRow<AnyProperty[]>
       : never;
 
 interface FormDataWithArrayValue {

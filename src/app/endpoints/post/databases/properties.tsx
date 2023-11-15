@@ -30,11 +30,15 @@ export async function PostDatabaseProperties(
     return Response.redirect(redirectUrl.href, 303);
   }
 
-  const propertyToAdd: Omit<Property, 'index'> = {
+  const propertyToAddType = getPropertyTypeFromString(
+    formData.type || 'string',
+  );
+
+  const propertyToAdd: Omit<Property<typeof propertyToAddType>, 'index'> = {
     id: getUniqueId(),
     databaseId,
     name: formData.name || '',
-    type: getPropertyTypeFromString(formData.type || 'string'),
+    type: propertyToAddType,
   };
 
   await addPropertyToIndexedDb<typeof database>(propertyToAdd, idb);

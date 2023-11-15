@@ -38,11 +38,13 @@ export async function PatchDatabaseProperty(
     });
   }
 
-  const updatedProperty: Property = {
+  const updatedPropertyType = getPropertyTypeFromString(database.type);
+
+  const updatedProperty: Property<typeof updatedPropertyType> = {
     index: property.index,
     id: property.id,
     databaseId: database.id,
-    type: getPropertyTypeFromString(database.type),
+    type: updatedPropertyType,
     name: typeof formData.name === 'string' ? formData.name : database.name,
   };
 
