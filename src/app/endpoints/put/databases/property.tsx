@@ -1,4 +1,9 @@
-import { Referrer, PartialDatabase, Property } from 'shared/types';
+import {
+  Referrer,
+  NormalizedFormData,
+  PartialDatabase,
+  Property,
+} from 'shared/types';
 import {
   getIdb,
   getDatabaseFromIndexedDb,
@@ -9,7 +14,7 @@ import {
 export async function PutDatabaseProperty(
   event: FetchEvent,
   match: RegExpExecArray | null,
-  formData: Record<string, string>,
+  formData: NormalizedFormData,
   referrer: Referrer,
 ) {
   const idb = await getIdb();

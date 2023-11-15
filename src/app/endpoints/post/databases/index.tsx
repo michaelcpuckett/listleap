@@ -2,12 +2,12 @@ import { getIdb } from 'utilities/idb';
 import { getUniqueId } from 'shared/getUniqueId';
 import { addPartialDatabaseToIndexedDb } from 'utilities/idb';
 import { assertIsDatabase } from 'shared/assertions';
-import { Referrer } from 'shared/types';
+import { Referrer, NormalizedFormData } from 'shared/types';
 
 export async function PostDatabase(
   event: FetchEvent,
   match: RegExpExecArray | null,
-  formData: Record<string, string>,
+  formData: NormalizedFormData,
   referrer: Referrer,
 ) {
   const idb = await getIdb();

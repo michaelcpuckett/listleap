@@ -2,12 +2,35 @@ import escapeStringRegexp from 'escape-string-regexp';
 import { BaseAutoSaveElement } from 'elements/BaseAutoSaveElement';
 
 export class AutoSaveCheckboxElement extends BaseAutoSaveElement {
+  private formElement: HTMLFormElement | undefined;
+  private boundMarkClean = this.markClean.bind(this);
+
+  constructor() {
+    super();
+
+    const formElement = this.inputElement.form;
+
+    if (!formElement) {
+      return;
+    }
+
+    this.formElement = formElement;
+  }
+
   connectedCallback() {
     this.inputElement.addEventListener('input', this.boundInputHandler);
+
+    if (this.formElement) {
+      this.formElement.addEventListener('submit', this.boundMarkClean);
+    }
   }
 
   disconnectedCallback() {
     this.inputElement.removeEventListener('input', this.boundInputHandler);
+
+    if (this.formElement) {
+      this.formElement.removeEventListener('submit', this.boundMarkClean);
+    }
   }
 
   override handleInput() {

@@ -3,12 +3,12 @@ import {
   getDatabaseFromIndexedDb,
   deleteRowByIdFromIndexedDb,
 } from 'utilities/idb';
-import { Referrer } from 'shared/types';
+import { Referrer, NormalizedFormData } from 'shared/types';
 
 export async function DeleteDatabaseRow(
   event: FetchEvent,
   match: RegExpExecArray | null,
-  formData: Record<string, string>,
+  formData: NormalizedFormData,
   referrer: Referrer,
 ) {
   const idb = await getIdb();

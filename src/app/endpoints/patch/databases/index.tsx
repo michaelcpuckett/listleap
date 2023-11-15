@@ -1,4 +1,4 @@
-import { Referrer, PartialDatabase } from 'shared/types';
+import { Referrer, PartialDatabase, NormalizedFormData } from 'shared/types';
 import {
   getIdb,
   getDatabaseFromIndexedDb,
@@ -8,7 +8,7 @@ import {
 export async function PatchDatabase(
   event: FetchEvent,
   match: RegExpExecArray | null,
-  formData: Record<string, string>,
+  formData: NormalizedFormData,
   referrer: Referrer,
 ) {
   const idb = await getIdb();

@@ -1,4 +1,9 @@
-import { PartialProperty, Referrer, Property } from 'shared/types';
+import {
+  PartialProperty,
+  Referrer,
+  Property,
+  NormalizedFormData,
+} from 'shared/types';
 import {
   getIdb,
   addPropertyToIndexedDb,
@@ -11,7 +16,7 @@ import { ERROR_CODES } from 'utilities/errors';
 export async function PostDatabaseProperties(
   event: FetchEvent,
   match: RegExpExecArray | null,
-  formData: Record<string, string>,
+  formData: NormalizedFormData,
   referrer: Referrer,
 ) {
   const idb = await getIdb();
@@ -28,8 +33,8 @@ export async function PostDatabaseProperties(
   const propertyToAdd: Omit<Property, 'index'> = {
     id: getUniqueId(),
     databaseId,
-    name: formData.name,
-    type: getPropertyTypeFromString(formData.type),
+    name: formData.name || '',
+    type: getPropertyTypeFromString(formData.type || 'string'),
   };
 
   await addPropertyToIndexedDb<typeof database>(propertyToAdd, idb);

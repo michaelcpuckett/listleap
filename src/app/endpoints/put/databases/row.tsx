@@ -1,4 +1,11 @@
-import { Database, Property, GetRowByType, Row, Referrer } from 'shared/types';
+import {
+  Database,
+  Property,
+  GetRowByType,
+  Row,
+  Referrer,
+  NormalizedFormData,
+} from 'shared/types';
 import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
 import {
   getIdb,
@@ -11,7 +18,7 @@ import {
 export async function PutDatabaseRow(
   event: FetchEvent,
   match: RegExpExecArray | null,
-  formData: Record<string, string>,
+  formData: NormalizedFormData,
   referrer: Referrer,
 ) {
   const idb = await getIdb();
