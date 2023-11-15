@@ -7,9 +7,14 @@ import {
   Row,
   Settings,
   UntypedProperty,
+  DynamicPropertyKeyValuePair,
+  DynamicPropertyKey,
+  DynamicPropertyValue,
+  DynamicPropertyKeyValuePairs,
 } from 'shared/types';
 import { LexoRank } from 'lexorank/lib/lexoRank';
 import { ID } from 'yjs';
+import { getUniqueId } from 'shared/getUniqueId';
 
 interface SwotionSchema extends DBSchema {
   settings: {
@@ -369,5 +374,68 @@ export async function editPropertyInIndexedDb<Db extends Database<Property[]>>(
     type: getStringFromPropertyType(property.type),
   };
   await store.put(untypedProperty);
+  await tx.done;
+}
+
+export async function addBlankRowToIndexedDb<Db extends Database<Property[]>>(
+  database: Db,
+  idb: SwotionIDB,
+): Promise<void> {
+  const rows = await getRowsByDatabaseIdFromIndexedDb(database.id, idb);
+  const lastRow = rows[rows.length - 1];
+  const properties = database.properties;
+  const dynamicPropertyKeyPairEntries = properties.map((property: Property) => {
+    const key: DynamicPropertyKey<Db['properties'][number]> = property.id;
+
+    function guardIsBooleanType(
+      t: Db['properties'][number]['type'],
+    ): t is BooleanConstructor {
+      return t === Boolean;
+    }
+
+    function guardIsNumberType(
+      t: Db['properties'][number]['type'],
+    ): t is NumberConstructor {
+      return t === Number;
+    }
+
+    function guardIsStringType(
+      t: Db['properties'][number]['type'],
+    ): t is StringConstructor {
+      return t === String;
+    }
+
+    if (guardIsStringType(property.type)) {
+      return [key, ''];
+    }
+
+    if (guardIsBooleanType(property.type)) {
+      return [key, false];
+    }
+
+    if (guardIsNumberType(property.type)) {
+      return [key, 0];
+    }
+
+    throw new Error('Unknown property type');
+  });
+  const dynamicPropertyKeyPairs: DynamicPropertyKeyValuePairs<
+    Db['properties']
+  > = Object.fromEntries(dynamicPropertyKeyPairEntries);
+  const row: Row<Db['properties']> = {
+    id: getUniqueId(),
+    databaseId: database.id,
+    title: '',
+    position: LexoRank.min().toString(),
+    ...dynamicPropertyKeyPairs,
+  };
+
+  if (lastRow) {
+    row.position = LexoRank.parse(lastRow.position).genNext().toString();
+  }
+
+  const tx = idb.transaction('rows', 'readwrite');
+  const store = tx.objectStore('rows');
+  await store.add(row);
   await tx.done;
 }

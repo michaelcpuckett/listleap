@@ -37,8 +37,6 @@ export async function PostDatabaseRows(
   if (formData.bulkAction !== undefined) {
     const rowIds = formData['row[]'] || [];
 
-    console.log(rowIds, formData);
-
     if (formData.bulkAction === 'DELETE') {
       for (const rowId of rowIds) {
         const row = await getRowByIdFromIndexedDb(rowId, idb);

@@ -58,14 +58,24 @@ export interface Property extends PartialProperty {
   type: StringConstructor | NumberConstructor | BooleanConstructor;
 }
 
-type DynamicPropertyKeyValuePair<Properties extends Property[]> = {
-  [K in keyof Properties]: Properties[K] extends StringConstructor
+export type DynamicPropertyKey<P extends Property> = P['id'];
+
+// Infers the type using `infer` keyword
+export type DynamicPropertyValue<P extends Property> =
+  P['type'] extends StringConstructor
     ? string
-    : Properties[K] extends NumberConstructor
+    : P['type'] extends NumberConstructor
       ? number
-      : Properties[K] extends BooleanConstructor
+      : P['type'] extends BooleanConstructor
         ? boolean
         : never;
+
+export type DynamicPropertyKeyValuePair<P extends Property> = {
+  [K in DynamicPropertyKey<P>]: DynamicPropertyValue<P>;
+};
+
+export type DynamicPropertyKeyValuePairs<P extends Property[]> = {
+  [K in DynamicPropertyKey<P[number]>]: DynamicPropertyValue<P[number]>;
 };
 
 export interface PartialRow {
@@ -82,7 +92,7 @@ export interface PartialChecklistRow extends PartialRow {
 
 export type Row<Properties extends Property[]> = PartialRow & {
   position: string;
-} & DynamicPropertyKeyValuePair<Properties>;
+} & DynamicPropertyKeyValuePairs<Properties>;
 
 export type ChecklistRow<Properties extends Property[]> = Row<Properties> &
   PartialChecklistRow;

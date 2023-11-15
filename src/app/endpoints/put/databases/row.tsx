@@ -13,7 +13,10 @@ import {
   editRowInIndexedDb,
   getRowByPositionFromIndexedDb,
   reorderRowInIndexedDb,
+  addRowToIndexedDb,
+  addBlankRowToIndexedDb,
 } from 'utilities/idb';
+import { getUniqueId } from 'shared/getUniqueId';
 
 export async function PutDatabaseRow(
   event: FetchEvent,
@@ -43,6 +46,9 @@ export async function PutDatabaseRow(
       status: 404,
     });
   }
+
+  const isLastRow =
+    database.rows.indexOf(existingRow) === database.rows.length - 1;
 
   const rowToPut: Partial<TypedRow> = {
     id: existingRow.id,
@@ -96,6 +102,10 @@ export async function PutDatabaseRow(
   }
 
   await editRowInIndexedDb<typeof database>(rowToPut, idb);
+
+  if (isLastRow) {
+    await addBlankRowToIndexedDb(database, idb);
+  }
 
   const redirectUrl = new URL(
     formData._redirect || `/databases/${databaseId}`,

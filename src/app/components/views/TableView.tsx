@@ -126,7 +126,7 @@ export function TableView(
                   noValidate
                   action={`/databases/${props.database.id}/rows/${row.id}`}
                   method="POST"
-                  id={`edit-row-inline-form--${row.id}`}
+                  id={formId}
                   role="none"
                 >
                   <input
