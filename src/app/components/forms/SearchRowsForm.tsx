@@ -13,7 +13,7 @@ export function SearchRowsForm(
 
   return (
     <details open={referrerUrl.searchParams.has('query')}>
-      <summary>Search</summary>
+      <summary className="button">Search</summary>
       <form
         action={referrerUrl.pathname}
         method="GET"

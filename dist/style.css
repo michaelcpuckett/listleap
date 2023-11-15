@@ -20,7 +20,6 @@ html {
     --swatch-button-text: #fff;
   }
 
-  
   &:has(dialog[open]) {
     overflow: hidden;
   }
@@ -69,6 +68,7 @@ nav {
   margin-top: 1rem;
 }
 
+summary,
 button {
   padding: unset;
   margin: unset;
@@ -78,11 +78,13 @@ button {
   box-shadow: unset;
   color: unset;
   background: unset;
+  min-width: 48px;
+  min-height: 48px;
   cursor: pointer;
 }
 
 .button {
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   margin: 0;
   border: 1px solid;
   border-radius: 0;
@@ -98,8 +100,8 @@ button {
   place-content: center;
   max-width: max-content;
 
-  &[aria-disabled="true"] {
-    opacity: .667;
+  &[aria-disabled='true'] {
+    opacity: 0.667;
     cursor: not-allowed;
   }
 }
@@ -124,12 +126,12 @@ flyout-menu .button {
   width: 100%;
   display: grid;
   grid-template-columns: var(--grid-columns);
-  
-  & thead,tbody {
+
+  & thead,
+  tbody {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
-    column-gap: .5rem;
   }
 
   & tr {
@@ -137,23 +139,29 @@ flyout-menu .button {
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
     border-bottom: 1px solid;
-    padding: 0 .5rem;
+    padding: 0;
     position: relative;
 
-    &:has(input[type="checkbox"][name="completed"]:checked) {
+    &:has(input[type='checkbox'][name='completed']:checked) {
       background: var(--swatch-gray-background);
       color: var(--swatch-gray-text);
 
-      & th,td {
+      & th,
+      td {
         text-decoration: line-through;
       }
     }
   }
 
-  & th,td {
+  & th,
+  td {
     display: flex;
     place-items: center;
-    padding: .5rem 0;
+    padding: 0.5rem;
+
+    &:not(:last-child) {
+      border-right: 1px solid;
+    }
 
     &.align-center {
       place-content: center;
@@ -186,7 +194,7 @@ tbody {
   display: grid;
 }
 
-.input[type="checkbox"] {
+.input[type='checkbox'] {
   margin: 0;
   display: flex;
   height: 2rem;
@@ -214,7 +222,7 @@ button:has(svg:only-child) {
   padding: 0;
 }
 
-[role="group"] {
+[role='group'] {
   padding: 0;
   margin: 0;
   display: flex;
@@ -222,7 +230,8 @@ button:has(svg:only-child) {
   width: 100%;
   min-width: 300px;
 
-  & label, .input {
+  & label,
+  .input {
     flex: 1;
   }
 }
@@ -239,7 +248,7 @@ nav {
     place-items: center;
   }
 
-  & a[aria-current="page"] {
+  & a[aria-current='page'] {
     font-weight: bold;
   }
 }
@@ -252,7 +261,7 @@ dialog[open] {
   bottom: 0;
   padding: 0;
   margin: 0;
-  background: rgba(0, 0, 0, .5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   place-items: center;
   max-height: 100%;
@@ -328,11 +337,11 @@ dd {
 .notice {
   background-color: var(--unsaved-color);
   color: black;
-  padding: .5rem;
-  margin: .5rem 0;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
   display: flex;
   place-items: center;
   place-content: center;
   font-weight: bold;
-  font-size: .95rem;
+  font-size: 0.95rem;
 }

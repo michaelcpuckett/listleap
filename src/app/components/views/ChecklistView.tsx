@@ -158,7 +158,7 @@ export function ChecklistView(
               action={`/databases/${props.database.id}/rows`}
               id="add-row-form"
             >
-              <button type="submit">Add New</button>
+              <button type="submit">Add New Row</button>
             </PostFormElement>
           </td>
         </tr>

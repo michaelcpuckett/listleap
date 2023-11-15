@@ -31,10 +31,10 @@ details[open] summary:before {
   inset: 0;
 }
 
-[role="menu"] {
+[role='menu'] {
   display: flex;
   flex-direction: column;
-  gap: .5rem;
+  gap: 0.5rem;
   border: 1px solid;
   list-style: none;
   background: CanvasText;
@@ -53,4 +53,3 @@ details[open] summary:before {
     max-width: none;
   }
 }
-
