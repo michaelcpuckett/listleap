@@ -19,10 +19,10 @@ export function AddDatabaseForm() {
         name="type"
         required
       >
-        <option value="CHECKLIST">Checklist</option>
+        <option value="TABLE">Table</option>
         {null && (
           <>
-            <option value="TABLE">Table</option>
+            <option value="CHECKLIST">Checklist</option>
             <option value="LIST">List</option>
             <option value="CALENDAR">Calendar</option>
             <option value="BOARD">Board</option>

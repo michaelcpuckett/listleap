@@ -54,6 +54,7 @@ export async function getIdb(): Promise<SwotionIDB> {
         keyPath: 'id',
         autoIncrement: false,
       });
+      rowsObjectStore.createIndex('id', 'id', { unique: true });
       rowsObjectStore.createIndex('position', 'position', { unique: true });
       rowsObjectStore.createIndex('databaseId', 'databaseId', {
         unique: false,
@@ -329,14 +330,8 @@ export async function getRowByPositionFromIndexedDb<
 export async function getRowByIdFromIndexedDb<Db extends Database<Property[]>>(
   id: string,
   idb: SwotionIDB,
-): Promise<Db['rows'][number]> {
-  const row = await idb.getFromIndex('rows', 'id', id);
-
-  if (!row) {
-    throw new Error('Row not found');
-  }
-
-  return row;
+): Promise<Db['rows'][number] | null> {
+  return (await idb.getFromIndex('rows', 'id', id)) || null;
 }
 
 export async function deleteRowByIdFromIndexedDb(

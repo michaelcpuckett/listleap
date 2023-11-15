@@ -1,4 +1,11 @@
-import { Database, GetRowByType, Property, Row, Referrer } from 'shared/types';
+import {
+  Database,
+  GetRowByType,
+  Property,
+  Row,
+  Referrer,
+  NormalizedFormData,
+} from 'shared/types';
 import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
 import { getUniqueId } from 'shared/getUniqueId';
 import {
@@ -7,13 +14,14 @@ import {
   addRowToIndexedDb,
   reorderRowInIndexedDb,
   getRowByIdFromIndexedDb,
+  deleteRowByIdFromIndexedDb,
 } from 'utilities/idb';
 import { LexoRank } from 'lexorank';
 
 export async function PostDatabaseRows(
   event: FetchEvent,
   match: RegExpExecArray | null,
-  formData: Record<string, string>,
+  formData: NormalizedFormData,
   referrer: Referrer,
 ) {
   const idb = await getIdb();
@@ -24,6 +32,28 @@ export async function PostDatabaseRows(
     return new Response('Not found', {
       status: 404,
     });
+  }
+
+  if (formData.bulkAction !== undefined) {
+    const rowIds = formData['row[]'] || [];
+
+    console.log(rowIds, formData);
+
+    if (formData.bulkAction === 'DELETE') {
+      for (const rowId of rowIds) {
+        const row = await getRowByIdFromIndexedDb(rowId, idb);
+
+        if (!row) {
+          continue;
+        }
+
+        await deleteRowByIdFromIndexedDb(row.id, idb);
+      }
+    } else {
+      throw new Error('Invalid bulk action.');
+    }
+
+    return Response.redirect(event.request.referrer, 303);
   }
 
   const properties = database.properties || [];

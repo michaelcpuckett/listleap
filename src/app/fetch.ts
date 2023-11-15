@@ -1,4 +1,4 @@
-import { Referrer } from 'shared/types';
+import { NormalizedFormData, Referrer } from 'shared/types';
 import { pathToRegexp } from 'path-to-regexp';
 import { URLS_TO_CACHE } from 'utilities/urlsToCache';
 
@@ -96,11 +96,19 @@ export function handleFetch(event: Event) {
   return event.respondWith(
     (async () => {
       const rawFormData = await event.request.formData();
-      const formData = Object.fromEntries(
-        Array.from(rawFormData.entries()).map(([key, value]) => [
-          key,
-          value.toString(),
-        ]),
+      const formData: NormalizedFormData = Object.fromEntries(
+        Array.from(rawFormData.entries()).map(([key, value]) => {
+          if (key.endsWith('[]')) {
+            return [
+              key,
+              rawFormData.getAll(key).map((v) => {
+                return v.toString();
+              }),
+            ];
+          }
+
+          return [key, value.toString()];
+        }),
       );
 
       switch (true) {

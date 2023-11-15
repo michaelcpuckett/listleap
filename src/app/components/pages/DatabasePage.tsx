@@ -5,20 +5,12 @@ import {
   Row,
   Property,
   Database,
-  PartialChecklistRow,
-  ChecklistRow,
-  Checklist,
   AnyRow,
 } from 'shared/types';
-import {
-  guardIsChecklist,
-  guardIsChecklistRow,
-  guardIsTable,
-} from 'shared/assertions';
+import { guardIsTable } from 'shared/assertions';
 import { PageShell } from 'components/pages/PageShell';
-import { ChecklistView } from 'components/views/ChecklistView';
+import { TableView } from 'components/views/TableView';
 import { SearchRowsForm } from 'components/forms/SearchRowsForm';
-import { FilterRowsForm } from 'components/forms/FilterRowsForm';
 import { EditDatabaseForm } from 'components/forms/EditDatabaseForm';
 import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
 import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
@@ -89,23 +81,6 @@ export function DatabasePage(
     );
   });
 
-  const checklistRows = queriedRows.filter(
-    (row): row is ChecklistRow<Property[]> => {
-      return guardIsChecklistRow(row, props.database);
-    },
-  );
-
-  const filteredRows = checklistRows.filter((row) => {
-    switch (props.referrer.filter) {
-      case 'completed':
-        return row.completed;
-      case 'incompleted':
-        return !row.completed;
-      default:
-        return true;
-    }
-  });
-
   return (
     <PageShell
       pageTitle={props.database.name}
@@ -159,24 +134,43 @@ export function DatabasePage(
           </header>
           <aside aria-label="Actions">
             <SearchRowsForm referrer={props.referrer} />
-            {guardIsChecklist(props.database) ? (
-              <FilterRowsForm
-                rows={props.database.rows}
-                referrer={props.referrer}
-              />
-            ) : null}
           </aside>
-          {guardIsChecklist(props.database) ? (
+
+          <details>
+            <summary className="button">Bulk Actions</summary>
+            <form
+              role="none"
+              method="POST"
+              action={`/databases/${props.database.id}/rows`}
+              id="select-multiple-rows-form"
+            >
+              <input
+                type="hidden"
+                name="_method"
+                value="POST"
+              />
+              <select name="bulkAction">
+                <option value="DELETE">Delete Selected Rows</option>
+              </select>
+              <button
+                type="submit"
+                className="button"
+              >
+                Submit
+              </button>
+            </form>
+          </details>
+          {guardIsTable(props.database) ? (
             <>
-              <ChecklistView
+              <TableView
                 database={props.database}
                 referrer={props.referrer}
-                filteredRows={filteredRows}
+                queriedRows={queriedRows}
               />
-              {props.database.rows.length - filteredRows.length > 0 ? (
+              {props.database.rows.length - queriedRows.length > 0 ? (
                 <p className="notice">
-                  Not showing {props.database.rows.length - filteredRows.length}{' '}
-                  rows due to search or filters.
+                  Not showing {props.database.rows.length - queriedRows.length}{' '}
+                  rows due to search filter.
                 </p>
               ) : null}
             </>

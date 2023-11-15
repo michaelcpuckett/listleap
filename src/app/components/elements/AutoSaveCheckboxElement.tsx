@@ -4,11 +4,12 @@ import { getUniqueId } from 'shared/getUniqueId';
 
 export function AutoSaveCheckboxElement(
   props: React.PropsWithChildren<{
-    form: string;
+    form?: string;
     name: string;
     label: string;
     id: string;
     checked: boolean;
+    value?: string;
   }>,
 ) {
   return (
@@ -31,6 +32,7 @@ export function AutoSaveCheckboxElement(
         aria-label={props.label}
         name={props.name}
         checked={props.checked}
+        value={props.value}
       />
     </auto-save-checkbox>
   );

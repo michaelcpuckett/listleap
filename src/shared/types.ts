@@ -109,3 +109,14 @@ export type GetRowByType<T extends Database<Property[]>['type']> =
     : T extends IsTable<T>
       ? TableRow<Property[]>
       : never;
+
+interface FormDataWithArrayValue {
+  [key: `${string}[]`]: string[] | undefined;
+}
+
+interface FormDataWithStringValue {
+  [key: string]: string | undefined;
+}
+
+export type NormalizedFormData = FormDataWithArrayValue &
+  FormDataWithStringValue;

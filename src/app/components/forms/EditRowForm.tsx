@@ -1,6 +1,5 @@
 import React from 'react';
 import { Database, Property, Row } from 'shared/types';
-import { guardIsChecklistRow } from 'shared/assertions';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 
 export function EditRowForm(
@@ -21,15 +20,6 @@ export function EditRowForm(
         name="_method"
         value="PUT"
       />
-      {guardIsChecklistRow(props.row, props.database) ? (
-        <input
-          id={`edit-row-inline-form-field--${props.row.id}--completed`}
-          name="completed"
-          type="checkbox"
-          className="input"
-          checked={props.row.completed}
-        />
-      ) : null}
       <label>
         <span>Title</span>
         <AutoSaveTextElement

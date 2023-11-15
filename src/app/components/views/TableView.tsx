@@ -1,5 +1,5 @@
 import React from 'react';
-import { Property, Referrer, Checklist, ChecklistRow } from 'shared/types';
+import { Property, Referrer, Table, TableRow } from 'shared/types';
 import { RowActionsFlyoutMenu } from 'components/menus/RowActionsFlyoutMenu';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 import { NumericalContentEditable } from 'components/elements/NumericalContentEditable';
@@ -7,11 +7,11 @@ import { NumericalContentEditable } from 'components/elements/NumericalContentEd
 import { AutoSaveCheckboxElement } from 'components/elements/AutoSaveCheckboxElement';
 import { PostFormElement } from 'components/elements/PostFormElement';
 
-export function ChecklistView(
+export function TableView(
   props: React.PropsWithoutRef<{
-    database: Checklist<Property[]>;
+    database: Table<Property[]>;
     referrer: Referrer;
-    filteredRows: ChecklistRow<Property[]>[];
+    queriedRows: TableRow<Property[]>[];
   }>,
 ) {
   const rows = props.database.rows;
@@ -31,7 +31,7 @@ export function ChecklistView(
     >
       <thead>
         <tr>
-          <th className="align-center">Done</th>
+          <th className="align-center">Select</th>
           <th>Title</th>
           {properties.map((property) => (
             <th>{property.name}</th>
@@ -41,7 +41,7 @@ export function ChecklistView(
       </thead>
       <tbody>
         {rows.map((row, index, { length }) => {
-          const filteredIndex = props.filteredRows.findIndex(
+          const filteredIndex = props.queriedRows.findIndex(
             (t) => t.id === row.id,
           );
 
@@ -53,16 +53,17 @@ export function ChecklistView(
 
           return (
             <tr
-              aria-label={row.title || 'New Row'}
+              aria-label={row.title}
               aria-rowindex={rows.indexOf(row) + 1}
             >
               <td className="align-center">
                 <AutoSaveCheckboxElement
-                  form={formId}
+                  form="select-multiple-rows-form"
                   id={row.id}
-                  label="Done"
-                  name="completed"
-                  checked={row.completed}
+                  value={row.id}
+                  name="row[]"
+                  label="Select row"
+                  checked={false}
                 />
               </td>
               <td>
@@ -139,8 +140,8 @@ export function ChecklistView(
                 </form>
                 <RowActionsFlyoutMenu
                   row={row}
-                  previousRow={props.filteredRows[filteredIndex - 1]}
-                  nextRow={props.filteredRows[filteredIndex + 1]}
+                  previousRow={props.queriedRows[filteredIndex - 1]}
+                  nextRow={props.queriedRows[filteredIndex + 1]}
                   referrer={props.referrer}
                 />
               </td>
