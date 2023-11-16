@@ -53,7 +53,7 @@ export async function PutDatabaseRow(
 
   for (const property of database.properties) {
     const formDataValue = formatPropertyValueFromFormData<typeof property>(
-      formData[property.id],
+      formData[property.id] || existingRow[property.id],
       property,
     );
 
@@ -79,16 +79,13 @@ export async function PutDatabaseRow(
     rowToPut.completed = formData.completed === 'on';
   }
 
-  const positionProperty = database.properties.find(
-    (property) => property.name === 'position',
-  );
-
   if (formData.position && formData.position !== existingRow.position) {
     const rowToReorder = await getRowByPositionFromIndexedDb(
       formData.position,
       idb,
     );
-    await reorderRowInIndexedDb(rowToPut, rowToReorder, idb);
+    await reorderRowInIndexedDb(existingRow, rowToReorder, idb);
+    rowToPut.position = formData.position;
   }
 
   await editRowInIndexedDb<typeof database>(rowToPut, idb);

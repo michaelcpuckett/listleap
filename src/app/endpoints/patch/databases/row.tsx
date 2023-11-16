@@ -5,13 +5,7 @@ import {
   editRowInIndexedDb,
   getRowByPositionFromIndexedDb,
 } from 'utilities/idb';
-import {
-  Referrer,
-  NormalizedFormData,
-  AnyProperty,
-  Database,
-  Property,
-} from 'shared/types';
+import { Referrer, NormalizedFormData } from 'shared/types';
 import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
 import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
 
@@ -49,7 +43,7 @@ export async function PatchDatabaseRow(
 
   for (const property of database.properties) {
     const formDataValue = formatPropertyValueFromFormData<typeof property>(
-      formData[property.id],
+      formData[property.id] || existingRow[property.id],
       property,
     );
 
@@ -76,7 +70,8 @@ export async function PatchDatabaseRow(
       formData.position,
       idb,
     );
-    await reorderRowInIndexedDb(rowToPatch, rowToReorder, idb);
+    await reorderRowInIndexedDb(existingRow, rowToReorder, idb);
+    rowToPatch.position = formData.position;
   }
 
   await editRowInIndexedDb<typeof database>(rowToPatch, idb);
