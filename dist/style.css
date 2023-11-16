@@ -285,7 +285,6 @@ nav {
   margin-bottom: 1rem;
 
   & > * {
-    flex: 1;
     display: flex;
     margin: 0;
     place-items: center;
@@ -387,4 +386,11 @@ dd {
   place-content: center;
   font-weight: bold;
   font-size: 0.95rem;
+}
+
+.layout--split {
+  display: flex;
+  gap: 1rem;
+  place-content: space-between;
+  place-items: space-between;
 }

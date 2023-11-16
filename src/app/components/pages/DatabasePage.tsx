@@ -129,7 +129,7 @@ export function DatabasePage(
         className="container"
         inert={isShowingModal ? '' : undefined}
       >
-        <nav>
+        <nav className="layout--split">
           <a href="/">Home</a>
           <a href="/settings">Settings</a>
         </nav>
@@ -137,34 +137,36 @@ export function DatabasePage(
           <header>
             <EditDatabaseForm database={props.database} />
           </header>
-          <aside aria-label="Actions">
+          <aside
+            aria-label="Actions"
+            className="layout--split"
+          >
+            <details>
+              <summary className="button">Bulk Actions</summary>
+              <form
+                role="none"
+                method="POST"
+                action={`/databases/${props.database.id}/rows`}
+                id="select-multiple-rows-form"
+              >
+                <input
+                  type="hidden"
+                  name="_method"
+                  value="POST"
+                />
+                <select name="bulkAction">
+                  <option value="DELETE">Delete Selected Rows</option>
+                </select>
+                <button
+                  type="submit"
+                  className="button"
+                >
+                  Submit
+                </button>
+              </form>
+            </details>
             <SearchRowsForm referrer={props.referrer} />
           </aside>
-
-          <details>
-            <summary className="button">Bulk Actions</summary>
-            <form
-              role="none"
-              method="POST"
-              action={`/databases/${props.database.id}/rows`}
-              id="select-multiple-rows-form"
-            >
-              <input
-                type="hidden"
-                name="_method"
-                value="POST"
-              />
-              <select name="bulkAction">
-                <option value="DELETE">Delete Selected Rows</option>
-              </select>
-              <button
-                type="submit"
-                className="button"
-              >
-                Submit
-              </button>
-            </form>
-          </details>
           {guardIsTable(props.database) ? (
             <>
               <TableView

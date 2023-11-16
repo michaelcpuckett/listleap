@@ -16,7 +16,7 @@ export function HomePage(
       settings={props.settings}
     >
       <div className="container">
-        <nav>
+        <nav className="layout--split">
           <a href="/settings">Settings</a>
         </nav>
         <main>
