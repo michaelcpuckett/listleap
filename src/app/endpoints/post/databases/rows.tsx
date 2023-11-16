@@ -50,7 +50,6 @@ export async function PostDatabaseRows(
   const rowToAdd = {
     id: getUniqueId(),
     databaseId: database.id,
-    title: formData.title || '',
   };
 
   for (const property of database.properties) {

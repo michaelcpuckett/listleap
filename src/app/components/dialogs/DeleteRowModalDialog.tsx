@@ -1,12 +1,12 @@
 import React from 'react';
-import { Row, Referrer, Property, Database } from 'shared/types';
+import { Row, Referrer, AnyProperty, Database } from 'shared/types';
 import { ModalDialog } from 'components/dialogs/ModalDialog';
 import { DeleteRowForm } from 'components/forms/DeleteRowForm';
 
 export function DeleteRowModalDialog(
   props: React.PropsWithChildren<{
-    row: Row<Property[]>;
-    database: Database<Property[]>;
+    row: Row<Database<AnyProperty[]>>;
+    database: Database<AnyProperty[]>;
     closeUrl: string;
   }>,
 ) {
@@ -18,10 +18,6 @@ export function DeleteRowModalDialog(
     >
       <p>Are you sure you want to delete this row?</p>
       <dl>
-        <React.Fragment key="title">
-          <dt>Title</dt>
-          <dd>{props.row.title}</dd>
-        </React.Fragment>
         {props.database.properties.map((property) => (
           <React.Fragment key={property.id}>
             <dt>{property.name}</dt>

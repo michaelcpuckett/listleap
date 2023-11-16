@@ -1,9 +1,9 @@
 import React from 'react';
-import { Referrer, AnyRow, Database, Property } from 'shared/types';
+import { Referrer, AnyRow, Database, AnyProperty } from 'shared/types';
 
 export function TriggerEditPropertiesForm(
   props: React.PropsWithChildren<{
-    database: Database<Property[]>;
+    database: Database<AnyProperty[]>;
     referrer: Referrer;
     role?: string;
     tabindex?: number;

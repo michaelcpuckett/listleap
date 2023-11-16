@@ -1,4 +1,3 @@
-import escapeStringRegexp from 'escape-string-regexp';
 import { BaseAutoSaveElement } from 'elements/BaseAutoSaveElement';
 
 export class AutoSaveTextElement extends BaseAutoSaveElement {

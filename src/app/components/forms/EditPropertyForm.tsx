@@ -1,11 +1,11 @@
 import React from 'react';
-import { Database, Property } from 'shared/types';
+import { Database, AnyProperty } from 'shared/types';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 
 export function EditPropertyForm(
   props: React.PropsWithChildren<{
-    database: Database<Property[]>;
-    property: Property;
+    database: Database<AnyProperty[]>;
+    property: AnyProperty;
   }>,
 ) {
   return (

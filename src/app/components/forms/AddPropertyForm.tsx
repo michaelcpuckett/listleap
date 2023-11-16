@@ -1,10 +1,10 @@
 import React from 'react';
-import { Database, Property } from 'shared/types';
+import { Database, AnyProperty } from 'shared/types';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 import { PostFormElement } from 'components/elements/PostFormElement';
 
 export function AddPropertyForm(
-  props: React.PropsWithChildren<{ database: Database<Property[]> }>,
+  props: React.PropsWithChildren<{ database: Database<AnyProperty[]> }>,
 ) {
   return (
     <PostFormElement

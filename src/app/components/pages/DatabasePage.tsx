@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Referrer,
   Settings,
-  Row,
   Property,
   Database,
   AnyRow,
@@ -59,11 +58,10 @@ export function DatabasePage(
     const getPropertyId = (property: AnyProperty) => property.id;
 
     const allStringProperties = [
-      'title',
       ...props.database.properties
         .filter(guardIsStringProperty)
         .map(getPropertyId),
-    ] as Array<'title' | Property<StringConstructor>['id']>;
+    ] as Array<Property<StringConstructor>['id']>;
 
     return !!allStringProperties.find(
       (stringPropertyId: Property<StringConstructor>['id']) => {

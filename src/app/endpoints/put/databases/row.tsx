@@ -48,7 +48,6 @@ export async function PutDatabaseRow(
     id: existingRow.id,
     position: existingRow.position,
     databaseId: database.id,
-    title: formData.title ?? existingRow.title ?? '',
   };
 
   for (const property of database.properties) {

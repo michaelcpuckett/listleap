@@ -1,5 +1,5 @@
 import React from 'react';
-import { AnyRow, Referrer } from 'shared/types';
+import { AnyProperty, AnyRow, Database, Referrer } from 'shared/types';
 import { FlyoutMenu } from 'components/elements/FlyoutMenu';
 import { ReorderRowUpForm } from 'components/forms/ReorderRowUpForm';
 import { ReorderRowDownForm } from 'components/forms/ReorderRowDownForm';
@@ -10,6 +10,7 @@ import { TriggerNewRowBelowForm } from 'components/forms/TriggerNewRowBelowForm'
 export function RowActionsFlyoutMenu(
   props: React.PropsWithChildren<{
     row: AnyRow;
+    title: string;
     previousRow?: AnyRow;
     nextRow?: AnyRow;
     referrer: Referrer;
@@ -18,7 +19,7 @@ export function RowActionsFlyoutMenu(
   return (
     <FlyoutMenu
       id={props.row.id}
-      label={props.row.title}
+      label={`Actions for ${props.title}}`}
     >
       <ReorderRowUpForm
         row={props.row}

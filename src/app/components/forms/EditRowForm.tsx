@@ -1,11 +1,11 @@
 import React from 'react';
-import { Database, Property, Row } from 'shared/types';
+import { Database, AnyProperty, Row } from 'shared/types';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 
 export function EditRowForm(
   props: React.PropsWithoutRef<{
-    row: Row<Property[]>;
-    database: Database<Property[]>;
+    row: Row<Database<AnyProperty[]>>;
+    database: Database<AnyProperty[]>;
   }>,
 ) {
   return (
@@ -20,15 +20,6 @@ export function EditRowForm(
         name="_method"
         value="PUT"
       />
-      <label>
-        <span>Title</span>
-        <AutoSaveTextElement
-          id={'edit-' + props.row.id + '-title'}
-          name="title"
-          label="Title"
-          value={props.row.title}
-        />
-      </label>
       {props.database.properties.map((property) => {
         return (
           <label key={property.id}>

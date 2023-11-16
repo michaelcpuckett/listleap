@@ -92,7 +92,6 @@ export type DynamicPropertyKeyValuePairs<P extends AnyProperty[]> = {
 export interface PartialRow {
   id: string;
   databaseId: string;
-  title: string;
 }
 
 export interface PartialTableRow extends PartialRow {}

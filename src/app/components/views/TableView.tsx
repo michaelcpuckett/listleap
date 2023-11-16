@@ -26,16 +26,13 @@ export function TableView(
   const rows = props.database.rows;
   const properties = props.database.properties;
   const rowIds = rows
-    /*.filter((row) => {
+    .filter((row) => {
       const filteredIndex = props.queriedRows.findIndex((t) => t.id === row.id);
-
-      if (filteredIndex === -1) {
-        return null;
-      }
-    })*/
+      return filteredIndex > -1;
+    })
     .map((row) => row.id);
 
-  const gridColumnsCss = `auto minmax(0, 1fr) ${
+  const gridColumnsCss = `auto ${
     properties.length ? `repeat(${properties.length}, minmax(0, 1fr))` : ''
   } auto`;
 
@@ -49,8 +46,10 @@ export function TableView(
     >
       <thead>
         <tr>
-          <th className="align-center">
-            <span className="visually-hidden">Select</span>
+          <th
+            className="align-center"
+            aria-label="Select"
+          >
             <SelectAllCheckboxElement>
               <AutoSaveCheckboxElement
                 form="select-multiple-rows-form"
@@ -62,9 +61,8 @@ export function TableView(
               />
             </SelectAllCheckboxElement>
           </th>
-          <th>Title</th>
           {properties.map((property) => (
-            <th>
+            <th aria-label={property.name}>
               {property.name}
               <PropertyActionsFlyoutMenu property={property} />
             </th>
@@ -85,11 +83,12 @@ export function TableView(
           }
 
           const formId = `edit-row-inline-form--${row.id}`;
+          const rowTitle = row[properties[0].id];
 
           return (
             <tr
-              aria-label={row.title}
               aria-rowindex={rows.indexOf(row) + 1}
+              aria-labelledby={`${row.id}-${properties[0].id}`}
             >
               <td className="align-center">
                 <AutoSaveCheckboxElement
@@ -101,53 +100,55 @@ export function TableView(
                   checked={false}
                 />
               </td>
-              <td>
-                <AutoSaveTextElement
-                  inline
-                  form={formId}
-                  id={row.id}
-                  label="Title"
-                  name="title"
-                  value={row.title}
-                />
-              </td>
-              {properties.map((property) => {
-                return (
-                  <td>
-                    {property.type === String ? (
-                      <AutoSaveTextElement
-                        inline
-                        form={formId}
-                        id={row.id}
-                        label={property.name}
-                        name={property.id}
-                        value={row[property.id] as string}
-                      />
-                    ) : null}
-                    {property.type === Boolean ? (
-                      <AutoSaveCheckboxElement
-                        form={formId}
-                        id={row.id}
-                        label={property.name}
-                        name={property.id}
-                        checked={row[property.id] as boolean}
-                      />
-                    ) : null}
-                    {property.type === Number ? (
-                      <NumericalContentEditable
-                        form={formId}
-                        id={row.id}
-                        label={property.name}
-                        name={property.id}
-                        value={row[property.id] as number}
-                      />
-                    ) : null}
-                  </td>
+              {properties.map((property, index) => {
+                const tagName = index === 0 ? 'th' : 'td';
+
+                return React.createElement(
+                  tagName,
+                  {
+                    id: `${row.id}-${property.id}`,
+                  },
+                  [
+                    ...(property.type === String
+                      ? [
+                          <AutoSaveTextElement
+                            inline
+                            form={formId}
+                            id={row.id}
+                            label={property.name}
+                            name={property.id}
+                            value={row[property.id] as string}
+                          />,
+                        ]
+                      : []),
+                    ...(property.type === Boolean
+                      ? [
+                          <AutoSaveCheckboxElement
+                            form={formId}
+                            id={row.id}
+                            label={property.name}
+                            name={property.id}
+                            checked={row[property.id] as boolean}
+                          />,
+                        ]
+                      : []),
+                    ...(property.type === Number
+                      ? [
+                          <NumericalContentEditable
+                            form={formId}
+                            id={row.id}
+                            label={property.name}
+                            name={property.id}
+                            value={row[property.id] as number}
+                          />,
+                        ]
+                      : []),
+                  ],
                 );
               })}
               <td
                 className="align-center"
-                aria-label={`Actions for ${row.title}`}
+                aria-label={`Actions for ${rowTitle}`}
               >
                 <form
                   noValidate
@@ -175,6 +176,7 @@ export function TableView(
                 </form>
                 <RowActionsFlyoutMenu
                   row={row}
+                  title={rowTitle}
                   previousRow={props.queriedRows[filteredIndex - 1]}
                   nextRow={props.queriedRows[filteredIndex + 1]}
                   referrer={props.referrer}

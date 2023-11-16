@@ -1,8 +1,8 @@
-import { getIdb } from 'utilities/idb';
+import { addPropertyToIndexedDb, getIdb } from 'utilities/idb';
 import { getUniqueId } from 'shared/getUniqueId';
 import { addPartialDatabaseToIndexedDb } from 'utilities/idb';
 import { assertIsDatabase } from 'shared/assertions';
-import { Referrer, NormalizedFormData } from 'shared/types';
+import { Referrer, NormalizedFormData, Property } from 'shared/types';
 
 export async function PostDatabase(
   event: FetchEvent,
@@ -24,6 +24,15 @@ export async function PostDatabase(
   assertIsDatabase(database);
 
   await addPartialDatabaseToIndexedDb(database, idb);
+
+  const titleProperty: Omit<Property<StringConstructor>, 'index'> = {
+    id: 'title',
+    name: 'Title',
+    databaseId: database.id,
+    type: String,
+  };
+
+  await addPropertyToIndexedDb(titleProperty, idb);
 
   const databaseUrl = `/databases/${id}`;
   const url = new URL(databaseUrl, new URL(event.request.url).origin);

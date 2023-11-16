@@ -1,12 +1,12 @@
 import React from 'react';
-import { Property, Database, Row } from 'shared/types';
+import { AnyProperty, Database, Row } from 'shared/types';
 import { ModalDialog } from 'components/dialogs/ModalDialog';
 import { EditRowForm } from 'components/forms/EditRowForm';
 
 export function EditRowModalDialog(
   props: React.PropsWithChildren<{
-    row: Row<Property[]>;
-    database: Database<Property[]>;
+    row: Row<Database<AnyProperty[]>>;
+    database: Database<AnyProperty[]>;
     closeUrl: string;
   }>,
 ) {

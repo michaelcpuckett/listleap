@@ -1,10 +1,10 @@
 import React from 'react';
-import { AnyRow, Property, Referrer } from 'shared/types';
+import { AnyRow, AnyProperty, Referrer } from 'shared/types';
 import { FlyoutMenu } from 'components/elements/FlyoutMenu';
 
 export function PropertyActionsFlyoutMenu(
   props: React.PropsWithChildren<{
-    property: Property;
+    property: AnyProperty;
   }>,
 ) {
   return (
