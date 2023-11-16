@@ -97,9 +97,8 @@ export class BaseAutoSaveElement extends HTMLElement {
         if (res.status === 404) {
           throw new Error('Not found');
         }
-      })
-      .catch((error) => {
-        console.log(error);
+
+        return res;
       });
   }
 }

@@ -64,7 +64,31 @@ export function TableView(
           </th>
           {properties.map((property) => (
             <th aria-label={property.name}>
-              {property.name}
+              <form
+                id={`edit-property-form--${property.id}`}
+                action={`/databases/${property.databaseId}/properties/${property.id}`}
+                method="POST"
+                role="none"
+              >
+                <input
+                  type="hidden"
+                  name="_method"
+                  value="PATCH"
+                />
+                <AutoSaveTextElement
+                  inline
+                  id={property.id}
+                  name="name"
+                  label={property.name}
+                  value={property.name}
+                />
+                <button
+                  type="submit"
+                  hidden
+                >
+                  Submit
+                </button>
+              </form>
               <PropertyActionsFlyoutMenu
                 property={property}
                 referrer={props.referrer}

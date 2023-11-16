@@ -14,6 +14,7 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
     const formElement = this.inputElement.form;
 
     if (!formElement) {
+      this.markDirty();
       return;
     }
 
@@ -26,9 +27,15 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
     const method = new FormData(formElement).get('_method')?.toString() || '';
 
     if (['PUT', 'PATCH'].includes(method)) {
-      this.patch(formAction, value).then(() => {
-        this.inputElement.setAttribute('value', value);
-      });
+      this.patch(formAction, value)
+        .then(() => {
+          this.inputElement.setAttribute('value', value);
+        })
+        .catch(() => {
+          this.markDirty();
+        });
+    } else {
+      this.markDirty();
     }
   }
 }

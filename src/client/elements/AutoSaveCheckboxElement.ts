@@ -39,6 +39,7 @@ export class AutoSaveCheckboxElement extends BaseAutoSaveElement {
     const formElement = this.inputElement.form;
 
     if (!formElement) {
+      this.markDirty();
       return;
     }
 
@@ -51,9 +52,13 @@ export class AutoSaveCheckboxElement extends BaseAutoSaveElement {
     const method = new FormData(formElement).get('_method')?.toString() || '';
 
     if (['PUT', 'PATCH'].includes(method)) {
-      this.patch(formAction, value).then(() => {
-        window.location.reload();
-      });
+      this.patch(formAction, value)
+        .then(() => {
+          window.location.reload();
+        })
+        .catch(() => {
+          this.markDirty();
+        });
     } else {
       if (this.inputElement.checked !== this.inputElement.defaultChecked) {
         this.markDirty();
