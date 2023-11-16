@@ -15,6 +15,7 @@ import { AutoSaveCheckboxElement } from 'components/elements/AutoSaveCheckboxEle
 import { PostFormElement } from 'components/elements/PostFormElement';
 import { PropertyActionsFlyoutMenu } from 'components/menus/PropertyActionsFlyoutMenu';
 import { SelectAllCheckboxElement } from 'components/elements/SelectAllCheckboxElement';
+import { TriggerAddPropertyForm } from 'components/forms/TriggerAddPropertyForm';
 
 export function TableView(
   props: React.PropsWithoutRef<{
@@ -64,11 +65,20 @@ export function TableView(
           {properties.map((property) => (
             <th aria-label={property.name}>
               {property.name}
-              <PropertyActionsFlyoutMenu property={property} />
+              <PropertyActionsFlyoutMenu
+                property={property}
+                referrer={props.referrer}
+              />
             </th>
           ))}
-          <th className="align-center">
-            <span className="visually-hidden">Actions</span>
+          <th
+            className="align-center"
+            aria-label="Actions"
+          >
+            <TriggerAddPropertyForm
+              database={props.database}
+              referrer={props.referrer}
+            />
           </th>
         </tr>
       </thead>

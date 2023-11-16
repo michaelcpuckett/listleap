@@ -14,8 +14,9 @@ import { SearchRowsForm } from 'components/forms/SearchRowsForm';
 import { EditDatabaseForm } from 'components/forms/EditDatabaseForm';
 import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
 import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
-import { TriggerEditPropertiesForm } from 'components/forms/TriggerEditPropertiesForm';
-import { PropertiesModalDialog } from 'components/dialogs/PropertiesModalDialog';
+import { TriggerAddPropertyForm } from 'components/forms/TriggerAddPropertyForm';
+import { AddPropertyModalDialog } from 'components/dialogs/AddPropertyModalDialog';
+import { EditPropertyModalDialog } from 'components/dialogs/EditPropertyModalDialog';
 import { ModalDialog } from 'components/dialogs/ModalDialog';
 import { ERROR_MESSAGES } from 'utilities/errors';
 
@@ -27,14 +28,22 @@ export function DatabasePage(
   }>,
 ) {
   const row = props.database.rows.find((row) => row.id === props.referrer.id);
+  const property = props.database.properties.find(
+    (property) => property.id === props.referrer.id,
+  );
   const hasError = !!props.referrer.error;
   const isEditingRow = !hasError && props.referrer.mode === 'EDIT_ROW' && !!row;
   const isDeletingRow =
     !hasError && props.referrer.mode === 'DELETE_ROW' && !!row;
-  const isEditingProperties =
-    !hasError && props.referrer.mode === 'EDIT_PROPERTIES';
+  const isAddingProperty = !hasError && props.referrer.mode === 'ADD_PROPERTY';
+  const isEditingProperty =
+    !hasError && props.referrer.mode === 'EDIT_PROPERTY' && !!property;
   const isShowingModal =
-    hasError || isEditingRow || isDeletingRow || isEditingProperties;
+    hasError ||
+    isEditingRow ||
+    isDeletingRow ||
+    isAddingProperty ||
+    isEditingProperty;
   const closeUrlPathname = `/databases/${props.database.id}`;
   const closeUrl = new URL(props.referrer.url);
   const closeUrlSearchParams = new URLSearchParams(closeUrl.search);
@@ -104,9 +113,15 @@ export function DatabasePage(
           closeUrl={closeUrlHref}
         />
       ) : null}
-      {isEditingProperties ? (
-        <PropertiesModalDialog
+      {isAddingProperty ? (
+        <AddPropertyModalDialog
           database={props.database}
+          closeUrl={closeUrlHref}
+        />
+      ) : null}
+      {isEditingProperty ? (
+        <EditPropertyModalDialog
+          property={property}
           closeUrl={closeUrlHref}
         />
       ) : null}
@@ -121,11 +136,6 @@ export function DatabasePage(
         <main>
           <header>
             <EditDatabaseForm database={props.database} />
-            <em>{props.database.type}</em>
-            <TriggerEditPropertiesForm
-              database={props.database}
-              referrer={props.referrer}
-            />
           </header>
           <aside aria-label="Actions">
             <SearchRowsForm referrer={props.referrer} />

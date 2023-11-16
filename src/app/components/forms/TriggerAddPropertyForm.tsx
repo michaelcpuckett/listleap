@@ -1,7 +1,7 @@
 import React from 'react';
 import { Referrer, AnyRow, Database, AnyProperty } from 'shared/types';
 
-export function TriggerEditPropertiesForm(
+export function TriggerAddPropertyForm(
   props: React.PropsWithChildren<{
     database: Database<AnyProperty[]>;
     referrer: Referrer;
@@ -24,7 +24,7 @@ export function TriggerEditPropertiesForm(
       tabIndex={props.tabindex}
       role={props.role || 'button'}
     >
-      Edit Properties
+      Add Property
     </a>
   );
 }

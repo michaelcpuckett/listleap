@@ -11,6 +11,7 @@ import { GetIndex } from 'endpoints/get/index';
 import { GetDatabaseRows } from 'endpoints/get/databases/rows';
 import { GetDatabaseRow } from 'endpoints/get/databases/row';
 import { GetDatabaseProperties } from 'endpoints/get/databases/properties';
+import { GetDatabaseProperty } from 'endpoints/get/databases/property';
 import { PostDatabase } from 'endpoints/post/databases/index';
 import { PatchDatabase } from 'endpoints/patch/databases/index';
 import { PostDatabaseRows } from 'endpoints/post/databases/rows';
@@ -86,6 +87,13 @@ export function handleFetch(event: Event) {
             return await GetDatabaseProperties(
               event,
               matchesDatabaseProperties,
+              referrer,
+            );
+          }
+          case !!matchesDatabaseProperty: {
+            return await GetDatabaseProperty(
+              event,
+              matchesDatabaseProperty,
               referrer,
             );
           }

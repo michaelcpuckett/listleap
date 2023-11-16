@@ -44,7 +44,7 @@ export async function PostDatabaseProperties(
   await addPropertyToIndexedDb<typeof database>(propertyToAdd, idb);
 
   const redirectUrl = new URL(
-    formData._redirect || `/databases/${databaseId}/properties`,
+    formData._redirect || `/databases/${databaseId}`,
     new URL(event.request.url).origin,
   );
 

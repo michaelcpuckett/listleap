@@ -53,7 +53,7 @@ export async function PutDatabaseProperty(
   await editPropertyInIndexedDb(updatedProperty, idb);
 
   const redirectUrl = new URL(
-    formData._redirect || `/databases/${databaseId}/properties`,
+    formData._redirect || `/databases/${databaseId}`,
     new URL(event.request.url).origin,
   );
 

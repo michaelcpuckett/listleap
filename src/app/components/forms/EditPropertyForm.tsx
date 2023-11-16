@@ -4,14 +4,13 @@ import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 
 export function EditPropertyForm(
   props: React.PropsWithChildren<{
-    database: Database<AnyProperty[]>;
     property: AnyProperty;
   }>,
 ) {
   return (
     <form
       noValidate
-      action={`/databases/${props.database.id}/properties/${props.property.id}`}
+      action={`/databases/${props.property.databaseId}/properties/${props.property.id}`}
       method="POST"
     >
       <input

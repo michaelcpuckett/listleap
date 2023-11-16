@@ -1,4 +1,3 @@
-import React from 'react';
 import { Referrer } from 'shared/types';
 import { renderToString } from 'react-dom/server';
 import { DatabasePage } from 'components/pages/DatabasePage';
@@ -8,13 +7,14 @@ import {
   getSettingsFromIndexedDb,
 } from 'utilities/idb';
 
-export async function GetDatabaseProperties(
+export async function GetDatabaseProperty(
   event: FetchEvent,
   match: RegExpExecArray | null,
   referrer: Referrer,
 ) {
   const idb = await getIdb();
   const databaseId = match?.[1] || '';
+  const id = match?.[2] || '';
 
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
@@ -24,19 +24,28 @@ export async function GetDatabaseProperties(
     });
   }
 
+  const property = database.properties.find((property) => property.id === id);
+
+  if (!property) {
+    return new Response('Not found', {
+      status: 404,
+    });
+  }
+
   const settings = await getSettingsFromIndexedDb(idb);
 
   const mode =
-    new URL(event.request.url).searchParams.get('mode') || 'ADD_PROPERTY';
+    new URL(event.request.url).searchParams.get('mode') || 'EDIT_PROPERTY';
 
   const renderResult = renderToString(
     <DatabasePage
       database={database}
-      settings={settings}
       referrer={{
         ...referrer,
+        id,
         mode,
       }}
+      settings={settings}
     />,
   );
 
