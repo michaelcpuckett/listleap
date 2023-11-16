@@ -73,7 +73,7 @@ export function DatabasePage(
 
         return ((row[stringPropertyId] as string) || '')
           .toLowerCase()
-          .includes(props.referrer.query.toLowerCase());
+          .startsWith(props.referrer.query.toLowerCase());
       },
     );
   });
