@@ -104,6 +104,18 @@ export function handleFetch(event: Event) {
       const formData: NormalizedFormData = Object.fromEntries(
         Array.from(rawFormData.entries()).map(([key, value]) => {
           if (key.endsWith('[]')) {
+            const allFromKey = rawFormData.getAll(key);
+            const onlyFromKey = rawFormData.get(key);
+
+            if (
+              allFromKey.length === 1 &&
+              allFromKey[0] === onlyFromKey &&
+              typeof onlyFromKey === 'string' &&
+              onlyFromKey.length > 0
+            ) {
+              return [key, onlyFromKey.split(',')];
+            }
+
             return [
               key,
               rawFormData.getAll(key).map((v) => {

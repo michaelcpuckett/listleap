@@ -4,6 +4,7 @@ import 'elements/AutoSaveSearchElement';
 import 'elements/ClearSearchElement';
 import 'elements/UnloadHandlerElement';
 import 'elements/PostFormElement';
+import 'elements/SelectAllCheckboxElement';
 
 const SCROLL_STORAGE_KEY = 'scroll-position-y';
 const FOCUS_STORAGE_KEY = 'focus-element-id';

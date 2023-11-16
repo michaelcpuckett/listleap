@@ -14,6 +14,7 @@ import { NumericalContentEditable } from 'components/elements/NumericalContentEd
 import { AutoSaveCheckboxElement } from 'components/elements/AutoSaveCheckboxElement';
 import { PostFormElement } from 'components/elements/PostFormElement';
 import { PropertyActionsFlyoutMenu } from 'components/menus/PropertyActionsFlyoutMenu';
+import { SelectAllCheckboxElement } from 'components/elements/SelectAllCheckboxElement';
 
 export function TableView(
   props: React.PropsWithoutRef<{
@@ -24,6 +25,15 @@ export function TableView(
 ) {
   const rows = props.database.rows;
   const properties = props.database.properties;
+  const rowIds = rows
+    /*.filter((row) => {
+      const filteredIndex = props.queriedRows.findIndex((t) => t.id === row.id);
+
+      if (filteredIndex === -1) {
+        return null;
+      }
+    })*/
+    .map((row) => row.id);
 
   const gridColumnsCss = `auto minmax(0, 1fr) ${
     properties.length ? `repeat(${properties.length}, minmax(0, 1fr))` : ''
@@ -41,6 +51,16 @@ export function TableView(
         <tr>
           <th className="align-center">
             <span className="visually-hidden">Select</span>
+            <SelectAllCheckboxElement>
+              <AutoSaveCheckboxElement
+                form="select-multiple-rows-form"
+                id="select-all-rows"
+                value={rowIds.join(',')}
+                name="row[]"
+                label="Select all rows"
+                checked={false}
+              />
+            </SelectAllCheckboxElement>
           </th>
           <th>Title</th>
           {properties.map((property) => (

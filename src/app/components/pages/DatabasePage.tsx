@@ -6,6 +6,7 @@ import {
   Property,
   Database,
   AnyRow,
+  AnyProperty,
 } from 'shared/types';
 import { guardIsTable } from 'shared/assertions';
 import { PageShell } from 'components/pages/PageShell';
@@ -21,7 +22,7 @@ import { ERROR_MESSAGES } from 'utilities/errors';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
-    database: Database<Property[]>;
+    database: Database<AnyProperty[]>;
     referrer: Referrer;
     settings: Settings;
   }>,
@@ -49,27 +50,23 @@ export function DatabasePage(
       return true;
     }
 
-    interface StringProperty extends Property {
-      type: StringConstructor;
-    }
-
     const guardIsStringProperty = (
-      property: Property,
-    ): property is StringProperty => {
+      property: AnyProperty,
+    ): property is Property<StringConstructor> => {
       return property.type === String;
     };
 
-    const getPropertyId = (property: StringProperty) => property.id;
+    const getPropertyId = (property: AnyProperty) => property.id;
 
     const allStringProperties = [
       'title',
       ...props.database.properties
         .filter(guardIsStringProperty)
         .map(getPropertyId),
-    ] as Array<'title' | StringProperty['id']>;
+    ] as Array<'title' | Property<StringConstructor>['id']>;
 
     return !!allStringProperties.find(
-      (stringPropertyId: StringProperty['id']) => {
+      (stringPropertyId: Property<StringConstructor>['id']) => {
         if (!props.referrer.query) {
           return false;
         }
