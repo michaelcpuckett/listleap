@@ -113,6 +113,9 @@ flyout-menu .button {
 .button--full-width {
   max-width: none;
   width: 100%;
+  display: flex;
+  place-content: center;
+  place-items: center;
 }
 
 .input {
