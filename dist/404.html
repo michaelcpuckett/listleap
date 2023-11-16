@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <style>
     :root {
@@ -11,7 +11,7 @@
       margin: 0;
     }
 
-    [role="status"] {
+    [role='status'] {
       display: flex;
       height: 100vh;
       height: 100svh;
@@ -21,16 +21,16 @@
   </style>
   <div role="status">Loading...</div>
   <script type="module">
-    window.addEventListener("DOMContentLoaded", (event) => {
-      navigator.serviceWorker.register("/app.js").then(
+    window.addEventListener('DOMContentLoaded', (event) => {
+      navigator.serviceWorker.register('/app.js').then(
         () => {
           navigator.serviceWorker.ready.then(() => {
-            window.location.href = "/";
+            window.location.reload();
           });
         },
         (err) => {
-          console.log("ServiceWorker registration failed: ", err);
-        }
+          console.log('ServiceWorker registration failed: ', err);
+        },
       );
     });
   </script>
