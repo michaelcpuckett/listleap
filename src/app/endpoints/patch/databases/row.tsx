@@ -5,12 +5,15 @@ import {
   editRowInIndexedDb,
   getRowByPositionFromIndexedDb,
 } from 'utilities/idb';
-import { Referrer, NormalizedFormData } from 'shared/types';
 import {
-  guardIsBooleanDynamicPropertyType,
-  guardIsNumberDynamicPropertyType,
-  guardIsStringDynamicPropertyType,
-} from 'shared/assertions';
+  Referrer,
+  NormalizedFormData,
+  AnyProperty,
+  Database,
+  Property,
+} from 'shared/types';
+import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
+import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
 
 export async function PatchDatabaseRow(
   event: FetchEvent,
@@ -29,9 +32,40 @@ export async function PatchDatabaseRow(
     });
   }
 
-  const rowToPatch = database.rows.find((row) => row.id === id);
+  const existingRow = database.rows.find((row) => row.id === id);
 
-  if (!rowToPatch) {
+  if (!existingRow) {
+    return new Response('Not found', {
+      status: 404,
+    });
+  }
+
+  const rowToPatch = {
+    id: existingRow.id,
+    position: existingRow.position,
+    databaseId: database.id,
+    title: formData.title ?? existingRow.title ?? '',
+  };
+
+  for (const property of database.properties) {
+    const formDataValue = formatPropertyValueFromFormData<typeof property>(
+      formData[property.id],
+      property,
+    );
+
+    if (formDataValue === undefined) {
+      continue;
+    }
+
+    rowToPatch[property.id] = formDataValue;
+  }
+
+  if (
+    !(
+      guardIsChecklistRow(rowToPatch, database) ||
+      guardIsTableRow(rowToPatch, database)
+    )
+  ) {
     return new Response('Not found', {
       status: 404,
     });
@@ -43,28 +77,6 @@ export async function PatchDatabaseRow(
       idb,
     );
     await reorderRowInIndexedDb(rowToPatch, rowToReorder, idb);
-  }
-
-  if (formData.title !== undefined) {
-    rowToPatch.title = formData.title;
-  }
-
-  for (const property of database.properties) {
-    if (formData[property.id] === undefined) {
-      continue;
-    }
-
-    if (guardIsStringDynamicPropertyType(property)) {
-      rowToPatch[property.id] = `${formData[property.id]}`;
-    }
-
-    if (guardIsBooleanDynamicPropertyType(property)) {
-      rowToPatch[property.id] = formData[property.id] === 'on';
-    }
-
-    if (guardIsNumberDynamicPropertyType(property)) {
-      rowToPatch[property.id] = Number(formData[property.id]);
-    }
   }
 
   await editRowInIndexedDb<typeof database>(rowToPatch, idb);

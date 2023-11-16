@@ -1,4 +1,9 @@
-import { NormalizedFormData, Referrer } from 'shared/types';
+import {
+  NormalizedFormData,
+  Property,
+  PropertyTypes,
+  Referrer,
+} from 'shared/types';
 import { pathToRegexp } from 'path-to-regexp';
 import { URLS_TO_CACHE } from 'utilities/urlsToCache';
 

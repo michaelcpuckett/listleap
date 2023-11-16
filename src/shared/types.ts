@@ -74,11 +74,11 @@ export type DynamicPropertyKey<P extends AnyProperty> = P['id'];
 // Infers the type using `infer` keyword
 export type DynamicPropertyValue<P extends AnyProperty> =
   P['type'] extends StringConstructor
-    ? string
+    ? string | string[]
     : P['type'] extends NumberConstructor
-      ? number
+      ? number | number[]
       : P['type'] extends BooleanConstructor
-        ? boolean
+        ? boolean | boolean[]
         : never;
 
 export type DynamicPropertyKeyValuePair<P extends AnyProperty> = {

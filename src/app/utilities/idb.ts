@@ -7,19 +7,14 @@ import {
   Row,
   Settings,
   UntypedProperty,
-  DynamicPropertyKeyValuePair,
   DynamicPropertyKey,
-  DynamicPropertyValue,
   DynamicPropertyKeyValuePairs,
+  AnyProperty,
+  AnyDatabase,
 } from 'shared/types';
+import { getUniqueId } from 'shared/getUniqueId';
 import { LexoRank } from 'lexorank/lib/lexoRank';
 import { ID } from 'yjs';
-import { getUniqueId } from 'shared/getUniqueId';
-import {
-  guardIsBooleanDynamicPropertyType,
-  guardIsNumberDynamicPropertyType,
-  guardIsStringDynamicPropertyType,
-} from 'shared/assertions';
 
 interface SwotionSchema extends DBSchema {
   settings: {
@@ -32,7 +27,7 @@ interface SwotionSchema extends DBSchema {
   };
   rows: {
     key: string;
-    value: Row<Property[]>;
+    value: Row<AnyDatabase>;
     keyPath: 'id';
     indexes: { id: string; position: string; databaseId: string };
   };
@@ -126,7 +121,7 @@ export function getStringFromPropertyType(
 }
 
 export async function getPropertiesByDatabaseIdFromIndexedDb<
-  Db extends Database<Property[]>,
+  Db extends Database<AnyProperty[]>,
 >(databaseId: string, idb: SwotionIDB): Promise<Db['properties']> {
   const filteredUntypedProperties = await idb.getAllFromIndex(
     'properties',
@@ -136,7 +131,7 @@ export async function getPropertiesByDatabaseIdFromIndexedDb<
 
   const convertType = (
     property: Omit<UntypedProperty, 'index'>,
-  ): Omit<Property, 'index'> => {
+  ): Omit<AnyProperty, 'index'> => {
     const { type, ...rest } = property;
     const typedProperty = {
       ...rest,
@@ -146,13 +141,13 @@ export async function getPropertiesByDatabaseIdFromIndexedDb<
     return typedProperty;
   };
 
-  function guardIsProperty(property: unknown): property is Property {
-    if (typeof (property as Property).index !== 'number') {
+  function guardIsProperty(property: unknown): property is AnyProperty {
+    if (typeof (property as AnyProperty).index !== 'number') {
       return false;
     }
 
     function isStringType(
-      type: Property['type'] | UntypedProperty['type'],
+      type: AnyProperty['type'] | UntypedProperty['type'],
     ): type is UntypedProperty['type'] {
       return typeof (property as UntypedProperty).type === 'string';
     }
@@ -162,7 +157,7 @@ export async function getPropertiesByDatabaseIdFromIndexedDb<
     }
 
     const isValidType = [Number, Boolean, String].includes(
-      (property as Property).type,
+      (property as AnyProperty).type,
     );
 
     return isValidType;
@@ -205,10 +200,9 @@ export async function saveSettingsToIndexedDb(
   await tx.done;
 }
 
-export async function getDatabaseFromIndexedDb<Db extends Database<Property[]>>(
-  id: string,
-  idb: SwotionIDB,
-): Promise<Database<Property[]> | null> {
+export async function getDatabaseFromIndexedDb<
+  Db extends Database<AnyProperty[]>,
+>(id: string, idb: SwotionIDB): Promise<Database<AnyProperty[]> | null> {
   const tx = idb.transaction('databases', 'readwrite');
   const store = tx.objectStore('databases');
   const database = await store.get(id);
@@ -239,7 +233,7 @@ export async function getPartialDatabasesFromIndexedDb(
 }
 
 export async function getRowsByDatabaseIdFromIndexedDb<
-  Db extends Database<Property[]>,
+  Db extends Database<AnyProperty[]>,
 >(databaseId: string, idb: SwotionIDB): Promise<Db['rows']> {
   const rows = await idb.getAllFromIndex('rows', 'databaseId', databaseId);
 
@@ -256,7 +250,7 @@ export async function getRowsByDatabaseIdFromIndexedDb<
   });
 }
 
-export async function addRowToIndexedDb<Db extends Database<Property[]>>(
+export async function addRowToIndexedDb<Db extends Database<AnyProperty[]>>(
   row: Db['rows'][number],
   idb: SwotionIDB,
 ): Promise<void> {
@@ -276,7 +270,7 @@ export async function editPartialDatabaseInIndexedDb(
   await tx.done;
 }
 
-export async function editRowInIndexedDb<Db extends Database<Property[]>>(
+export async function editRowInIndexedDb<Db extends Database<AnyProperty[]>>(
   row: Db['rows'][number],
   idb: SwotionIDB,
 ): Promise<void> {
@@ -326,7 +320,7 @@ export async function reorderRowInIndexedDb(
 }
 
 export async function getRowByPositionFromIndexedDb<
-  Db extends Database<Property[]>,
+  Db extends Database<AnyProperty[]>,
 >(position: string, idb: SwotionIDB): Promise<Db['rows'][number]> {
   const row = await idb.getFromIndex('rows', 'position', position);
 
@@ -337,10 +331,9 @@ export async function getRowByPositionFromIndexedDb<
   return row;
 }
 
-export async function getRowByIdFromIndexedDb<Db extends Database<Property[]>>(
-  id: string,
-  idb: SwotionIDB,
-): Promise<Db['rows'][number] | null> {
+export async function getRowByIdFromIndexedDb<
+  Db extends Database<AnyProperty[]>,
+>(id: string, idb: SwotionIDB): Promise<Db['rows'][number] | null> {
   return (await idb.getFromIndex('rows', 'id', id)) || null;
 }
 
@@ -354,7 +347,9 @@ export async function deleteRowByIdFromIndexedDb(
   await tx.done;
 }
 
-export async function addPropertyToIndexedDb<Db extends Database<Property[]>>(
+export async function addPropertyToIndexedDb<
+  Db extends Database<AnyProperty[]>,
+>(
   property: Omit<Db['properties'][number], 'index'>,
   idb: SwotionIDB,
 ): Promise<void> {
@@ -368,10 +363,9 @@ export async function addPropertyToIndexedDb<Db extends Database<Property[]>>(
   await tx.done;
 }
 
-export async function editPropertyInIndexedDb<Db extends Database<Property[]>>(
-  property: Db['properties'][number],
-  idb: SwotionIDB,
-): Promise<void> {
+export async function editPropertyInIndexedDb<
+  Db extends Database<AnyProperty[]>,
+>(property: Db['properties'][number], idb: SwotionIDB): Promise<void> {
   const tx = idb.transaction('properties', 'readwrite');
   const store = tx.objectStore('properties');
   const untypedProperty = {
@@ -382,34 +376,42 @@ export async function editPropertyInIndexedDb<Db extends Database<Property[]>>(
   await tx.done;
 }
 
-export async function addBlankRowToIndexedDb<Db extends Database<Property[]>>(
-  database: Db,
-  idb: SwotionIDB,
-): Promise<void> {
+export async function addBlankRowToIndexedDb<
+  Db extends Database<AnyProperty[]>,
+>(database: Db, idb: SwotionIDB): Promise<void> {
   const rows = await getRowsByDatabaseIdFromIndexedDb(database.id, idb);
   const lastRow = rows[rows.length - 1];
   const properties = database.properties;
-  const dynamicPropertyKeyPairEntries = properties.map((property: Property) => {
-    const key: DynamicPropertyKey<Db['properties'][number]> = property.id;
+  const dynamicPropertyKeyPairEntries = properties.map(
+    (property: AnyProperty) => {
+      const key = property.id;
+      const isArray = key.endsWith('[]');
 
-    if (guardIsStringDynamicPropertyType<Db>(property)) {
-      return [key, ''];
-    }
+      if (isArray) {
+        return [key, []];
+      }
 
-    if (guardIsBooleanDynamicPropertyType<Db>(property)) {
-      return [key, false];
-    }
+      if (property.type === String) {
+        return [key, ''];
+      }
 
-    if (guardIsNumberDynamicPropertyType<Db>(property)) {
-      return [key, 0];
-    }
+      if (property.type === Number) {
+        return [key, 0];
+      }
 
-    throw new Error('Unknown property type');
-  });
+      if (property.type === Boolean) {
+        return [key, false];
+      }
+
+      throw new Error('Unknown property type');
+    },
+  );
+
   const dynamicPropertyKeyPairs: DynamicPropertyKeyValuePairs<
     Db['properties']
   > = Object.fromEntries(dynamicPropertyKeyPairEntries);
-  const row: Row<Db['properties']> = {
+
+  const row: Row<Db> = {
     id: getUniqueId(),
     databaseId: database.id,
     title: '',

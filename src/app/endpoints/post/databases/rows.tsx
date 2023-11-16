@@ -1,27 +1,11 @@
-import {
-  Database,
-  GetRowByType,
-  Property,
-  Row,
-  Referrer,
-  NormalizedFormData,
-  AnyProperty,
-  AnyRow,
-  AnyDatabase,
-} from 'shared/types';
-import {
-  guardIsBooleanDynamicPropertyType,
-  guardIsChecklistRow,
-  guardIsNumberDynamicPropertyType,
-  guardIsStringDynamicPropertyType,
-  guardIsTableRow,
-} from 'shared/assertions';
+import { Referrer, NormalizedFormData } from 'shared/types';
+import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
 import { getUniqueId } from 'shared/getUniqueId';
+import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
 import {
   getIdb,
   getDatabaseFromIndexedDb,
   addRowToIndexedDb,
-  reorderRowInIndexedDb,
   getRowByIdFromIndexedDb,
   deleteRowByIdFromIndexedDb,
 } from 'utilities/idb';
@@ -63,24 +47,29 @@ export async function PostDatabaseRows(
     return Response.redirect(event.request.referrer, 303);
   }
 
-  const properties = database.properties || [];
-
-  type TypedRow = GetRowByType<typeof database>;
-
-  const rowToAdd: Partial<TypedRow> = {
+  const rowToAdd = {
     id: getUniqueId(),
     databaseId: database.id,
     title: formData.title || '',
   };
 
-  function guardIsRowOfType<T extends AnyRow>(
-    row: Partial<AnyRow>,
-    database: AnyDatabase,
-  ): row is T {
-    return guardIsChecklistRow(row, database) || guardIsTableRow(row, database);
+  for (const property of database.properties) {
+    const formDataValue = formatPropertyValueFromFormData<typeof property>(
+      formData[property.id],
+      property,
+    );
+
+    if (formDataValue === undefined) {
+      continue;
+    }
+
+    rowToAdd[property.id] = formDataValue;
   }
 
-  if (!guardIsRowOfType<TypedRow>(rowToAdd, database)) {
+  if (
+    !guardIsChecklistRow(rowToAdd, database) &&
+    !guardIsTableRow(rowToAdd, database)
+  ) {
     const url = new URL(event.request.referrer);
     url.searchParams.set('error', 'Invalid row');
 
@@ -89,24 +78,6 @@ export async function PostDatabaseRows(
 
   if (guardIsChecklistRow(rowToAdd, database)) {
     rowToAdd.completed = formData.completed === 'on';
-  }
-
-  for (const property of properties) {
-    if (formData[property.id] === undefined) {
-      continue;
-    }
-
-    if (guardIsStringDynamicPropertyType(property)) {
-      rowToAdd[property.id] = `${formData[property.id]}`;
-    }
-
-    if (guardIsNumberDynamicPropertyType(property)) {
-      rowToAdd[property.id] = Number(formData[property.id]);
-    }
-
-    if (guardIsBooleanDynamicPropertyType(property)) {
-      rowToAdd[property.id] = formData[property.id] === 'on';
-    }
   }
 
   if (formData.position !== undefined) {

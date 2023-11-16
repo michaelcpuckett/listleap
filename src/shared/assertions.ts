@@ -5,6 +5,8 @@ import {
   AnyChecklist,
   AnyTable,
   AnyProperty,
+  ChecklistRow,
+  TableRow,
 } from './types';
 
 export function guardIsDatabase(db: unknown): db is AnyDatabase {
@@ -64,31 +66,17 @@ export function assertIsTable(db: unknown): asserts db is AnyTable {
 export function guardIsChecklistRow(
   row: unknown,
   database: AnyDatabase,
-): row is (typeof database)['rows'][number] {
+): row is ChecklistRow<typeof database> {
   return database.type === 'CHECKLIST';
 }
 
 export function guardIsTableRow(
   row: unknown,
   database: AnyDatabase,
-): row is (typeof database)['rows'][number] {
+): row is TableRow<typeof database> {
   return database.type === 'TABLE';
 }
 
-export function guardIsBooleanDynamicPropertyType(
-  p: AnyProperty,
-): p is Property<BooleanConstructor> {
-  return p.type === Boolean;
-}
-
-export function guardIsNumberDynamicPropertyType(
-  p: AnyProperty,
-): p is Property<NumberConstructor> {
-  return p.type === Number;
-}
-
-export function guardIsStringDynamicPropertyType(
-  p: AnyProperty,
-): p is Property<StringConstructor> {
-  return p.type === String;
+export function guardIsString(value: unknown): value is string {
+  return typeof value === 'string';
 }
