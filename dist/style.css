@@ -213,6 +213,7 @@ flyout-menu .button {
 
   & th {
     text-align: start;
+    place-content: space-between;
   }
 }
 
