@@ -22,6 +22,8 @@ import { PostDatabaseProperties } from 'endpoints/post/databases/properties';
 import { PatchDatabaseProperty } from 'endpoints/patch/databases/property';
 import { DeleteDatabaseProperty } from 'endpoints/delete/databases/property';
 import { PutDatabaseProperty } from 'endpoints/put/databases/property';
+import { PatchSettings } from 'endpoints/patch/settings';
+import { GetSettings } from 'endpoints/get/settings';
 
 export function handleFetch(event: Event) {
   if (!(event instanceof FetchEvent)) {
@@ -47,6 +49,7 @@ export function handleFetch(event: Event) {
   };
 
   const matchesHome = pathToRegexp('/').exec(pathname);
+  const matchesSettings = pathToRegexp('/settings').exec(pathname);
   const matchesDatabases = pathToRegexp('/databases').exec(pathname);
   const matchesDatabase = pathToRegexp('/databases/:id').exec(pathname);
   const matchesDatabaseRows = pathToRegexp('/databases/:databaseId/rows').exec(
@@ -76,8 +79,10 @@ export function handleFetch(event: Event) {
 
         switch (true) {
           case !!matchesHome: {
-            console.log('MATCHES HOME');
             return await GetIndex(event, matchesHome, referrer);
+          }
+          case !!matchesSettings: {
+            return await GetSettings(event, matchesSettings, referrer);
           }
           case !!matchesDatabase: {
             return await GetDatabaseRows(event, matchesDatabase, referrer);
@@ -139,6 +144,13 @@ export function handleFetch(event: Event) {
       );
 
       switch (true) {
+        case !!matchesSettings: {
+          switch (formData._method) {
+            case 'PATCH': {
+              return PatchSettings(event, matchesSettings, formData, referrer);
+            }
+          }
+        }
         case !!matchesDatabases: {
           switch (formData._method) {
             case 'POST': {
