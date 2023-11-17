@@ -172,26 +172,85 @@ export async function getPropertiesByDatabaseIdFromIndexedDb<
   return filteredProperties;
 }
 
+export async function getDbFromCreatedDatabaseObjectStores(
+  id: string,
+): Promise<IDBDatabase> {
+  return await new Promise(async (resolve, reject) => {
+    const version = await self.indexedDB.databases().then((databases) => {
+      const database = databases.find(
+        (database) => database.name === DATABASE_NAME,
+      );
+
+      return database?.version || 1;
+    });
+
+    const openRequest = self.indexedDB.open(DATABASE_NAME, version + 1);
+
+    openRequest.addEventListener('success', () => {
+      openRequest.result.onabort = () => {
+        reject(void 0);
+      };
+
+      openRequest.result.onerror = () => {
+        reject(void 0);
+      };
+
+      resolve(openRequest.result);
+    });
+
+    openRequest.addEventListener('upgradeneeded', () => {
+      const rowsObjectStore = openRequest.result.createObjectStore(
+        `rows--${id}`,
+        {
+          keyPath: 'id',
+          autoIncrement: false,
+        },
+      );
+      rowsObjectStore.createIndex('id', 'id', { unique: true });
+      rowsObjectStore.createIndex('position', 'position', { unique: true });
+
+      const propertiesObjectStore = openRequest.result.createObjectStore(
+        `properties--${id}`,
+        {
+          keyPath: 'id',
+          autoIncrement: false,
+        },
+      );
+      propertiesObjectStore.createIndex('id', 'id', { unique: true });
+      propertiesObjectStore.createIndex('position', 'position', {
+        unique: true,
+      });
+    });
+
+    openRequest.addEventListener('error', (event) => {
+      reject(event);
+    });
+
+    openRequest.addEventListener('blocked', (event) => {
+      console.log('Blocked!', event);
+      reject(event);
+    });
+  });
+}
+
 export async function addPartialDatabaseToIndexedDb(
   partialDatabase: PartialDatabase,
-  idb: SwotionIDB,
-): Promise<number> {
-  const { id, name, type } = partialDatabase;
-  const db = idb as IDBPDatabase<unknown>;
+): Promise<void> {
+  const { id } = partialDatabase;
+  const rawDb = await getDbFromCreatedDatabaseObjectStores(id);
+  const db = wrap(rawDb) as IDBPDatabase<unknown>;
   const tx = db.transaction('databases', 'readwrite');
   const store = tx.objectStore('databases');
   store.add(
     {
-      id,
-      name,
-      type,
+      id: partialDatabase.id,
+      name: partialDatabase.name,
+      type: partialDatabase.type,
     },
     partialDatabase.id,
   );
-
   await tx.done;
-
-  return db.version;
+  db.close();
 }
 
 export async function saveSettingsToIndexedDb(
