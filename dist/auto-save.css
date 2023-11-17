@@ -13,11 +13,10 @@
   border-radius: 0;
   box-shadow: none;
   font: inherit;
-  color: inherit;
+  color: CanvasText;
+  background: Canvas;
   width: 100%;
   display: flex;
-  background: CanvasText;
-  color: Canvas;
 }
 
 :host([data-inline]) ::slotted(input) {

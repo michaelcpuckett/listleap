@@ -69,7 +69,8 @@ nav {
 }
 
 summary,
-button {
+button,
+select {
   padding: unset;
   margin: unset;
   border: unset;
@@ -81,6 +82,16 @@ button {
   min-width: 48px;
   min-height: 48px;
   cursor: pointer;
+}
+
+select {
+  appearance: none;
+  border: 1px solid;
+  padding: 0.5rem;
+}
+
+details:not([open]) .summary svg {
+  transform: rotate(-90deg);
 }
 
 .button {
@@ -116,6 +127,19 @@ flyout-menu .button {
   display: flex;
   place-content: center;
   place-items: center;
+  gap: 0.5rem;
+}
+
+.button--max-content {
+  display: flex;
+  place-content: center;
+  place-items: center;
+  max-width: max-content;
+  gap: 0.5rem;
+}
+
+.summary {
+  justify-content: flex-start;
 }
 
 .input {
@@ -282,13 +306,6 @@ button:has(svg:only-child) {
 nav {
   display: flex;
   flex-wrap: wrap;
-  margin-bottom: 1rem;
-
-  & > * {
-    display: flex;
-    margin: 0;
-    place-items: center;
-  }
 
   & a[aria-current='page'] {
     font-weight: bold;
@@ -390,7 +407,7 @@ dd {
   display: flex;
   gap: 1rem;
   place-content: space-between;
-  place-items: space-between;
+  place-items: center;
 }
 
 .text-color--CanvasText {

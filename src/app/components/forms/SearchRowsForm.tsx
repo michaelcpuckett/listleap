@@ -12,45 +12,43 @@ export function SearchRowsForm(
   const searchParamEntries = Array.from(searchParams.entries());
 
   return (
-    <details open={referrerUrl.searchParams.has('query')}>
-      <summary className="button">Search</summary>
-      <form
-        action={referrerUrl.pathname}
-        method="GET"
-        role="none"
+    <form
+      action={referrerUrl.pathname}
+      method="GET"
+      role="none"
+    >
+      {searchParamEntries.map(([key, value]) => (
+        <input
+          key={key}
+          type="hidden"
+          name={key}
+          value={value}
+        />
+      ))}
+      <div style={{ display: 'flex', flex: 1 }}>
+        <AutoSaveSearchElement
+          id="search-rows-input"
+          name="query"
+          label="Search"
+          value={props.referrer.query ?? ''}
+          placeholder="Search rows"
+        />
+        <ClearSearchElement />
+      </div>
+      <button
+        type="submit"
+        hidden
       >
-        {searchParamEntries.map(([key, value]) => (
-          <input
-            key={key}
-            type="hidden"
-            name={key}
-            value={value}
-          />
-        ))}
-        <div style={{ display: 'flex' }}>
-          <AutoSaveSearchElement
-            id="search-rows-input"
-            name="query"
-            label="Search"
-            value={props.referrer.query ?? ''}
-          />
-          <ClearSearchElement />
-        </div>
+        Search
+      </button>
+      <noscript>
         <button
+          className="button"
           type="submit"
-          hidden
         >
           Search
         </button>
-        <noscript>
-          <button
-            className="button"
-            type="submit"
-          >
-            Search
-          </button>
-        </noscript>
-      </form>
-    </details>
+      </noscript>
+    </form>
   );
 }

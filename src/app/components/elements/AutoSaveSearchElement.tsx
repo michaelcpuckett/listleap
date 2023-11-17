@@ -6,6 +6,7 @@ import { getUniqueId } from 'shared/getUniqueId';
 export function AutoSaveSearchElement(
   props: React.PropsWithChildren<{
     form?: string;
+    placeholder?: string;
     inline?: boolean;
     id: string;
     label: string;
@@ -34,6 +35,7 @@ export function AutoSaveSearchElement(
         id={`auto-save-search--field__${props.name}--${props.id}`}
         autoComplete="off"
         aria-label={props.label}
+        placeholder={props.placeholder}
         type="search"
         name={props.name}
         value={props.value}

@@ -19,6 +19,7 @@ export async function GetDatabaseRow(
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
+    idb.close();
     return new Response('Not found', {
       status: 404,
     });

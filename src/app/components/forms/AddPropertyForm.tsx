@@ -16,20 +16,24 @@ export function AddPropertyForm(
         name="type"
         value="String"
       />
-      <label>
-        <span>Property</span>
-        <AutoSaveTextElement
-          id={props.database.id + '-new-property'}
-          label="Name"
-          name="name"
-          value=""
-        />
-      </label>
       <button
-        className="button"
         type="submit"
+        className="text-color--CanvasText button--full-width"
+        aria-label="Add Property"
       >
-        Add
+        <svg
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="currentColor"
+          viewBox="125 175 250 250"
+        >
+          <use
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+            xlinkHref="/icons.svg#plus"
+          ></use>
+        </svg>
       </button>
     </PostFormElement>
   );

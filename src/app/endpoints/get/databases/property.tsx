@@ -27,6 +27,7 @@ export async function GetDatabaseProperty(
   const property = database.properties.find((property) => property.id === id);
 
   if (!property) {
+    idb.close();
     return new Response('Not found', {
       status: 404,
     });

@@ -14,7 +14,6 @@ import { SearchRowsForm } from 'components/forms/SearchRowsForm';
 import { EditDatabaseForm } from 'components/forms/EditDatabaseForm';
 import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
 import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
-import { TriggerAddPropertyForm } from 'components/forms/TriggerAddPropertyForm';
 import { AddPropertyModalDialog } from 'components/dialogs/AddPropertyModalDialog';
 import { EditPropertyModalDialog } from 'components/dialogs/EditPropertyModalDialog';
 import { ModalDialog } from 'components/dialogs/ModalDialog';
@@ -35,15 +34,10 @@ export function DatabasePage(
   const isEditingRow = !hasError && props.referrer.mode === 'EDIT_ROW' && !!row;
   const isDeletingRow =
     !hasError && props.referrer.mode === 'DELETE_ROW' && !!row;
-  const isAddingProperty = !hasError && props.referrer.mode === 'ADD_PROPERTY';
   const isEditingProperty =
     !hasError && props.referrer.mode === 'EDIT_PROPERTY' && !!property;
   const isShowingModal =
-    hasError ||
-    isEditingRow ||
-    isDeletingRow ||
-    isAddingProperty ||
-    isEditingProperty;
+    hasError || isEditingRow || isDeletingRow || isEditingProperty;
   const closeUrlPathname = `/databases/${props.database.id}`;
   const closeUrl = new URL(props.referrer.url);
   const closeUrlSearchParams = new URLSearchParams(closeUrl.search);
@@ -118,12 +112,6 @@ export function DatabasePage(
           closeUrl={closeUrlHref}
         />
       ) : null}
-      {isAddingProperty ? (
-        <AddPropertyModalDialog
-          database={props.database}
-          closeUrl={closeUrlHref}
-        />
-      ) : null}
       {isEditingProperty ? (
         <EditPropertyModalDialog
           property={property}
@@ -136,16 +124,31 @@ export function DatabasePage(
       >
         <nav className="layout--split">
           <a href="/">Home</a>
+          <SearchRowsForm referrer={props.referrer} />
           <a href="/settings">Settings</a>
         </nav>
         <main>
           <header>
             <EditDatabaseForm database={props.database} />
           </header>
-          <SearchRowsForm referrer={props.referrer} />
           <aside aria-label="Actions">
             <details>
-              <summary className="button">Bulk Actions</summary>
+              <summary className="summary button--full-width">
+                <svg
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  viewBox="0 0 96.154 96.154"
+                >
+                  <use
+                    xmlnsXlink="http://www.w3.org/1999/xlink"
+                    xlinkHref="/icons.svg#arrow-down"
+                  ></use>
+                </svg>
+                Bulk Actions
+              </summary>
               <form
                 role="none"
                 method="POST"
@@ -157,15 +160,20 @@ export function DatabasePage(
                   name="_method"
                   value="POST"
                 />
-                <select name="bulkAction">
-                  <option value="DELETE">Delete Selected Rows</option>
-                </select>
-                <button
-                  type="submit"
-                  className="button"
-                >
-                  Submit
-                </button>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <select
+                    name="bulkAction"
+                    className="button--full-width"
+                  >
+                    <option value="DELETE">Delete Selected Rows</option>
+                  </select>
+                  <button
+                    type="submit"
+                    className="button"
+                  >
+                    Submit
+                  </button>
+                </div>
               </form>
             </details>
           </aside>

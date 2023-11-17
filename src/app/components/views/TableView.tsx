@@ -15,7 +15,7 @@ import { AutoSaveCheckboxElement } from 'components/elements/AutoSaveCheckboxEle
 import { PostFormElement } from 'components/elements/PostFormElement';
 import { PropertyActionsFlyoutMenu } from 'components/menus/PropertyActionsFlyoutMenu';
 import { SelectAllCheckboxElement } from 'components/elements/SelectAllCheckboxElement';
-import { TriggerAddPropertyForm } from 'components/forms/TriggerAddPropertyForm';
+import { AddPropertyForm } from 'components/forms/AddPropertyForm';
 
 export function TableView(
   props: React.PropsWithoutRef<{
@@ -99,10 +99,7 @@ export function TableView(
             className="align-center"
             aria-label="Actions"
           >
-            <TriggerAddPropertyForm
-              database={props.database}
-              referrer={props.referrer}
-            />
+            <AddPropertyForm database={props.database} />
           </th>
         </tr>
       </thead>
