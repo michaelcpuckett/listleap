@@ -31,7 +31,7 @@ export function AutoSaveSearchElement(
       </template>
       <input
         form={props.form}
-        id={`auto-save-searcg--field__${props.name}--${props.id}`}
+        id={`auto-save-search--field__${props.name}--${props.id}`}
         autoComplete="off"
         aria-label={props.label}
         type="search"

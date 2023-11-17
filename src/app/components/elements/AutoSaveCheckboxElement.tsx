@@ -28,7 +28,7 @@ export function AutoSaveCheckboxElement(
       <input
         form={props.form}
         type="checkbox"
-        id={`auto-save-text--field__${props.name}--${props.id}`}
+        id={`auto-save-checkbox--field__${props.name}--${props.id}`}
         aria-label={props.label}
         name={props.name}
         checked={props.checked}

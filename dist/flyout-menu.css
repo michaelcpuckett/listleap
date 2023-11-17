@@ -8,11 +8,20 @@
 
 summary {
   list-style: none;
-  border-radius: 50%;
   color: CanvasText;
-  border: 2px solid;
-  background: Canvas;
   padding: 8px 10px 6px 10px;
+  margin: 1rem;
+  position: relative;
+}
+
+summary:after {
+  content: '';
+  height: 100%;
+  width: 100%;
+  inset: -1rem;
+  position: absolute;
+  padding: 1rem;
+  box-sizing: content-box;
 }
 
 summary::-webkit-details-marker {
