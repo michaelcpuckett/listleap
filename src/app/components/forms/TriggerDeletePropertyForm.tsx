@@ -1,19 +1,19 @@
 import React from 'react';
-import { AnyRow, Referrer } from 'shared/types';
+import { AnyProperty, Referrer } from 'shared/types';
 
-export function TriggerDeleteRowForm(
+export function TriggerDeletePropertyForm(
   props: React.PropsWithChildren<{
-    row: AnyRow;
+    property: AnyProperty;
     referrer: Referrer;
     role?: string;
     tabindex?: number;
   }>,
 ) {
-  const urlPathname = `/databases/${props.row.databaseId}/rows/${props.row.id}`;
+  const urlPathname = `/databases/${props.property.databaseId}/properties/${props.property.id}`;
   const url = new URL(props.referrer.url);
   url.pathname = urlPathname;
   const urlSearchParams = new URLSearchParams(url.search);
-  urlSearchParams.set('mode', 'DELETE_ROW');
+  urlSearchParams.set('mode', 'DELETE_PROPERTY');
   url.search = urlSearchParams.toString();
   const href = url.href.replace(url.origin, '');
 

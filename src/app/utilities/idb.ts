@@ -382,6 +382,19 @@ export async function deleteRowByIdFromIndexedDb(
   await tx.done;
 }
 
+export async function deletePropertyByIdFromIndexedDb(
+  id: string,
+  databaseId: string,
+  idb: SwotionIDB,
+): Promise<void> {
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `properties--${databaseId}`;
+  const tx = db.transaction(objectStoreName, 'readwrite');
+  const store = tx.objectStore(objectStoreName);
+  await store.delete(id);
+  await tx.done;
+}
+
 export async function addPropertyToIndexedDb<
   Db extends Database<AnyProperty[]>,
 >(

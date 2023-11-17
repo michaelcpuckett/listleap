@@ -16,6 +16,7 @@ import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
 import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
 import { AddPropertyModalDialog } from 'components/dialogs/AddPropertyModalDialog';
 import { EditPropertyModalDialog } from 'components/dialogs/EditPropertyModalDialog';
+import { DeletePropertyModalDialog } from 'components/dialogs/DeletePropertyModalDialog';
 import { ModalDialog } from 'components/dialogs/ModalDialog';
 import { ERROR_MESSAGES } from 'utilities/errors';
 
@@ -36,8 +37,14 @@ export function DatabasePage(
     !hasError && props.referrer.mode === 'DELETE_ROW' && !!row;
   const isEditingProperty =
     !hasError && props.referrer.mode === 'EDIT_PROPERTY' && !!property;
+  const isDeletingProperty =
+    !hasError && props.referrer.mode === 'DELETE_PROPERTY' && !!property;
   const isShowingModal =
-    hasError || isEditingRow || isDeletingRow || isEditingProperty;
+    hasError ||
+    isEditingRow ||
+    isDeletingRow ||
+    isEditingProperty ||
+    isDeletingProperty;
   const closeUrlPathname = `/databases/${props.database.id}`;
   const closeUrl = new URL(props.referrer.url);
   const closeUrlSearchParams = new URLSearchParams(closeUrl.search);
@@ -114,6 +121,12 @@ export function DatabasePage(
       ) : null}
       {isEditingProperty ? (
         <EditPropertyModalDialog
+          property={property}
+          closeUrl={closeUrlHref}
+        />
+      ) : null}
+      {isDeletingProperty ? (
+        <DeletePropertyModalDialog
           property={property}
           closeUrl={closeUrlHref}
         />

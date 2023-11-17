@@ -20,6 +20,7 @@ import { PatchDatabaseRow } from 'endpoints/patch/databases/row';
 import { PutDatabaseRow } from 'endpoints/put/databases/row';
 import { PostDatabaseProperties } from 'endpoints/post/databases/properties';
 import { PatchDatabaseProperty } from 'endpoints/patch/databases/property';
+import { DeleteDatabaseProperty } from 'endpoints/delete/databases/property';
 import { PutDatabaseProperty } from 'endpoints/put/databases/property';
 
 export function handleFetch(event: Event) {
@@ -206,6 +207,14 @@ export function handleFetch(event: Event) {
         }
         case !!matchesDatabaseProperty: {
           switch (formData._method) {
+            case 'DELETE': {
+              return DeleteDatabaseProperty(
+                event,
+                matchesDatabaseProperty,
+                formData,
+                referrer,
+              );
+            }
             case 'PATCH': {
               return PatchDatabaseProperty(
                 event,
