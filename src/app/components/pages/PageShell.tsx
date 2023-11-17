@@ -14,11 +14,15 @@ export function PageShell(
     >
       <head>
         <title>{props.pageTitle}</title>
-        <script src="/bfcache.js"></script>
+        <meta
+          name="theme-color"
+          content={props.settings.theme === 'light' ? '#ffffff' : '#000000'}
+        />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1"
         />
+        <script src="/bfcache.js"></script>
         {cssUrls.map((url) => (
           <link
             rel="stylesheet"
