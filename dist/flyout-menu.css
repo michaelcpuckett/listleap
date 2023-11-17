@@ -6,7 +6,7 @@
   display: contents;
 }
 
-summary {
+:host summary {
   list-style: none;
   color: CanvasText;
   padding: 8px 10px 6px 10px;
@@ -14,7 +14,7 @@ summary {
   position: relative;
 }
 
-summary:after {
+:host summary:after {
   content: '';
   height: 100%;
   width: 100%;
@@ -24,22 +24,22 @@ summary:after {
   box-sizing: content-box;
 }
 
-summary::-webkit-details-marker {
+:host summary::-webkit-details-marker {
   display: none;
 }
 
-details[open] {
+:host details[open] {
   position: relative;
 }
 
-details[open] summary:before {
+:host details[open] summary:before {
   content: '';
   z-index: 1;
   position: fixed;
   inset: 0;
 }
 
-[role='menu'] {
+:host [role='menu'] {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

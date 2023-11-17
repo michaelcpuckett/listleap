@@ -1,9 +1,12 @@
 import React from 'react';
 import { Settings } from 'shared/types';
+import { URLS_TO_CACHE } from 'utilities/urlsToCache';
 
 export function PageShell(
   props: React.PropsWithChildren<{ pageTitle: string; settings: Settings }>,
 ) {
+  const cssUrls = URLS_TO_CACHE.filter((url) => url.endsWith('.css'));
+
   return (
     <html
       lang="en"
@@ -16,14 +19,12 @@ export function PageShell(
           name="viewport"
           content="width=device-width, initial-scale=1"
         />
-        <link
-          rel="stylesheet"
-          href="/style.css"
-        />
-        <link
-          rel="manifest"
-          href="/manifest.json"
-        />
+        {cssUrls.map((url) => (
+          <link
+            rel="stylesheet"
+            href={url}
+          />
+        ))}
       </head>
       <body>
         {props.children}

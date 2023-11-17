@@ -34,11 +34,3 @@
   outline: 1px solid var(--unsaved-color);
   outline-offset: 2px;
 }
-
-svg {
-  display: none;
-}
-
-::slotted([data-dirty]) + svg {
-  display: block;
-}

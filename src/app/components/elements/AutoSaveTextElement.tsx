@@ -28,7 +28,6 @@ export function AutoSaveTextElement(
           href="/auto-save.css"
         />
         <slot></slot>
-        <UnsavedIndicator />
       </template>
       <input
         form={props.form}
