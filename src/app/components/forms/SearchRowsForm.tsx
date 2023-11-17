@@ -27,19 +27,29 @@ export function SearchRowsForm(
             value={value}
           />
         ))}
-        <AutoSaveSearchElement
-          id="search-rows-input"
-          name="query"
-          label="Search"
-          value={props.referrer.query ?? ''}
-        />
+        <div style={{ display: 'flex' }}>
+          <AutoSaveSearchElement
+            id="search-rows-input"
+            name="query"
+            label="Search"
+            value={props.referrer.query ?? ''}
+          />
+          <ClearSearchElement />
+        </div>
         <button
-          className="button"
           type="submit"
+          hidden
         >
           Search
         </button>
-        <ClearSearchElement />
+        <noscript>
+          <button
+            className="button"
+            type="submit"
+          >
+            Search
+          </button>
+        </noscript>
       </form>
     </details>
   );

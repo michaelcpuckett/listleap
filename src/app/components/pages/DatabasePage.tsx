@@ -53,6 +53,11 @@ export function DatabasePage(
   closeUrl.search = closeUrlSearchParams.toString();
   const closeUrlHref = closeUrl.href.replace(closeUrl.origin, '');
 
+  const clearSearchUrl = new URL(props.referrer.url);
+  const clearSearchSearchParams = new URLSearchParams(clearSearchUrl.search);
+  clearSearchSearchParams.delete('query');
+  clearSearchUrl.search = clearSearchSearchParams.toString();
+
   const queriedRows: AnyRow[] = props.database.rows.filter((row: AnyRow) => {
     if (!props.referrer.query) {
       return true;
@@ -137,10 +142,7 @@ export function DatabasePage(
           <header>
             <EditDatabaseForm database={props.database} />
           </header>
-          <aside
-            aria-label="Actions"
-            className="layout--split"
-          >
+          <aside aria-label="Actions">
             <details>
               <summary className="button">Bulk Actions</summary>
               <form
@@ -165,8 +167,8 @@ export function DatabasePage(
                 </button>
               </form>
             </details>
-            <SearchRowsForm referrer={props.referrer} />
           </aside>
+          <SearchRowsForm referrer={props.referrer} />
           {guardIsTable(props.database) ? (
             <>
               <TableView
@@ -177,7 +179,13 @@ export function DatabasePage(
               {props.database.rows.length - queriedRows.length > 0 ? (
                 <p className="notice">
                   Not showing {props.database.rows.length - queriedRows.length}{' '}
-                  rows due to search filter.
+                  rows due to search filter.{' '}
+                  <a
+                    className="text-color--currentColor"
+                    href={clearSearchUrl.href}
+                  >
+                    Clear
+                  </a>
                 </p>
               ) : null}
             </>
