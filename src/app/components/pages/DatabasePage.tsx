@@ -142,6 +142,7 @@ export function DatabasePage(
           <header>
             <EditDatabaseForm database={props.database} />
           </header>
+          <SearchRowsForm referrer={props.referrer} />
           <aside aria-label="Actions">
             <details>
               <summary className="button">Bulk Actions</summary>
@@ -168,7 +169,6 @@ export function DatabasePage(
               </form>
             </details>
           </aside>
-          <SearchRowsForm referrer={props.referrer} />
           {guardIsTable(props.database) ? (
             <>
               <TableView
