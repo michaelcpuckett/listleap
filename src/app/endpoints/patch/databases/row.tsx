@@ -44,7 +44,7 @@ export async function PatchDatabaseRow(
 
   for (const property of database.properties) {
     const formDataValue = formatPropertyValueFromFormData<typeof property>(
-      formData[property.id] || existingRow[property.id],
+      formData[property.id] ?? existingRow[property.id],
       property,
     );
 
