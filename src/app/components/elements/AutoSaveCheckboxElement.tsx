@@ -33,6 +33,7 @@ export function AutoSaveCheckboxElement(
         name={props.name}
         checked={props.checked}
         value={props.value}
+        className="expand-touch-target"
       />
     </auto-save-checkbox>
   );

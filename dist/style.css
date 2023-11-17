@@ -171,12 +171,12 @@ flyout-menu .button {
       padding: 1rem;
     }
 
-    & input[type='checkbox'] {
+    & .expand-touch-target {
       margin: 1rem;
       position: relative;
     }
 
-    & input[type='checkbox']:after {
+    & .expand-touch-target:after {
       content: '';
       height: 100%;
       width: 100%;

@@ -20,7 +20,7 @@ export function TriggerAddPropertyForm(
   return (
     <a
       href={href}
-      className="button--full-width"
+      className="button--full-width expand-touch-target"
       tabIndex={props.tabindex}
       role={props.role || 'button'}
       aria-label="Add Property"
