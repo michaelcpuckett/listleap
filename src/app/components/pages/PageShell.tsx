@@ -25,6 +25,10 @@ export function PageShell(
             href={url}
           />
         ))}
+        <link
+          rel="manifest"
+          href="/manifest.json"
+        />
       </head>
       <body>
         {props.children}
