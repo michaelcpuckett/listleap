@@ -33,6 +33,7 @@ export async function GetDatabaseProperty(
   }
 
   const settings = await getSettingsFromIndexedDb(idb);
+  idb.close();
 
   const mode =
     new URL(event.request.url).searchParams.get('mode') || 'EDIT_PROPERTY';

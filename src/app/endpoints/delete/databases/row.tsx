@@ -17,12 +17,14 @@ export async function DeleteDatabaseRow(
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
+    idb.close();
     return new Response('Not found', {
       status: 404,
     });
   }
 
-  await deleteRowByIdFromIndexedDb(id, idb);
+  await deleteRowByIdFromIndexedDb(id, databaseId, idb);
+  idb.close();
 
   const redirectUrl = new URL(
     formData._redirect || `/databases/${databaseId}`,

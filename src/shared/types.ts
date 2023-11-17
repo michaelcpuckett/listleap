@@ -53,7 +53,7 @@ export interface PartialProperty {
 }
 
 export interface UntypedProperty extends PartialProperty {
-  index: number;
+  position: string;
   type: string;
 }
 
@@ -63,7 +63,7 @@ export type PropertyTypes =
   | BooleanConstructor;
 
 export interface Property<T extends PropertyTypes> extends PartialProperty {
-  index: number;
+  position: string;
   type: T;
 }
 

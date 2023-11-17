@@ -16,6 +16,8 @@ export async function GetIndex(
   const idb = await getIdb();
   const databases = await getPartialDatabasesFromIndexedDb(idb);
   const settings = await getSettingsFromIndexedDb(idb);
+  idb.close();
+
   const renderResult = renderToString(
     <HomePage
       databases={databases}

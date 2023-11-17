@@ -23,6 +23,7 @@ export async function GetDatabaseRows(
   }
 
   const settings = await getSettingsFromIndexedDb(idb);
+  idb.close();
 
   const renderResult = renderToString(
     <DatabasePage

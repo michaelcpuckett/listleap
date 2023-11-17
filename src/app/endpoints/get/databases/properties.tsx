@@ -25,6 +25,7 @@ export async function GetDatabaseProperties(
   }
 
   const settings = await getSettingsFromIndexedDb(idb);
+  idb.close();
 
   const mode =
     new URL(event.request.url).searchParams.get('mode') || 'ADD_PROPERTY';

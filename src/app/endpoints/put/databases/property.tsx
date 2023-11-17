@@ -23,6 +23,7 @@ export async function PutDatabaseProperty(
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
+    idb.close();
     return new Response('Not found', {
       status: 404,
     });
@@ -33,6 +34,7 @@ export async function PutDatabaseProperty(
   );
 
   if (!property) {
+    idb.close();
     return new Response('Not found', {
       status: 404,
     });
@@ -43,7 +45,7 @@ export async function PutDatabaseProperty(
   );
 
   const updatedProperty: Property<typeof updatedPropertyType> = {
-    index: property.index,
+    position: property.position,
     id: property.id,
     databaseId: database.id,
     type: updatedPropertyType,
@@ -51,6 +53,7 @@ export async function PutDatabaseProperty(
   };
 
   await editPropertyInIndexedDb(updatedProperty, idb);
+  idb.close();
 
   const redirectUrl = new URL(
     formData._redirect || `/databases/${databaseId}`,

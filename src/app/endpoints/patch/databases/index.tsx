@@ -16,6 +16,7 @@ export async function PatchDatabase(
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
+    idb.close();
     return new Response('Not found', {
       status: 404,
     });
@@ -28,6 +29,7 @@ export async function PatchDatabase(
   };
 
   await editPartialDatabaseInIndexedDb(updatedDatabase, idb);
+  idb.close();
 
   return Response.redirect(event.request.url, 303);
 }

@@ -22,6 +22,7 @@ export async function PostDatabaseRows(
   const database = await getDatabaseFromIndexedDb(id, idb);
 
   if (!database) {
+    idb.close();
     return new Response('Not found', {
       status: 404,
     });
@@ -32,18 +33,19 @@ export async function PostDatabaseRows(
 
     if (formData.bulkAction === 'DELETE') {
       for (const rowId of rowIds) {
-        const row = await getRowByIdFromIndexedDb(rowId, idb);
+        const row = await getRowByIdFromIndexedDb(rowId, database.id, idb);
 
         if (!row) {
           continue;
         }
 
-        await deleteRowByIdFromIndexedDb(row.id, idb);
+        await deleteRowByIdFromIndexedDb(row.id, database.id, idb);
       }
     } else {
       throw new Error('Invalid bulk action.');
     }
 
+    idb.close();
     return Response.redirect(event.request.referrer, 303);
   }
 
@@ -69,6 +71,7 @@ export async function PostDatabaseRows(
     !guardIsChecklistRow(rowToAdd, database) &&
     !guardIsTableRow(rowToAdd, database)
   ) {
+    idb.close();
     const url = new URL(event.request.referrer);
     url.searchParams.set('error', 'Invalid row');
 
@@ -92,6 +95,7 @@ export async function PostDatabaseRows(
   }
 
   await addRowToIndexedDb<typeof database>(rowToAdd, idb);
+  idb.close();
 
   return Response.redirect(event.request.referrer, 303);
 }

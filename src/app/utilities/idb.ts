@@ -1,4 +1,4 @@
-import { DBSchema, IDBPDatabase, wrap } from 'idb';
+import { DBSchema, IDBPDatabase, unwrap, wrap } from 'idb';
 import {
   AnyRow,
   Database,
@@ -14,6 +14,8 @@ import { getUniqueId } from 'shared/getUniqueId';
 import { LexoRank } from 'lexorank/lib/lexoRank';
 import { ID } from 'yjs';
 
+const DATABASE_NAME = 'listleap';
+
 interface SwotionSchema extends DBSchema {
   settings: {
     key: string;
@@ -23,61 +25,62 @@ interface SwotionSchema extends DBSchema {
     key: string;
     value: PartialDatabase;
   };
-  rows: {
+  [key: `rows--${string}`]: {
     key: string;
     value: Row<AnyDatabase>;
     keyPath: 'id';
-    indexes: { id: string; position: string; databaseId: string };
+    indexes: { id: string; position: string };
   };
-  properties: {
-    key: number;
-    value: Omit<UntypedProperty, 'index'>;
-    keyPath: 'index';
-    indexes: { id: string; databaseId: string };
+  [key: `properties--${string}`]: {
+    key: string;
+    value: UntypedProperty;
+    keyPath: 'id';
+    indexes: { id: string; position: string };
   };
 }
 
 export type SwotionIDB = IDBPDatabase<SwotionSchema>;
 
-export async function getIdb(): Promise<SwotionIDB> {
-  return await new Promise((resolve) => {
-    const openRequest = self.indexedDB.open('swotion', 2);
+export async function getIdb(options?: {
+  onclose: () => void;
+}): Promise<SwotionIDB> {
+  console.log('getIdb');
+  return await new Promise(async (resolve, reject) => {
+    const version = await self.indexedDB.databases().then((databases) => {
+      const database = databases.find(
+        (database) => database.name === DATABASE_NAME,
+      );
+
+      return database?.version || 1;
+    });
+
+    const openRequest = self.indexedDB.open(DATABASE_NAME, version);
 
     openRequest.addEventListener('success', () => {
+      console.log('success');
+      openRequest.result.onclose =
+        options?.onclose ||
+        (() => {
+          console.log('onclose');
+        });
       const wrappedIdb = wrap(openRequest.result) as SwotionIDB;
       resolve(wrappedIdb);
     });
 
     openRequest.addEventListener('upgradeneeded', () => {
+      console.log('upgradeneeded');
       openRequest.result.createObjectStore('settings');
-
       openRequest.result.createObjectStore('databases');
-
-      const rowsObjectStore = openRequest.result.createObjectStore('rows', {
-        keyPath: 'id',
-        autoIncrement: false,
-      });
-      rowsObjectStore.createIndex('id', 'id', { unique: true });
-      rowsObjectStore.createIndex('position', 'position', { unique: true });
-      rowsObjectStore.createIndex('databaseId', 'databaseId', {
-        unique: false,
-      });
-
-      const propertiesObjectStore = openRequest.result.createObjectStore(
-        'properties',
-        {
-          keyPath: 'index',
-          autoIncrement: true,
-        },
-      );
-      propertiesObjectStore.createIndex('id', 'id', { unique: true });
-      propertiesObjectStore.createIndex('databaseId', 'databaseId', {
-        unique: false,
-      });
     });
 
     openRequest.addEventListener('error', (event) => {
-      console.error(event);
+      console.log('error', event);
+      reject(event);
+    });
+
+    openRequest.addEventListener('blocked', (event) => {
+      console.log('blocked', event);
+      reject(event);
     });
   });
 }
@@ -85,7 +88,8 @@ export async function getIdb(): Promise<SwotionIDB> {
 export async function getSettingsFromIndexedDb(
   idb: SwotionIDB,
 ): Promise<Settings> {
-  const tx = idb.transaction('settings', 'readonly');
+  const db = idb as IDBPDatabase<unknown>;
+  const tx = db.transaction('settings', 'readonly');
   const store = tx.objectStore('settings');
   const theme = (await store.get('theme')) || '';
   await tx.done;
@@ -121,15 +125,15 @@ export function getStringFromPropertyType(
 export async function getPropertiesByDatabaseIdFromIndexedDb<
   Db extends Database<AnyProperty[]>,
 >(databaseId: string, idb: SwotionIDB): Promise<Db['properties']> {
-  const filteredUntypedProperties = await idb.getAllFromIndex(
-    'properties',
-    'databaseId',
-    databaseId,
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `properties--${databaseId}`;
+  const filteredUntypedProperties = await db.getAllFromIndex(
+    objectStoreName,
+    'position',
   );
+  console.log(filteredUntypedProperties, databaseId);
 
-  const convertType = (
-    property: Omit<UntypedProperty, 'index'>,
-  ): Omit<AnyProperty, 'index'> => {
+  const convertType = (property: UntypedProperty): AnyProperty => {
     const { type, ...rest } = property;
     const typedProperty = {
       ...rest,
@@ -140,7 +144,7 @@ export async function getPropertiesByDatabaseIdFromIndexedDb<
   };
 
   function guardIsProperty(property: unknown): property is AnyProperty {
-    if (typeof (property as AnyProperty).index !== 'number') {
+    if (typeof (property as AnyProperty).position !== 'string') {
       return false;
     }
 
@@ -171,11 +175,12 @@ export async function getPropertiesByDatabaseIdFromIndexedDb<
 export async function addPartialDatabaseToIndexedDb(
   partialDatabase: PartialDatabase,
   idb: SwotionIDB,
-): Promise<void> {
-  const tx = idb.transaction('databases', 'readwrite');
-  const store = tx.objectStore('databases');
+): Promise<number> {
   const { id, name, type } = partialDatabase;
-  await store.add(
+  const db = idb as IDBPDatabase<unknown>;
+  const tx = db.transaction('databases', 'readwrite');
+  const store = tx.objectStore('databases');
+  store.add(
     {
       id,
       name,
@@ -183,14 +188,18 @@ export async function addPartialDatabaseToIndexedDb(
     },
     partialDatabase.id,
   );
+
   await tx.done;
+
+  return db.version;
 }
 
 export async function saveSettingsToIndexedDb(
   settings: Settings,
   idb: SwotionIDB,
 ): Promise<void> {
-  const tx = idb.transaction('settings', 'readwrite');
+  const db = idb as IDBPDatabase<unknown>;
+  const tx = db.transaction('settings', 'readwrite');
   const store = tx.objectStore('settings');
   for (const key in settings) {
     await store.put(settings[key], key);
@@ -201,7 +210,8 @@ export async function saveSettingsToIndexedDb(
 export async function getDatabaseFromIndexedDb<
   Db extends Database<AnyProperty[]>,
 >(id: string, idb: SwotionIDB): Promise<Database<AnyProperty[]> | null> {
-  const tx = idb.transaction('databases', 'readwrite');
+  const db = idb as IDBPDatabase<unknown>;
+  const tx = db.transaction('databases', 'readwrite');
   const store = tx.objectStore('databases');
   const database = await store.get(id);
   await tx.done;
@@ -223,7 +233,8 @@ export async function getDatabaseFromIndexedDb<
 export async function getPartialDatabasesFromIndexedDb(
   idb: SwotionIDB,
 ): Promise<PartialDatabase[]> {
-  const tx = idb.transaction('databases', 'readwrite');
+  const db = idb as IDBPDatabase<unknown>;
+  const tx = db.transaction('databases', 'readwrite');
   const store = tx.objectStore('databases');
   const databases = await store.getAll();
   await tx.done;
@@ -233,7 +244,9 @@ export async function getPartialDatabasesFromIndexedDb(
 export async function getRowsByDatabaseIdFromIndexedDb<
   Db extends Database<AnyProperty[]>,
 >(databaseId: string, idb: SwotionIDB): Promise<Db['rows']> {
-  const rows = await idb.getAllFromIndex('rows', 'databaseId', databaseId);
+  const db = idb as IDBPDatabase<unknown>;
+  console.log(db, 'here');
+  const rows = await db.getAllFromIndex(`rows--${databaseId}`, 'position');
 
   if (!rows.length) {
     return [];
@@ -252,8 +265,10 @@ export async function addRowToIndexedDb<Db extends Database<AnyProperty[]>>(
   row: Db['rows'][number],
   idb: SwotionIDB,
 ): Promise<void> {
-  const tx = idb.transaction('rows', 'readwrite');
-  const store = tx.objectStore('rows');
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `rows--${row.databaseId}`;
+  const tx = db.transaction(objectStoreName, 'readwrite');
+  const store = tx.objectStore(objectStoreName);
   await store.add(row);
   await tx.done;
 }
@@ -262,7 +277,8 @@ export async function editPartialDatabaseInIndexedDb(
   partialDatabase: PartialDatabase,
   idb: SwotionIDB,
 ): Promise<void> {
-  const tx = idb.transaction('databases', 'readwrite');
+  const db = idb as IDBPDatabase<unknown>;
+  const tx = db.transaction('databases', 'readwrite');
   const store = tx.objectStore('databases');
   await store.put(partialDatabase, partialDatabase.id);
   await tx.done;
@@ -272,8 +288,10 @@ export async function editRowInIndexedDb<Db extends Database<AnyProperty[]>>(
   row: Db['rows'][number],
   idb: SwotionIDB,
 ): Promise<void> {
-  const tx = idb.transaction('rows', 'readwrite');
-  const store = tx.objectStore('rows');
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `rows--${row.databaseId}`;
+  const tx = db.transaction(objectStoreName, 'readwrite');
+  const store = tx.objectStore(objectStoreName);
   await store.put(row);
   await tx.done;
 }
@@ -284,8 +302,10 @@ export async function reorderRowInIndexedDb(
   idb: SwotionIDB,
 ): Promise<void> {
   if (rowToReorder && rowToFlip) {
-    const tx = idb.transaction('rows', 'readwrite');
-    const store = tx.objectStore('rows');
+    const db = idb as IDBPDatabase<unknown>;
+    const objectStoreName = `rows--${rowToReorder.databaseId}`;
+    const tx = db.transaction(objectStoreName, 'readwrite');
+    const store = tx.objectStore(objectStoreName);
     const { position: oldPosition } = rowToReorder;
     const { position: newPosition } = rowToFlip;
     rowToReorder.position = newPosition;
@@ -296,8 +316,10 @@ export async function reorderRowInIndexedDb(
     await store.put(rowToFlip);
     await tx.done;
   } else {
-    const tx = idb.transaction('rows', 'readwrite');
-    const store = tx.objectStore('rows');
+    const db = idb as IDBPDatabase<unknown>;
+    const objectStoreName = `rows--${rowToReorder.databaseId}`;
+    const tx = db.transaction(objectStoreName, 'readwrite');
+    const store = tx.objectStore(objectStoreName);
 
     const rows = await getRowsByDatabaseIdFromIndexedDb(
       rowToReorder.databaseId,
@@ -319,8 +341,14 @@ export async function reorderRowInIndexedDb(
 
 export async function getRowByPositionFromIndexedDb<
   Db extends Database<AnyProperty[]>,
->(position: string, idb: SwotionIDB): Promise<Db['rows'][number]> {
-  const row = await idb.getFromIndex('rows', 'position', position);
+>(
+  position: string,
+  databaseId: string,
+  idb: SwotionIDB,
+): Promise<Db['rows'][number]> {
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `rows--${databaseId}`;
+  const row = await db.getFromIndex(objectStoreName, 'position', position);
 
   if (!row) {
     throw new Error('Row not found');
@@ -331,16 +359,25 @@ export async function getRowByPositionFromIndexedDb<
 
 export async function getRowByIdFromIndexedDb<
   Db extends Database<AnyProperty[]>,
->(id: string, idb: SwotionIDB): Promise<Db['rows'][number] | null> {
-  return (await idb.getFromIndex('rows', 'id', id)) || null;
+>(
+  id: string,
+  databaseId: string,
+  idb: SwotionIDB,
+): Promise<Db['rows'][number] | null> {
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `rows--${databaseId}`;
+  return (await db.getFromIndex(objectStoreName, 'id', id)) || null;
 }
 
 export async function deleteRowByIdFromIndexedDb(
   id: string,
+  databaseId: string,
   idb: SwotionIDB,
 ): Promise<void> {
-  const tx = idb.transaction('rows', 'readwrite');
-  const store = tx.objectStore('rows');
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `rows--${databaseId}`;
+  const tx = db.transaction(objectStoreName, 'readwrite');
+  const store = tx.objectStore(objectStoreName);
   await store.delete(id);
   await tx.done;
 }
@@ -348,15 +385,23 @@ export async function deleteRowByIdFromIndexedDb(
 export async function addPropertyToIndexedDb<
   Db extends Database<AnyProperty[]>,
 >(
-  property: Omit<Db['properties'][number], 'index'>,
+  property: Omit<Db['properties'][number], 'position'>,
   idb: SwotionIDB,
 ): Promise<void> {
-  const tx = idb.transaction('properties', 'readwrite');
-  const store = tx.objectStore('properties');
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `properties--${property.databaseId}`;
+  const allProperties = await db.getAllFromIndex(objectStoreName, 'position');
+  const lastProperty = allProperties[allProperties.length - 1];
   const untypedProperty = {
     ...property,
     type: getStringFromPropertyType(property.type),
+    position: lastProperty
+      ? LexoRank.parse(lastProperty.position).genNext().toString()
+      : LexoRank.min().toString(),
   };
+
+  const tx = db.transaction(objectStoreName, 'readwrite');
+  const store = tx.objectStore(objectStoreName);
   await store.add(untypedProperty);
   await tx.done;
 }
@@ -364,8 +409,10 @@ export async function addPropertyToIndexedDb<
 export async function editPropertyInIndexedDb<
   Db extends Database<AnyProperty[]>,
 >(property: Db['properties'][number], idb: SwotionIDB): Promise<void> {
-  const tx = idb.transaction('properties', 'readwrite');
-  const store = tx.objectStore('properties');
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `properties--${property.databaseId}`;
+  const tx = db.transaction(objectStoreName, 'readwrite');
+  const store = tx.objectStore(objectStoreName);
   const untypedProperty = {
     ...property,
     type: getStringFromPropertyType(property.type),
@@ -421,8 +468,10 @@ export async function addBlankRowToIndexedDb<
     row.position = LexoRank.parse(lastRow.position).genNext().toString();
   }
 
-  const tx = idb.transaction('rows', 'readwrite');
-  const store = tx.objectStore('rows');
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `rows--${row.databaseId}`;
+  const tx = db.transaction(objectStoreName, 'readwrite');
+  const store = tx.objectStore(objectStoreName);
   await store.add(row);
   await tx.done;
 }

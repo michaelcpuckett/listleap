@@ -28,6 +28,7 @@ export async function PutDatabaseRow(
     await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
+    idb.close();
     return new Response('Not found', {
       status: 404,
     });
@@ -36,6 +37,7 @@ export async function PutDatabaseRow(
   const existingRow = database.rows.find((row) => row.id === id);
 
   if (!existingRow) {
+    idb.close();
     return new Response('Not found', {
       status: 404,
     });
@@ -69,6 +71,7 @@ export async function PutDatabaseRow(
       guardIsTableRow(rowToPut, database)
     )
   ) {
+    idb.close();
     return new Response('Not found', {
       status: 404,
     });
@@ -81,6 +84,7 @@ export async function PutDatabaseRow(
   if (formData.position && formData.position !== existingRow.position) {
     const rowToReorder = await getRowByPositionFromIndexedDb(
       formData.position,
+      databaseId,
       idb,
     );
     await reorderRowInIndexedDb(existingRow, rowToReorder, idb);
@@ -92,6 +96,7 @@ export async function PutDatabaseRow(
   if (isLastRow) {
     await addBlankRowToIndexedDb(database, idb);
   }
+  idb.close();
 
   const redirectUrl = new URL(
     formData._redirect || `/databases/${databaseId}`,

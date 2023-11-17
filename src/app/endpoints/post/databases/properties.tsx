@@ -25,6 +25,7 @@ export async function PostDatabaseProperties(
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
+    idb.close();
     const redirectUrl = new URL(referrer.url);
     redirectUrl.searchParams.set('error', ERROR_CODES['DATABASE_NOT_FOUND']);
     return Response.redirect(redirectUrl.href, 303);
@@ -34,7 +35,7 @@ export async function PostDatabaseProperties(
     formData.type || 'string',
   );
 
-  const propertyToAdd: Omit<Property<typeof propertyToAddType>, 'index'> = {
+  const propertyToAdd: Omit<Property<typeof propertyToAddType>, 'position'> = {
     id: getUniqueId(),
     databaseId,
     name: formData.name || '',
@@ -42,6 +43,7 @@ export async function PostDatabaseProperties(
   };
 
   await addPropertyToIndexedDb<typeof database>(propertyToAdd, idb);
+  idb.close();
 
   const redirectUrl = new URL(
     formData._redirect || `/databases/${databaseId}`,

@@ -75,6 +75,7 @@ export function handleFetch(event: Event) {
 
         switch (true) {
           case !!matchesHome: {
+            console.log('MATCHES HOME');
             return await GetIndex(event, matchesHome, referrer);
           }
           case !!matchesDatabase: {
