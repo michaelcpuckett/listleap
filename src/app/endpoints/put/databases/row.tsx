@@ -93,9 +93,9 @@ export async function PutDatabaseRow(
 
   await editRowInIndexedDb<typeof database>(rowToPut, idb);
 
-  if (isLastRow) {
-    await addBlankRowToIndexedDb(database, idb);
-  }
+  // if (isLastRow) {
+  //   await addBlankRowToIndexedDb(database, idb);
+  // }
   idb.close();
 
   const redirectUrl = new URL(
