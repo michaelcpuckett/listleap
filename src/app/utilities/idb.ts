@@ -131,7 +131,6 @@ export async function getPropertiesByDatabaseIdFromIndexedDb<
     objectStoreName,
     'position',
   );
-  console.log(filteredUntypedProperties, databaseId);
 
   const convertType = (property: UntypedProperty): AnyProperty => {
     const { type, ...rest } = property;
@@ -367,10 +366,12 @@ export async function reorderRowInIndexedDb(
     const store = tx.objectStore(objectStoreName);
     const { position: oldPosition } = rowToReorder;
     const { position: newPosition } = rowToFlip;
+
     rowToReorder.position = newPosition;
     rowToFlip.position = oldPosition;
     await store.delete(rowToReorder.id);
     await store.delete(rowToFlip.id);
+
     await store.put(rowToReorder);
     await store.put(rowToFlip);
     await tx.done;
@@ -393,6 +394,7 @@ export async function reorderRowInIndexedDb(
     } else {
       rowToReorder.position = LexoRank.min().toString();
     }
+
     await store.put(rowToReorder);
     await tx.done;
   }
@@ -414,6 +416,80 @@ export async function getRowByPositionFromIndexedDb<
   }
 
   return row;
+}
+
+export async function reorderPropertyInIndexedDb(
+  propertyToReorder: AnyProperty,
+  propertyToFlip: AnyProperty | undefined,
+  idb: SwotionIDB,
+): Promise<void> {
+  const untypedPropertyToReorder = {
+    ...propertyToReorder,
+    type: getStringFromPropertyType(propertyToReorder.type),
+  };
+
+  const untypedPropertyToFlip = propertyToFlip
+    ? {
+        ...propertyToFlip,
+        type: getStringFromPropertyType(propertyToFlip.type),
+      }
+    : undefined;
+
+  if (untypedPropertyToReorder && untypedPropertyToFlip) {
+    const db = idb as IDBPDatabase<unknown>;
+    const objectStoreName = `properties--${propertyToReorder.databaseId}`;
+    const tx = db.transaction(objectStoreName, 'readwrite');
+    const store = tx.objectStore(objectStoreName);
+    const { position: oldPosition } = untypedPropertyToReorder;
+    const { position: newPosition } = untypedPropertyToFlip;
+    untypedPropertyToReorder.position = newPosition;
+    untypedPropertyToFlip.position = oldPosition;
+    await store.delete(untypedPropertyToReorder.id);
+    await store.delete(untypedPropertyToFlip.id);
+    await store.put(untypedPropertyToReorder);
+    await store.put(untypedPropertyToFlip);
+    await tx.done;
+  } else {
+    const db = idb as IDBPDatabase<unknown>;
+    const objectStoreName = `properties--${propertyToReorder.databaseId}`;
+    const tx = db.transaction(objectStoreName, 'readwrite');
+    const store = tx.objectStore(objectStoreName);
+
+    const properties = await getPropertiesByDatabaseIdFromIndexedDb(
+      propertyToReorder.databaseId,
+      idb,
+    );
+    const lastProperty = properties[properties.length - 1];
+
+    if (lastProperty && lastProperty !== propertyToReorder) {
+      untypedPropertyToReorder.position = LexoRank.parse(lastProperty.position)
+        .genNext()
+        .toString();
+    } else {
+      untypedPropertyToReorder.position = LexoRank.min().toString();
+    }
+
+    await store.put(untypedPropertyToReorder);
+    await tx.done;
+  }
+}
+
+export async function getPropertyByPositionFromIndexedDb<
+  Db extends Database<AnyProperty[]>,
+>(
+  position: string,
+  databaseId: string,
+  idb: SwotionIDB,
+): Promise<Db['properties'][number]> {
+  const db = idb as IDBPDatabase<unknown>;
+  const objectStoreName = `properties--${databaseId}`;
+  const property = await db.getFromIndex(objectStoreName, 'position', position);
+
+  if (!property) {
+    throw new Error('Property not found');
+  }
+
+  return property;
 }
 
 export async function getRowByIdFromIndexedDb<

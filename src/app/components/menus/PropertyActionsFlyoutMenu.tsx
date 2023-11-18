@@ -3,10 +3,14 @@ import { AnyRow, AnyProperty, Referrer } from 'shared/types';
 import { FlyoutMenu } from 'components/elements/FlyoutMenu';
 import { TriggerEditPropertyForm } from 'components/forms/TriggerEditPropertyForm';
 import { TriggerDeletePropertyForm } from 'components/forms/TriggerDeletePropertyForm';
+import { ReorderPropertyUpForm } from 'components/forms/ReorderPropertyUpForm';
+import { ReorderPropertyDownForm } from 'components/forms/ReorderPropertyDownForm';
 
 export function PropertyActionsFlyoutMenu(
   props: React.PropsWithChildren<{
     property: AnyProperty;
+    previousProperty?: AnyProperty;
+    nextProperty?: AnyProperty;
     referrer: Referrer;
   }>,
 ) {
@@ -15,6 +19,18 @@ export function PropertyActionsFlyoutMenu(
       id={props.property.id}
       label={props.property.name}
     >
+      <ReorderPropertyUpForm
+        property={props.property}
+        prevProperty={props.previousProperty}
+        isDisabled={!props.previousProperty}
+        role="menuitem"
+      />
+      <ReorderPropertyDownForm
+        property={props.property}
+        nextProperty={props.nextProperty}
+        isDisabled={!props.nextProperty}
+        role="menuitem"
+      />
       <TriggerEditPropertyForm
         property={props.property}
         referrer={props.referrer}

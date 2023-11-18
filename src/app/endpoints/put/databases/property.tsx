@@ -9,6 +9,8 @@ import {
   getDatabaseFromIndexedDb,
   editPropertyInIndexedDb,
   getPropertyTypeFromString,
+  reorderPropertyInIndexedDb,
+  getPropertyByPositionFromIndexedDb,
 } from 'utilities/idb';
 
 export async function PutDatabaseProperty(
@@ -49,8 +51,20 @@ export async function PutDatabaseProperty(
     id: property.id,
     databaseId: database.id,
     type: updatedPropertyType,
-    name: typeof formData.name === 'string' ? formData.name : database.name,
+    name: typeof formData.name === 'string' ? formData.name : property.name,
   };
+
+  if (formData.position !== undefined) {
+    const propertyToReorder = await getPropertyByPositionFromIndexedDb(
+      formData.position,
+      databaseId,
+      idb,
+    );
+
+    await reorderPropertyInIndexedDb(updatedProperty, propertyToReorder, idb);
+
+    updatedProperty.position = formData.position;
+  }
 
   await editPropertyInIndexedDb(updatedProperty, idb);
   idb.close();

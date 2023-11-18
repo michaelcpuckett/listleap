@@ -62,7 +62,7 @@ export function TableView(
               />
             </SelectAllCheckboxElement>
           </th>
-          {properties.map((property) => (
+          {properties.map((property, index) => (
             <th aria-label={property.name}>
               <form
                 id={`edit-property-form--${property.id}`}
@@ -91,6 +91,8 @@ export function TableView(
               </form>
               <PropertyActionsFlyoutMenu
                 property={property}
+                previousProperty={properties[index - 1]}
+                nextProperty={properties[index + 1]}
                 referrer={props.referrer}
               />
             </th>
@@ -104,7 +106,7 @@ export function TableView(
         </tr>
       </thead>
       <tbody>
-        {rows.map((row, index, { length }) => {
+        {rows.map((row) => {
           const filteredIndex = props.queriedRows.findIndex(
             (t) => t.id === row.id,
           );
