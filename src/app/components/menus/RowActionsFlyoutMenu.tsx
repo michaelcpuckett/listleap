@@ -6,6 +6,7 @@ import { ReorderRowDownForm } from 'components/forms/ReorderRowDownForm';
 import { TriggerEditRowForm } from 'components/forms/TriggerEditRowForm';
 import { TriggerDeleteRowForm } from 'components/forms/TriggerDeleteRowForm';
 import { TriggerNewRowBelowForm } from 'components/forms/TriggerNewRowBelowForm';
+import { DeleteRowForm } from 'components/forms/DeleteRowForm';
 
 export function RowActionsFlyoutMenu(
   props: React.PropsWithChildren<{
@@ -44,9 +45,8 @@ export function RowActionsFlyoutMenu(
         referrer={props.referrer}
         role="menuitem"
       />
-      <TriggerDeleteRowForm
+      <DeleteRowForm
         row={props.row}
-        referrer={props.referrer}
         role="menuitem"
       />
     </FlyoutMenu>
