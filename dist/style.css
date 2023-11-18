@@ -159,6 +159,10 @@ flyout-menu .button {
   display: grid;
   grid-template-columns: var(--grid-columns);
 
+  & tbody th {
+    font-weight: normal;
+  }
+
   & thead,
   tbody {
     display: grid;
