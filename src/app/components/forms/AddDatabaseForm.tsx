@@ -15,7 +15,7 @@ export function AddDatabaseForm() {
         id="new-database-name"
       />
       <select
-        className="input"
+        className="input visually-hidden"
         name="type"
         required
       >

@@ -232,6 +232,51 @@ export async function getDbFromCreatedDatabaseObjectStores(
   });
 }
 
+export async function deleteDatabaseByIdFromIndexedDb(
+  databaseId: string,
+): Promise<void> {
+  const version = await self.indexedDB.databases().then((databases) => {
+    const database = databases.find(
+      (database) => database.name === DATABASE_NAME,
+    );
+
+    return database?.version || 1;
+  });
+
+  await new Promise((resolve, reject) => {
+    const openRequest = self.indexedDB.open(DATABASE_NAME, version + 1);
+
+    openRequest.addEventListener('success', async () => {
+      const db = openRequest.result;
+      const tx = db.transaction('databases', 'readwrite');
+
+      tx.addEventListener('complete', () => {
+        db.close();
+        resolve(void 0);
+      });
+
+      const store = tx.objectStore('databases');
+      store.delete(databaseId);
+    });
+
+    openRequest.addEventListener('error', (event) => {
+      console.log('error', event);
+      reject(event);
+    });
+
+    openRequest.addEventListener('blocked', (event) => {
+      console.log('blocked', event);
+      reject(event);
+    });
+
+    openRequest.addEventListener('upgradeneeded', () => {
+      const db = openRequest.result;
+      db.deleteObjectStore(`rows--${databaseId}`);
+      db.deleteObjectStore(`properties--${databaseId}`);
+    });
+  });
+}
+
 export async function addPartialDatabaseToIndexedDb(
   partialDatabase: PartialDatabase,
 ): Promise<void> {

@@ -40,7 +40,7 @@ export function TableView(
   return (
     <table
       aria-rowcount={rows.length}
-      className="view view--checklist"
+      className="view"
       style={{
         '--grid-columns': gridColumnsCss,
       }}

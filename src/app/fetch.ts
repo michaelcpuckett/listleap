@@ -24,6 +24,7 @@ import { DeleteDatabaseProperty } from 'endpoints/delete/databases/property';
 import { PutDatabaseProperty } from 'endpoints/put/databases/property';
 import { PatchSettings } from 'endpoints/patch/settings';
 import { GetSettings } from 'endpoints/get/settings';
+import { DeleteDatabase } from 'endpoints/delete/databases';
 
 export function handleFetch(event: Event) {
   if (!(event instanceof FetchEvent)) {
@@ -160,6 +161,9 @@ export function handleFetch(event: Event) {
         }
         case !!matchesDatabase: {
           switch (formData._method) {
+            case 'DELETE': {
+              return DeleteDatabase(event, matchesDatabase, formData, referrer);
+            }
             case 'PATCH': {
               return PatchDatabase(event, matchesDatabase, formData, referrer);
             }

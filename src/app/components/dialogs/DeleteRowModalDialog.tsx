@@ -25,10 +25,7 @@ export function DeleteRowModalDialog(
           </React.Fragment>
         ))}
       </dl>
-      <DeleteRowForm
-        row={props.row}
-        database={props.database}
-      />
+      <DeleteRowForm row={props.row} />
       <a
         href={props.closeUrl}
         role="button"
