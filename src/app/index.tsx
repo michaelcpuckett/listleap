@@ -36,6 +36,7 @@ declare global {
       'unload-handler': CustomElement;
       'post-form': CustomElement;
       'grid-keyboard-navigation': CustomElement;
+      'modal-dialog': CustomElement;
     }
   }
 }

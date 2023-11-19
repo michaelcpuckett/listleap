@@ -1,6 +1,6 @@
 import React from 'react';
 import { AnyProperty, Database, Row } from 'shared/types';
-import { ModalDialog } from 'components/dialogs/ModalDialog';
+import { ModalDialogElement } from 'components/elements/ModalDialogElement';
 import { EditRowForm } from 'components/forms/EditRowForm';
 
 export function EditRowModalDialog(
@@ -11,7 +11,7 @@ export function EditRowModalDialog(
   }>,
 ) {
   return (
-    <ModalDialog
+    <ModalDialogElement
       open
       heading={<>Edit Row</>}
       closeUrl={props.closeUrl}
@@ -27,6 +27,6 @@ export function EditRowModalDialog(
       >
         Cancel
       </a>
-    </ModalDialog>
+    </ModalDialogElement>
   );
 }

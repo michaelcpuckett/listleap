@@ -1,6 +1,6 @@
 import React from 'react';
 import { AnyProperty, Database } from 'shared/types';
-import { ModalDialog } from 'components/dialogs/ModalDialog';
+import { ModalDialogElement } from 'components/elements/ModalDialogElement';
 import { DeletePropertyForm } from 'components/forms/DeletePropertyForm';
 
 export function DeletePropertyModalDialog(
@@ -10,7 +10,7 @@ export function DeletePropertyModalDialog(
   }>,
 ) {
   return (
-    <ModalDialog
+    <ModalDialogElement
       open
       heading={<>Delete Property</>}
       closeUrl={props.closeUrl}
@@ -26,6 +26,6 @@ export function DeletePropertyModalDialog(
       >
         Cancel
       </a>
-    </ModalDialog>
+    </ModalDialogElement>
   );
 }

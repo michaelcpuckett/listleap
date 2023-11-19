@@ -6,6 +6,8 @@ import 'elements/UnloadHandlerElement';
 import 'elements/PostFormElement';
 import 'elements/SelectAllCheckboxElement';
 import 'elements/GridKeyboardNavigationElement';
+import 'elements/ModalDialogElement';
+import 'elements/FlyoutMenuElement';
 
 const SCROLL_STORAGE_KEY = 'scroll-position-y';
 const FOCUS_STORAGE_KEY = 'focus-element-id';

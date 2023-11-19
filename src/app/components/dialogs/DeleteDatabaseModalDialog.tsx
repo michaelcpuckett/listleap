@@ -1,6 +1,6 @@
 import React from 'react';
 import { AnyProperty, Database, PartialDatabase } from 'shared/types';
-import { ModalDialog } from 'components/dialogs/ModalDialog';
+import { ModalDialogElement } from 'components/elements/ModalDialogElement';
 import { DeleteDatabaseForm } from 'components/forms/DeleteDatabaseForm';
 
 export function DeleteDatabaseModalDialog(
@@ -10,7 +10,7 @@ export function DeleteDatabaseModalDialog(
   }>,
 ) {
   return (
-    <ModalDialog
+    <ModalDialogElement
       open
       heading={<>Delete Database</>}
       closeUrl={props.closeUrl}
@@ -26,6 +26,6 @@ export function DeleteDatabaseModalDialog(
       >
         Cancel
       </a>
-    </ModalDialog>
+    </ModalDialogElement>
   );
 }

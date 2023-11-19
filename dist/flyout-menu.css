@@ -42,7 +42,6 @@
 :host [role='menu'] {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   border: 1px solid;
   list-style: none;
   background: CanvasText;
@@ -53,13 +52,6 @@
   right: -1rem;
   min-width: 300px;
   z-index: 2;
-
-  & button,
-  & a {
-    display: flex;
-    width: 100%;
-    max-width: none;
-  }
 }
 
 :host svg {

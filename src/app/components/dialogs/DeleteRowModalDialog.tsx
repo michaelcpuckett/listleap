@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Referrer, AnyProperty, Database } from 'shared/types';
-import { ModalDialog } from 'components/dialogs/ModalDialog';
+import { ModalDialogElement } from 'components/elements/ModalDialogElement';
 import { DeleteRowForm } from 'components/forms/DeleteRowForm';
 
 export function DeleteRowModalDialog(
@@ -11,7 +11,7 @@ export function DeleteRowModalDialog(
   }>,
 ) {
   return (
-    <ModalDialog
+    <ModalDialogElement
       open
       heading={<>Delete Row</>}
       closeUrl={props.closeUrl}
@@ -33,6 +33,6 @@ export function DeleteRowModalDialog(
       >
         Cancel
       </a>
-    </ModalDialog>
+    </ModalDialogElement>
   );
 }

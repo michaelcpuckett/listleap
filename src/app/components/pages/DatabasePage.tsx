@@ -17,7 +17,7 @@ import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
 import { AddPropertyModalDialog } from 'components/dialogs/AddPropertyModalDialog';
 import { EditPropertyModalDialog } from 'components/dialogs/EditPropertyModalDialog';
 import { DeletePropertyModalDialog } from 'components/dialogs/DeletePropertyModalDialog';
-import { ModalDialog } from 'components/dialogs/ModalDialog';
+import { ModalDialogElement } from 'components/elements/ModalDialogElement';
 import { ERROR_MESSAGES } from 'utilities/errors';
 
 export function DatabasePage(
@@ -97,13 +97,13 @@ export function DatabasePage(
       settings={props.settings}
     >
       {props.referrer.error ? (
-        <ModalDialog
+        <ModalDialogElement
           open
           heading={<>Error</>}
           closeUrl={closeUrlHref}
         >
           <p>{ERROR_MESSAGES[props.referrer.error]}</p>
-        </ModalDialog>
+        </ModalDialogElement>
       ) : null}
       {isEditingRow ? (
         <EditRowModalDialog
