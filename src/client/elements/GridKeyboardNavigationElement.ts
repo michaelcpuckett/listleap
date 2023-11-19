@@ -1,3 +1,6 @@
+const FOCUSABLE_ELEMENTS_SELECTOR =
+  'input:not([type="hidden"]):not([hidden]), button:not([hidden]), a:not([hidden]), textarea:not([hidden]), select:not([hidden]), [tabindex]:not([hidden])';
+
 export class GridKeyboardNavigationElement extends HTMLElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
 
@@ -24,12 +27,6 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    const inputTarget = event.composed
-      ? event.composedPath().find((element) => {
-          return element instanceof HTMLElement && element.matches('input');
-        })
-      : event.currentTarget;
-
     const cellElement = target.closest('td, th');
 
     if (!(cellElement instanceof HTMLElement)) {
@@ -43,46 +40,9 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       event.preventDefault();
       this.handleArrowDown(cellElement);
     } else if (event.key === 'ArrowLeft') {
-      if (
-        inputTarget instanceof HTMLInputElement &&
-        ['search', 'text'].includes(inputTarget.type)
-      ) {
-        const isSelected =
-          inputTarget.selectionStart !== inputTarget.selectionEnd;
-        const isFullySelected =
-          isSelected &&
-          inputTarget.selectionStart === 0 &&
-          inputTarget.selectionEnd === inputTarget.value.length;
-        const isCursorAtStart =
-          inputTarget.selectionStart === 0 && inputTarget.selectionEnd === 0;
-
-        if (!isFullySelected && !isCursorAtStart) {
-          return;
-        }
-      }
-
       event.preventDefault();
       this.handleArrowLeft(cellElement);
     } else if (event.key === 'ArrowRight') {
-      if (
-        inputTarget instanceof HTMLInputElement &&
-        ['search', 'text'].includes(inputTarget.type)
-      ) {
-        const isSelected =
-          inputTarget.selectionStart !== inputTarget.selectionEnd;
-        const isFullySelected =
-          isSelected &&
-          inputTarget.selectionStart === 0 &&
-          inputTarget.selectionEnd === inputTarget.value.length;
-        const isCursorAtEnd =
-          inputTarget.selectionStart === inputTarget.value.length &&
-          inputTarget.selectionEnd === inputTarget.value.length;
-
-        if (!isFullySelected && !isCursorAtEnd) {
-          return;
-        }
-      }
-
       event.preventDefault();
       this.handleArrowRight(cellElement);
     }
@@ -107,22 +67,24 @@ export class GridKeyboardNavigationElement extends HTMLElement {
 
     const rowIndex = rowElements.indexOf(rowElement);
 
-    const targetRow = rowElements[rowIndex - 1];
+    const targetRowElement = rowElements[rowIndex - 1];
 
-    if (!(targetRow instanceof HTMLElement)) {
+    if (!(targetRowElement instanceof HTMLElement)) {
       return;
     }
 
-    const targetRowCells = Array.from(targetRow.children);
+    const targetRowElementCells = Array.from(targetRowElement.children);
 
-    const targetCell =
-      targetRowCells[Math.min(targetRowCells.length - 1, cellIndex)];
+    const targetCellElement =
+      targetRowElementCells[
+        Math.min(targetRowElementCells.length - 1, cellIndex)
+      ];
 
-    if (!(targetCell instanceof HTMLElement)) {
+    if (!(targetCellElement instanceof HTMLElement)) {
       return;
     }
 
-    this.focusElement(targetCell);
+    this.focusElement(targetCellElement, cellElement);
   }
 
   handleArrowDown(cellElement: HTMLElement) {
@@ -144,62 +106,82 @@ export class GridKeyboardNavigationElement extends HTMLElement {
 
     const rowIndex = rowElements.indexOf(rowElement);
 
-    const targetRow = rowElements[rowIndex + 1];
+    const targetRowElement = rowElements[rowIndex + 1];
 
-    if (!(targetRow instanceof HTMLElement)) {
+    if (!(targetRowElement instanceof HTMLElement)) {
       return;
     }
 
-    const targetRowCells = Array.from(targetRow.children);
+    const targetRowElementCells = Array.from(targetRowElement.children);
 
-    const targetCell =
-      targetRowCells[Math.min(targetRowCells.length - 1, cellIndex)];
+    const targetCellElement =
+      targetRowElementCells[
+        Math.min(targetRowElementCells.length - 1, cellIndex)
+      ];
 
-    if (!(targetCell instanceof HTMLElement)) {
+    if (!(targetCellElement instanceof HTMLElement)) {
       return;
     }
 
-    this.focusElement(targetCell);
+    this.focusElement(targetCellElement, cellElement);
   }
 
   handleArrowLeft(cellElement: HTMLElement) {
-    const previousCell = cellElement.previousElementSibling;
+    const previousCellElement = cellElement.previousElementSibling;
 
-    if (!(previousCell instanceof HTMLElement)) {
+    if (!(previousCellElement instanceof HTMLElement)) {
       return;
     }
 
-    this.focusElement(previousCell);
+    this.focusElement(previousCellElement, cellElement);
   }
 
   handleArrowRight(cellElement: HTMLElement) {
-    const nextCell = cellElement.nextElementSibling;
+    const nextCellElement = cellElement.nextElementSibling;
 
-    if (!(nextCell instanceof HTMLElement)) {
+    if (!(nextCellElement instanceof HTMLElement)) {
       return;
     }
 
-    this.focusElement(nextCell);
+    this.focusElement(nextCellElement, cellElement);
   }
 
-  focusElement(targetCell: HTMLElement) {
-    const focusableElement = targetCell.querySelector(
-      'input:not([type="hidden"]):not([hidden]), button:not([hidden]), a:not([hidden]), textarea:not([hidden]), select:not([hidden]), [tabindex]:not([hidden])',
+  focusElement(targetCellElement: HTMLElement, cellElement: HTMLElement) {
+    const targetCellElementFocusableElements = Array.from(
+      targetCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
     );
 
-    if (!(focusableElement instanceof HTMLElement)) {
-      return;
+    for (const targetCellElementFocusableElement of targetCellElementFocusableElements) {
+      if (targetCellElementFocusableElement instanceof HTMLElement) {
+        targetCellElementFocusableElement.dataset.originalTabindex =
+          targetCellElementFocusableElement.getAttribute('tabindex') || '';
+      }
+
+      targetCellElementFocusableElement.setAttribute('tabindex', '0');
     }
 
-    focusableElement.focus();
+    const [firstFocusableElement] = targetCellElementFocusableElements;
 
-    if (
-      focusableElement instanceof HTMLInputElement &&
-      focusableElement.value.length > 0 &&
-      (focusableElement.type === 'text' || focusableElement.type === 'search')
-    ) {
-      focusableElement.selectionStart = 0;
-      focusableElement.selectionEnd = focusableElement.value.length;
+    if (firstFocusableElement instanceof HTMLElement) {
+      firstFocusableElement.focus();
+    }
+
+    const cellElementFocusableElements = Array.from(
+      cellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
+    );
+
+    for (const cellElementFocusableElement of cellElementFocusableElements) {
+      if (cellElementFocusableElement instanceof HTMLElement) {
+        const originalTabindex =
+          cellElementFocusableElement.dataset.originalTabindex;
+        cellElementFocusableElement.removeAttribute('data-original-tabindex');
+        cellElementFocusableElement.setAttribute(
+          'tabindex',
+          originalTabindex || '-1',
+        );
+      } else {
+        cellElementFocusableElement.setAttribute('tabindex', '-1');
+      }
     }
   }
 }

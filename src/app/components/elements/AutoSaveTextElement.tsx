@@ -13,6 +13,7 @@ export function AutoSaveTextElement(
     name: string;
     value: string;
     tabindex?: number;
+    readonly?: boolean;
   }>,
 ) {
   return (
@@ -38,6 +39,7 @@ export function AutoSaveTextElement(
         name={props.name}
         value={props.value}
         tabIndex={props.tabindex}
+        readOnly={props.readonly}
       />
     </auto-save-text>
   );
