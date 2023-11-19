@@ -1,5 +1,4 @@
 import React from 'react';
-import { UnsavedIndicator } from 'components/elements/UnsavedIndicator';
 import { getUniqueId } from 'shared/getUniqueId';
 
 export function AutoSaveCheckboxElement(

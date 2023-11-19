@@ -1,5 +1,4 @@
 import React from 'react';
-import { UnsavedIndicator } from 'components/elements/UnsavedIndicator';
 
 export function NumericalContentEditable(
   props: React.PropsWithChildren<{
@@ -16,13 +15,15 @@ export function NumericalContentEditable(
         form={props.form}
         id={`content-editable-field__${props.name}--${props.id}`}
         autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck={false}
         aria-label={props.label}
         type="tel"
         className="content-editable"
         name={props.name}
         value={props.value}
       />
-      <UnsavedIndicator />
     </>
   );
 }
