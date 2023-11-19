@@ -7,6 +7,8 @@ import {
   AnyProperty,
   ChecklistRow,
   TableRow,
+  PartialProperty,
+  UntypedProperty,
 } from './types';
 
 export function guardIsDatabase(db: unknown): db is AnyDatabase {
@@ -79,4 +81,31 @@ export function guardIsTableRow(
 
 export function guardIsString(value: unknown): value is string {
   return typeof value === 'string';
+}
+
+export function guardIsUntypedProperty(
+  property: unknown,
+): property is UntypedProperty | Omit<UntypedProperty, 'position'> {
+  return (
+    typeof property === 'object' &&
+    property !== null &&
+    typeof (property as UntypedProperty).id === 'string' &&
+    typeof (property as UntypedProperty).databaseId === 'string' &&
+    typeof (property as UntypedProperty).name === 'string' &&
+    typeof (property as UntypedProperty).type === 'string' &&
+    ['string', 'number', 'boolean'].includes((property as UntypedProperty).type)
+  );
+}
+
+export function guardIsProperty(
+  property: unknown,
+): property is AnyProperty | Omit<AnyProperty, 'position'> {
+  return (
+    typeof property === 'object' &&
+    property !== null &&
+    typeof (property as AnyProperty).id === 'string' &&
+    typeof (property as AnyProperty).databaseId === 'string' &&
+    typeof (property as AnyProperty).name === 'string' &&
+    [String, Number, Boolean].includes((property as AnyProperty).type)
+  );
 }

@@ -5,6 +5,8 @@ import { TriggerEditPropertyForm } from 'components/forms/TriggerEditPropertyFor
 import { TriggerDeletePropertyForm } from 'components/forms/TriggerDeletePropertyForm';
 import { ReorderPropertyUpForm } from 'components/forms/ReorderPropertyUpForm';
 import { ReorderPropertyDownForm } from 'components/forms/ReorderPropertyDownForm';
+import { AddNewPropertyAboveForm } from 'components/forms/AddNewPropertyAboveForm';
+import { AddNewPropertyBelowForm } from 'components/forms/AddNewPropertyBelowForm';
 
 export function PropertyActionsFlyoutMenu(
   props: React.PropsWithChildren<{
@@ -31,6 +33,22 @@ export function PropertyActionsFlyoutMenu(
         property={props.property}
         nextProperty={props.nextProperty}
         isDisabled={!props.nextProperty}
+        role="menuitem"
+      />
+      <AddNewPropertyAboveForm
+        property={props.property}
+        prevPosition={props.property.position}
+        nextPosition={
+          props.previousProperty ? props.previousProperty.position : undefined
+        }
+        role="menuitem"
+      />
+      <AddNewPropertyBelowForm
+        property={props.property}
+        prevPosition={props.property.position}
+        nextPosition={
+          props.nextProperty ? props.nextProperty.position : undefined
+        }
         role="menuitem"
       />
       <TriggerEditPropertyForm

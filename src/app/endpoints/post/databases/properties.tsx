@@ -3,6 +3,7 @@ import {
   Referrer,
   Property,
   NormalizedFormData,
+  AnyProperty,
 } from 'shared/types';
 import {
   getIdb,
@@ -12,6 +13,7 @@ import {
 } from 'utilities/idb';
 import { getUniqueId } from 'shared/getUniqueId';
 import { ERROR_CODES } from 'utilities/errors';
+import { guardIsProperty } from 'shared/assertions';
 
 export async function PostDatabaseProperties(
   event: FetchEvent,
@@ -35,12 +37,25 @@ export async function PostDatabaseProperties(
     formData.type || 'string',
   );
 
-  const propertyToAdd: Omit<Property<typeof propertyToAddType>, 'position'> = {
+  const propertyToAdd = {
     id: getUniqueId(),
     databaseId,
     name: formData.name || '',
     type: propertyToAddType,
+    position: formData.position,
   };
+
+  if (propertyToAdd.position === undefined) {
+    delete propertyToAdd.position;
+  }
+
+  if (!guardIsProperty(propertyToAdd)) {
+    idb.close();
+    const url = new URL(event.request.referrer);
+    url.searchParams.set('error', 'Invalid property');
+
+    return Response.redirect(url.href, 303);
+  }
 
   await addPropertyToIndexedDb<typeof database>(propertyToAdd, idb);
   idb.close();

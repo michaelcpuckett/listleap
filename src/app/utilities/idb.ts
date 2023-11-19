@@ -418,7 +418,7 @@ export async function reorderRowInIndexedDb(
         .genNext()
         .toString();
     } else {
-      rowToReorder.position = LexoRank.min().toString();
+      rowToReorder.position = LexoRank.middle().toString();
     }
 
     await store.put(rowToReorder);
@@ -492,7 +492,7 @@ export async function reorderPropertyInIndexedDb(
         .genNext()
         .toString();
     } else {
-      untypedPropertyToReorder.position = LexoRank.min().toString();
+      untypedPropertyToReorder.position = LexoRank.middle().toString();
     }
 
     await store.put(untypedPropertyToReorder);
@@ -574,7 +574,9 @@ export async function deletePropertyByIdFromIndexedDb(
 export async function addPropertyToIndexedDb<
   Db extends Database<AnyProperty[]>,
 >(
-  property: Omit<Db['properties'][number], 'position'>,
+  property:
+    | Db['properties'][number]
+    | Omit<Db['properties'][number], 'position'>,
   idb: SwotionIDB,
 ): Promise<void> {
   const db = idb as IDBPDatabase<unknown>;
@@ -584,9 +586,11 @@ export async function addPropertyToIndexedDb<
   const untypedProperty = {
     ...property,
     type: getStringFromPropertyType(property.type),
-    position: lastProperty
-      ? LexoRank.parse(lastProperty.position).genNext().toString()
-      : LexoRank.min().toString(),
+    position:
+      ('position' in property ? property.position : null) ??
+      (lastProperty
+        ? LexoRank.parse(lastProperty.position).genNext().toString()
+        : LexoRank.middle().toString()),
   };
 
   const tx = db.transaction(objectStoreName, 'readwrite');
@@ -649,7 +653,7 @@ export async function addBlankRowToIndexedDb<
     id: getUniqueId(),
     databaseId: database.id,
     title: '',
-    position: LexoRank.min().toString(),
+    position: LexoRank.middle().toString(),
     ...dynamicPropertyKeyPairs,
   };
 

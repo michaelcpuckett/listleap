@@ -1,14 +1,14 @@
 import React from 'react';
-import { Database, Property, AnyRow } from 'shared/types';
+import { Database, Property, AnyProperty } from 'shared/types';
 import { PostFormElement } from 'components/elements/PostFormElement';
 import { LexoRank } from 'lexorank';
 
-export function TriggerNewRowBelowForm(
+export function AddNewPropertyBelowForm(
   props: React.PropsWithChildren<{
     role: string;
     prevPosition: string;
     nextPosition?: string;
-    row: AnyRow;
+    property: AnyProperty;
   }>,
 ) {
   const prevPosition = LexoRank.parse(props.prevPosition);
@@ -21,8 +21,8 @@ export function TriggerNewRowBelowForm(
 
   return (
     <PostFormElement
-      action={`/databases/${props.row.databaseId}/rows`}
-      id={`trigger-new-row-below-${props.row.id}-form`}
+      action={`/databases/${props.property.databaseId}/properties`}
+      id={`trigger-new-property-below-${props.property.id}-form`}
     >
       <input
         type="hidden"
@@ -34,7 +34,7 @@ export function TriggerNewRowBelowForm(
         role={props.role}
         className="button"
       >
-        Add Row Below
+        Add Property to Right
       </button>
     </PostFormElement>
   );

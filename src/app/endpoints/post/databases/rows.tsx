@@ -90,7 +90,7 @@ export async function PostDatabaseRows(
     if (lastRow) {
       rowToAdd.position = LexoRank.parse(lastRow.position).genNext().toString();
     } else {
-      rowToAdd.position = LexoRank.min().toString();
+      rowToAdd.position = LexoRank.middle().toString();
     }
   }
 
