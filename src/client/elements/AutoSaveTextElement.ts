@@ -6,14 +6,17 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
   private boundBlurHandler = this.handleBlur.bind(this);
 
   connectedCallback() {
-    this.inputElement.addEventListener('click', this.boundClickHandler);
+    this.inputElement.addEventListener('pointerdown', this.boundClickHandler);
     this.inputElement.addEventListener('change', this.boundChangeHandler);
     this.inputElement.addEventListener('keydown', this.boundKeydownHandler);
     this.inputElement.addEventListener('blur', this.boundBlurHandler);
   }
 
   disconnectedCallback() {
-    this.inputElement.removeEventListener('click', this.boundClickHandler);
+    this.inputElement.removeEventListener(
+      'pointerdown',
+      this.boundClickHandler,
+    );
     this.inputElement.removeEventListener('change', this.boundChangeHandler);
     this.inputElement.removeEventListener('keydown', this.boundKeydownHandler);
     this.inputElement.removeEventListener('blur', this.boundBlurHandler);
