@@ -36,6 +36,7 @@ export function AutoSaveTextElement(
         aria-label={props.label}
         placeholder={props.placeholder}
         type="text"
+        className={props.inline ? undefined : 'input'}
         name={props.name}
         value={props.value}
       />

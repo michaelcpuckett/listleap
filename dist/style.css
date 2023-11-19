@@ -156,10 +156,19 @@ flyout-menu .button {
   width: 100%;
 }
 
+.view--table tbody tr:last-child {
+  color: var(--swatch-table-border);
+}
+
 .view {
   width: 100%;
   display: grid;
   grid-template-columns: var(--grid-columns);
+
+  & td,
+  th {
+    min-height: 48px;
+  }
 
   & tbody th {
     font-weight: normal;
@@ -173,8 +182,7 @@ flyout-menu .button {
   }
 
   & thead,
-  thead input[type='text'],
-  tbody tr:last-child {
+  thead input[type='text'] {
     color: var(--swatch-table-border);
   }
 

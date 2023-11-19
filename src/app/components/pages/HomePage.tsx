@@ -56,19 +56,27 @@ export function HomePage(
               '--grid-columns': gridColumnsCss,
             }}
           >
-            {props.databases.map((database) => (
-              <tr key={database.id}>
-                <td>
-                  <a href={`/databases/${database.id}`}>{database.name}</a>
-                </td>
-                <td>
-                  <DatabaseActionsFlyoutMenu
-                    database={database}
-                    referrer={props.referrer}
-                  />
-                </td>
+            <thead>
+              <tr>
+                <th>Database</th>
+                <th>Actions</th>
               </tr>
-            ))}
+            </thead>
+            <tbody>
+              {props.databases.map((database) => (
+                <tr key={database.id}>
+                  <td>
+                    <a href={`/databases/${database.id}`}>{database.name}</a>
+                  </td>
+                  <td>
+                    <DatabaseActionsFlyoutMenu
+                      database={database}
+                      referrer={props.referrer}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
           <AddDatabaseForm />
         </main>
