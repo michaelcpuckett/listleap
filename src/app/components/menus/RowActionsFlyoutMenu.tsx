@@ -11,7 +11,6 @@ import { DeleteRowForm } from 'components/forms/DeleteRowForm';
 export function RowActionsFlyoutMenu(
   props: React.PropsWithChildren<{
     row: AnyRow;
-    title: string;
     previousRow?: AnyRow;
     nextRow?: AnyRow;
     referrer: Referrer;
@@ -20,7 +19,7 @@ export function RowActionsFlyoutMenu(
   return (
     <FlyoutMenu
       id={props.row.id}
-      label={`Actions for ${props.title}}`}
+      label="Row"
     >
       <ReorderRowUpForm
         row={props.row}

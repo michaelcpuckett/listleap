@@ -44,7 +44,6 @@ export type SwotionIDB = IDBPDatabase<SwotionSchema>;
 export async function getIdb(options?: {
   onclose: () => void;
 }): Promise<SwotionIDB> {
-  console.log('getIdb');
   return await new Promise(async (resolve, reject) => {
     const version = await self.indexedDB.databases().then((databases) => {
       const database = databases.find(
@@ -57,24 +56,16 @@ export async function getIdb(options?: {
     const openRequest = self.indexedDB.open(DATABASE_NAME, version);
 
     openRequest.addEventListener('success', () => {
-      console.log('success');
-      openRequest.result.onclose =
-        options?.onclose ||
-        (() => {
-          console.log('onclose');
-        });
       const wrappedIdb = wrap(openRequest.result) as SwotionIDB;
       resolve(wrappedIdb);
     });
 
     openRequest.addEventListener('upgradeneeded', () => {
-      console.log('upgradeneeded');
       openRequest.result.createObjectStore('settings');
       openRequest.result.createObjectStore('databases');
     });
 
     openRequest.addEventListener('error', (event) => {
-      console.log('error', event);
       reject(event);
     });
 
@@ -186,14 +177,6 @@ export async function getDbFromCreatedDatabaseObjectStores(
     const openRequest = self.indexedDB.open(DATABASE_NAME, version + 1);
 
     openRequest.addEventListener('success', () => {
-      openRequest.result.onabort = () => {
-        reject(void 0);
-      };
-
-      openRequest.result.onerror = () => {
-        reject(void 0);
-      };
-
       resolve(openRequest.result);
     });
 
@@ -226,7 +209,7 @@ export async function getDbFromCreatedDatabaseObjectStores(
     });
 
     openRequest.addEventListener('blocked', (event) => {
-      console.log('Blocked!', event);
+      console.log('blocked', event);
       reject(event);
     });
   });
@@ -260,7 +243,6 @@ export async function deleteDatabaseByIdFromIndexedDb(
     });
 
     openRequest.addEventListener('error', (event) => {
-      console.log('error', event);
       reject(event);
     });
 
@@ -348,7 +330,6 @@ export async function getRowsByDatabaseIdFromIndexedDb<
   Db extends Database<AnyProperty[]>,
 >(databaseId: string, idb: SwotionIDB): Promise<Db['rows']> {
   const db = idb as IDBPDatabase<unknown>;
-  console.log(db, 'here');
   const rows = await db.getAllFromIndex(`rows--${databaseId}`, 'position');
 
   if (!rows.length) {
