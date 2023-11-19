@@ -1,15 +1,142 @@
 const FOCUSABLE_ELEMENTS_SELECTOR =
   'input:not([type="hidden"]):not([hidden]), button:not([hidden]), a:not([hidden]), textarea:not([hidden]), select:not([hidden]), [tabindex]:not([hidden])';
 
+const FOCUS_STORAGE_KEY = 'focus-element-id';
+
 export class GridKeyboardNavigationElement extends HTMLElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
+  private boundFocusinHandler = this.handleFocusin.bind(this);
+  private boundFocusoutHandler = this.handleFocusout.bind(this);
+
+  constructor() {
+    super();
+    this.setInitialTabIndices();
+  }
+
+  setInitialTabIndices() {
+    const focusableElements = Array.from(
+      this.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
+    );
+
+    for (const focusableElement of focusableElements) {
+      if (focusableElement instanceof HTMLElement) {
+        focusableElement.dataset.originalTabindex =
+          focusableElement.tabIndex.toString();
+      }
+
+      focusableElement.setAttribute('tabindex', '-1');
+    }
+
+    const autofocusElement = this.querySelector('[data-auto-focus="true"]');
+    const focusElementId = sessionStorage.getItem(FOCUS_STORAGE_KEY) || '';
+    const focusElement = focusElementId
+      ? this.querySelector(`#${focusElementId}`)
+      : null;
+    const autoFocusedElement = autofocusElement || focusElement;
+
+    if (autoFocusedElement instanceof HTMLElement) {
+      return;
+    }
+
+    const firstRow = this.querySelector('tr');
+
+    if (!firstRow) {
+      return;
+    }
+
+    const firstCell = firstRow.querySelector('td, th');
+
+    if (!firstCell) {
+      return;
+    }
+
+    const firstCellFocusableElements = Array.from(
+      firstCell.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
+    );
+
+    const [firstFocusableElement] = firstCellFocusableElements;
+
+    if (!(firstFocusableElement instanceof HTMLElement)) {
+      return;
+    }
+
+    firstFocusableElement.setAttribute(
+      'tabindex',
+      firstFocusableElement.dataset.originalTabindex || '0',
+    );
+  }
 
   connectedCallback() {
     this.addEventListener('keydown', this.boundKeydownHandler);
+    this.addEventListener('focusin', this.boundFocusinHandler);
+    this.addEventListener('focusout', this.boundFocusoutHandler);
   }
 
   disconnected() {
     this.removeEventListener('keydown', this.boundKeydownHandler);
+    this.removeEventListener('focusin', this.boundFocusinHandler);
+    this.removeEventListener('focusout', this.boundFocusoutHandler);
+  }
+
+  handleFocusin(event: Event) {
+    if (!(event instanceof FocusEvent)) {
+      return;
+    }
+
+    const cellElement = event.composedPath().find((element) => {
+      return element instanceof HTMLElement && element.matches('td, th');
+    });
+
+    if (!(cellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const focusableElements = Array.from(
+      cellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
+    );
+
+    for (const focusableElement of focusableElements) {
+      if (focusableElement instanceof HTMLElement) {
+        focusableElement.setAttribute(
+          'tabindex',
+          focusableElement.dataset.originalTabindex || '0',
+        );
+      }
+    }
+  }
+
+  async handleFocusout(event: Event) {
+    if (!(event instanceof FocusEvent)) {
+      return;
+    }
+
+    const previousCellElement = event.composedPath().find((element) => {
+      return element instanceof HTMLElement && element.matches('td, th');
+    });
+
+    const focusedElement = window.document.activeElement;
+    const focusedCellElement =
+      focusedElement && this.contains(focusedElement)
+        ? focusedElement.closest('td, th')
+        : null;
+
+    const unfocusedCellElements = Array.from(
+      this.querySelectorAll('td, th'),
+    ).filter((cellElement) => {
+      return cellElement !== (focusedCellElement || previousCellElement);
+    });
+
+    for (const unfocusedCellElement of unfocusedCellElements) {
+      const focusableElements = Array.from(
+        unfocusedCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
+      );
+
+      for (const focusableElement of focusableElements) {
+        if (focusableElement instanceof HTMLElement) {
+          focusableElement.setAttribute('tabindex', '-1');
+        }
+      }
+    }
   }
 
   handleKeydown(event: Event) {
@@ -17,11 +144,9 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    const target = event.composed
-      ? event.composedPath().find((element) => {
-          return element instanceof HTMLElement && element.matches('td, th');
-        })
-      : event.currentTarget;
+    const target = event.composedPath().find((element) => {
+      return element instanceof HTMLElement && element.matches('td, th');
+    });
 
     if (!(target instanceof HTMLElement)) {
       return;
@@ -30,6 +155,20 @@ export class GridKeyboardNavigationElement extends HTMLElement {
     const cellElement = target.closest('td, th');
 
     if (!(cellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const editableAutoSaveTextInputElement = event
+      .composedPath()
+      .find((element) => {
+        return (
+          element instanceof HTMLInputElement &&
+          element.closest('auto-save-text') &&
+          !element.readOnly
+        );
+      });
+
+    if (editableAutoSaveTextInputElement) {
       return;
     }
 
@@ -84,7 +223,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    this.focusElement(targetCellElement, cellElement);
+    this.focusElement(targetCellElement);
   }
 
   handleArrowDown(cellElement: HTMLElement) {
@@ -123,7 +262,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    this.focusElement(targetCellElement, cellElement);
+    this.focusElement(targetCellElement);
   }
 
   handleArrowLeft(cellElement: HTMLElement) {
@@ -133,7 +272,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    this.focusElement(previousCellElement, cellElement);
+    this.focusElement(previousCellElement);
   }
 
   handleArrowRight(cellElement: HTMLElement) {
@@ -143,45 +282,18 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    this.focusElement(nextCellElement, cellElement);
+    this.focusElement(nextCellElement);
   }
 
-  focusElement(targetCellElement: HTMLElement, cellElement: HTMLElement) {
+  focusElement(targetCellElement: HTMLElement) {
     const targetCellElementFocusableElements = Array.from(
       targetCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
     );
-
-    for (const targetCellElementFocusableElement of targetCellElementFocusableElements) {
-      if (targetCellElementFocusableElement instanceof HTMLElement) {
-        targetCellElementFocusableElement.dataset.originalTabindex =
-          targetCellElementFocusableElement.getAttribute('tabindex') || '';
-      }
-
-      targetCellElementFocusableElement.setAttribute('tabindex', '0');
-    }
 
     const [firstFocusableElement] = targetCellElementFocusableElements;
 
     if (firstFocusableElement instanceof HTMLElement) {
       firstFocusableElement.focus();
-    }
-
-    const cellElementFocusableElements = Array.from(
-      cellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    );
-
-    for (const cellElementFocusableElement of cellElementFocusableElements) {
-      if (cellElementFocusableElement instanceof HTMLElement) {
-        const originalTabindex =
-          cellElementFocusableElement.dataset.originalTabindex;
-        cellElementFocusableElement.removeAttribute('data-original-tabindex');
-        cellElementFocusableElement.setAttribute(
-          'tabindex',
-          originalTabindex || '-1',
-        );
-      } else {
-        cellElementFocusableElement.setAttribute('tabindex', '-1');
-      }
     }
   }
 }

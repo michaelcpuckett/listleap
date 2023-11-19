@@ -61,7 +61,6 @@ export function TableView(
                   name="row[]"
                   label="Select all rows"
                   checked={false}
-                  tabindex={0}
                 />
               </SelectAllCheckboxElement>
             </th>
@@ -84,7 +83,6 @@ export function TableView(
                     name="name"
                     label={property.name}
                     value={property.name}
-                    tabindex={-1}
                     readonly
                   />
                   <button
@@ -99,7 +97,6 @@ export function TableView(
                   previousProperty={properties[index - 1]}
                   nextProperty={properties[index + 1]}
                   referrer={props.referrer}
-                  tabindex={-1}
                 />
               </th>
             ))}
@@ -133,7 +130,6 @@ export function TableView(
                     name="row[]"
                     label="Select row"
                     checked={false}
-                    tabindex={-1}
                   />
                 </td>
                 {properties.map((property, index) => {
@@ -149,7 +145,6 @@ export function TableView(
                             label={property.name}
                             name={property.id}
                             value={row[property.id]}
-                            tabindex={-1}
                             readonly
                           />,
                         ]
@@ -162,7 +157,6 @@ export function TableView(
                             label={property.name}
                             name={property.id}
                             checked={row[property.id]}
-                            tabindex={-1}
                           />,
                         ]
                       : []),
@@ -188,7 +182,6 @@ export function TableView(
                     previousRow={props.queriedRows[filteredIndex - 1]}
                     nextRow={props.queriedRows[filteredIndex + 1]}
                     referrer={props.referrer}
-                    tabindex={-1}
                   />
                   <form
                     noValidate
@@ -231,7 +224,7 @@ export function TableView(
               >
                 <button
                   className="button--full-width"
-                  tabIndex={-1}
+                  id="add-new-row-button"
                   type="submit"
                 >
                   Add New Row

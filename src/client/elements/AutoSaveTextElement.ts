@@ -37,18 +37,24 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
     }
 
     if (event.key === 'Escape') {
-      if (this.inputElement.readOnly) {
-        this.toggleEditMode();
-      } else {
-        this.inputElement.value = this.inputElement.getAttribute('value') || '';
+      if (!this.inputElement.readOnly) {
+        const currentValue = this.inputElement.value;
+        const savedValue = this.inputElement.getAttribute('value') || '';
+
+        if (currentValue === savedValue) {
+          this.toggleEditMode();
+        } else {
+          this.inputElement.value =
+            this.inputElement.getAttribute('value') || '';
+        }
       }
     }
 
     if (event.key === 'Enter') {
-      event.preventDefault();
       this.toggleEditMode();
 
       if (!this.inputElement.readOnly) {
+        event.preventDefault();
         this.inputElement.selectionStart = this.inputElement.selectionEnd =
           this.inputElement.value.length;
       }

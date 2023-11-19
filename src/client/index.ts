@@ -21,9 +21,7 @@ const focusElement = window.document.getElementById(focusElementId);
 const elementToAutoFocus = autofocusElement || focusElement;
 
 if (elementToAutoFocus instanceof HTMLElement) {
-  elementToAutoFocus.focus({
-    preventScroll: true,
-  });
+  elementToAutoFocus.focus();
 
   if (
     elementToAutoFocus instanceof HTMLInputElement &&
