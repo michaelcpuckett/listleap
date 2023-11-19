@@ -47,7 +47,6 @@ function FlyoutMenuDSD(
           xmlns="http://www.w3.org/2000/svg"
           width="22"
           height="22"
-          fill="black"
           viewBox="0 0 16 16"
         >
           <use

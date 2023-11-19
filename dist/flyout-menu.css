@@ -8,7 +8,7 @@
 
 :host summary {
   list-style: none;
-  color: CanvasText;
+  color: currentColor;
   padding: 8px 10px 6px 10px;
   margin: 1rem;
   position: relative;
@@ -60,4 +60,8 @@
     width: 100%;
     max-width: none;
   }
+}
+
+:host svg {
+  fill: currentColor;
 }

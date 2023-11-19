@@ -35,6 +35,7 @@ export function AutoSaveSearchElement(
         autoComplete="off"
         aria-label={props.label}
         placeholder={props.placeholder}
+        className="input"
         type="search"
         name={props.name}
         value={props.value}

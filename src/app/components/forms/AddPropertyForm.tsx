@@ -18,7 +18,7 @@ export function AddPropertyForm(
       />
       <button
         type="submit"
-        className="text-color--CanvasText button--full-width"
+        className="text-color--currentColor button--full-width"
         aria-label="Add Property"
       >
         <svg
