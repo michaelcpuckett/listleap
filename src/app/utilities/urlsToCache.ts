@@ -3,6 +3,7 @@ export const URLS_TO_CACHE = [
   '/bfcache.js',
   '/flyout-menu.css',
   '/select-all-checkbox.css',
+  '/grid-keyboard-navigation.css',
   '/post-form.css',
   '/auto-save.css',
   '/icons.svg',

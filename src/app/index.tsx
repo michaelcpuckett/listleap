@@ -9,7 +9,7 @@ declare module 'react' {
     extends React.AriaAttributes,
       React.DOMAttributes<T> {
     shadowrootmode?: string;
-    shadowrootdelegatesfocus?: boolean;
+    shadowrootdelegatesfocus?: string;
     part?: string;
     inert?: string;
   }
@@ -35,6 +35,7 @@ declare global {
       'select-all-checkbox': CustomElement;
       'unload-handler': CustomElement;
       'post-form': CustomElement;
+      'grid-keyboard-navigation': CustomElement;
     }
   }
 }

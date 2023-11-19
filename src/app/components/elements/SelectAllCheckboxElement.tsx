@@ -1,10 +1,7 @@
 export function SelectAllCheckboxElement(props: React.PropsWithChildren<{}>) {
   return (
     <select-all-checkbox>
-      <template
-        shadowrootmode="open"
-        shadowrootdelegatesfocus
-      >
+      <template shadowrootmode="open">
         <link
           rel="stylesheet"
           href="/select-all-checkbox.css"

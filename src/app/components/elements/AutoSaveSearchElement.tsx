@@ -19,10 +19,7 @@ export function AutoSaveSearchElement(
       id={getUniqueId()}
       data-inline={props.inline ? '' : undefined}
     >
-      <template
-        shadowrootmode="open"
-        shadowrootdelegatesfocus
-      >
+      <template shadowrootmode="open">
         <link
           rel="stylesheet"
           href="/auto-save.css"

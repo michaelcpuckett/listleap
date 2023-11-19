@@ -12,6 +12,7 @@ export function AutoSaveTextElement(
     label: string;
     name: string;
     value: string;
+    tabindex?: number;
   }>,
 ) {
   return (
@@ -19,10 +20,7 @@ export function AutoSaveTextElement(
       id={getUniqueId()}
       data-inline={props.inline ? '' : undefined}
     >
-      <template
-        shadowrootmode="open"
-        shadowrootdelegatesfocus
-      >
+      <template shadowrootmode="open">
         <link
           rel="stylesheet"
           href="/auto-save.css"
@@ -39,6 +37,7 @@ export function AutoSaveTextElement(
         className={props.inline ? undefined : 'input'}
         name={props.name}
         value={props.value}
+        tabIndex={props.tabindex}
       />
     </auto-save-text>
   );

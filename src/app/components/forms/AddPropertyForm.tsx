@@ -20,6 +20,7 @@ export function AddPropertyForm(
         type="submit"
         className="text-color--currentColor button--full-width"
         aria-label="Add Property"
+        tabIndex={-1}
       >
         <svg
           aria-hidden="true"

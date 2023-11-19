@@ -12,12 +12,14 @@ export function PropertyActionsFlyoutMenu(
     previousProperty?: AnyProperty;
     nextProperty?: AnyProperty;
     referrer: Referrer;
+    tabindex?: number;
   }>,
 ) {
   return (
     <FlyoutMenu
       id={props.property.id}
       label={props.property.name}
+      tabindex={props.tabindex}
     >
       <ReorderPropertyUpForm
         property={props.property}

@@ -14,12 +14,14 @@ export function RowActionsFlyoutMenu(
     previousRow?: AnyRow;
     nextRow?: AnyRow;
     referrer: Referrer;
+    tabindex?: number;
   }>,
 ) {
   return (
     <FlyoutMenu
       id={props.row.id}
       label="Row"
+      tabindex={props.tabindex}
     >
       <ReorderRowUpForm
         row={props.row}

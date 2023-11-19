@@ -10,14 +10,12 @@ export function AutoSaveCheckboxElement(
     id: string;
     checked: boolean;
     value?: string;
+    tabindex?: number;
   }>,
 ) {
   return (
     <auto-save-checkbox id={getUniqueId()}>
-      <template
-        shadowrootmode="open"
-        shadowrootdelegatesfocus
-      >
+      <template shadowrootmode="open">
         <link
           rel="stylesheet"
           href="/auto-save.css"
@@ -33,6 +31,7 @@ export function AutoSaveCheckboxElement(
         checked={props.checked}
         value={props.value}
         className="expand-touch-target"
+        tabIndex={props.tabindex}
       />
     </auto-save-checkbox>
   );

@@ -2,13 +2,20 @@ import React from 'react';
 import { getUniqueId } from 'shared/getUniqueId';
 
 export function FlyoutMenu(
-  props: React.PropsWithChildren<{ id: string; label: string }>,
+  props: React.PropsWithChildren<{
+    id: string;
+    label: string;
+    tabindex?: number;
+  }>,
 ) {
   return (
-    <flyout-menu id={getUniqueId()}>
+    <flyout-menu
+      id={getUniqueId()}
+      tabIndex={props.tabindex ?? 0}
+    >
       <template
         shadowrootmode="open"
-        shadowrootdelegatesfocus
+        shadowrootdelegatesfocus=""
       >
         <link
           rel="stylesheet"
