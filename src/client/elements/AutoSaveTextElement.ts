@@ -53,8 +53,25 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
     if (event.key === 'Enter') {
       this.toggleEditMode();
 
-      if (!this.inputElement.readOnly) {
-        event.preventDefault();
+      event.preventDefault();
+
+      if (this.inputElement.readOnly) {
+        this.dispatchEvent(
+          new CustomEvent('auto-save-text:toggle-edit-mode', {
+            composed: true,
+            bubbles: true,
+          }),
+        );
+      } else {
+        this.inputElement.selectionStart = this.inputElement.selectionEnd =
+          this.inputElement.value.length;
+      }
+    }
+
+    if (event.key.length === 1 && /[a-zA-Z0-9-_ ]/.test(event.key)) {
+      if (this.inputElement.readOnly) {
+        this.toggleEditMode();
+        this.inputElement.value = '';
         this.inputElement.selectionStart = this.inputElement.selectionEnd =
           this.inputElement.value.length;
       }

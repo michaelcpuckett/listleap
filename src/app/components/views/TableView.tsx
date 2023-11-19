@@ -83,7 +83,6 @@ export function TableView(
                     name="name"
                     label={property.name}
                     value={property.name}
-                    readonly
                   />
                   <button
                     type="submit"
@@ -145,7 +144,6 @@ export function TableView(
                             label={property.name}
                             name={property.id}
                             value={row[property.id]}
-                            readonly
                           />,
                         ]
                       : []),

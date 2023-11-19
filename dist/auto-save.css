@@ -25,6 +25,11 @@
   color: CanvasText;
 }
 
+::slotted(input[type='text']:not([readonly])) {
+  background: CanvasText;
+  color: Canvas;
+}
+
 ::slotted(input[type='checkbox']) {
   width: 1.5rem;
   height: 1.5rem;

@@ -22,6 +22,7 @@ export function ModalDialog(
           href={props.closeUrl}
           aria-label="Close dialog"
           role="button"
+          autoFocus
           className="button"
         >
           X

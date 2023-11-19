@@ -11,6 +11,54 @@ export class GridKeyboardNavigationElement extends HTMLElement {
   constructor() {
     super();
     this.setInitialTabIndices();
+
+    this.addEventListener('auto-save-text:toggle-edit-mode', (event: Event) => {
+      if (!(event instanceof CustomEvent)) {
+        return;
+      }
+
+      const target = event.target;
+
+      if (!(target instanceof HTMLElement)) {
+        return;
+      }
+
+      const cellElement = target.closest('td, th');
+
+      if (!(cellElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const rowElement = cellElement.closest('tr');
+
+      if (!(rowElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const cellIndex = Array.from(rowElement.children).indexOf(cellElement);
+
+      const nextRowElement = rowElement.nextElementSibling;
+
+      if (!(nextRowElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const nextCellElement = nextRowElement.children[cellIndex];
+
+      if (!(nextCellElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const nextFocusableElement = nextCellElement.querySelector(
+        FOCUSABLE_ELEMENTS_SELECTOR,
+      );
+
+      if (!(nextFocusableElement instanceof HTMLElement)) {
+        return;
+      }
+
+      nextFocusableElement.focus();
+    });
   }
 
   setInitialTabIndices() {
