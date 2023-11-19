@@ -16,7 +16,7 @@ export function AutoSaveSearchElement(
 ) {
   return (
     <auto-save-search
-      id={getUniqueId()}
+      id={`auto-save-search--${props.name}--${props.id}`}
       data-inline={props.inline ? '' : undefined}
     >
       <template shadowrootmode="open">

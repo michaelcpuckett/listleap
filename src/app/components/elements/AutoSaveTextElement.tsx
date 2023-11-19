@@ -17,7 +17,7 @@ export function AutoSaveTextElement(
 ) {
   return (
     <auto-save-text
-      id={getUniqueId()}
+      id={`auto-save-text--${props.name}--${props.id}`}
       data-inline={props.inline ? '' : undefined}
     >
       <template shadowrootmode="open">

@@ -14,7 +14,7 @@ export function AutoSaveCheckboxElement(
   }>,
 ) {
   return (
-    <auto-save-checkbox id={getUniqueId()}>
+    <auto-save-checkbox id={`auto-save-checkbox--${props.name}--${props.id}`}>
       <template shadowrootmode="open">
         <link
           rel="stylesheet"
