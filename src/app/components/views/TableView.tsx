@@ -68,6 +68,7 @@ export function TableView(
               <th aria-label={property.name}>
                 <form
                   id={`edit-property-form--${property.id}`}
+                  autoComplete="off"
                   action={`/databases/${property.databaseId}/properties/${property.id}`}
                   method="POST"
                   role="none"
@@ -183,6 +184,7 @@ export function TableView(
                   />
                   <form
                     noValidate
+                    autoComplete="off"
                     action={`/databases/${props.database.id}/rows/${row.id}`}
                     method="POST"
                     id={formId}

@@ -10,4 +10,5 @@ export const URLS_TO_CACHE = [
   '/icons.svg',
   '/client.js',
   '/manifest.json',
+  '/NotoColorEmoji.ttf',
 ];

@@ -13,6 +13,7 @@ export function PageShell(
       className={`theme--${props.settings.theme || 'dark'}`}
     >
       <head>
+        <meta charSet="utf-8" />
         <title>{props.pageTitle}</title>
         <meta
           name="theme-color"

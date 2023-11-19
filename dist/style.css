@@ -28,9 +28,15 @@ html {
   }
 }
 
+@font-face {
+  font-family: 'Noto Color Emoji';
+  src: url('NotoColorEmoji.ttf') format('truetype');
+}
+
 body {
   margin: 0;
-  font-family: sans-serif;
+  font-family: sans-serif, 'Noto Color Emoji';
+  font-display: fallback;
   background: Canvas;
   color: CanvasText;
   -webkit-font-smoothing: antialiased;

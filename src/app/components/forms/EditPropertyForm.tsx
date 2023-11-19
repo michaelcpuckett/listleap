@@ -10,6 +10,7 @@ export function EditPropertyForm(
   return (
     <form
       noValidate
+      autoComplete="off"
       action={`/databases/${props.property.databaseId}/properties/${props.property.id}`}
       method="POST"
     >

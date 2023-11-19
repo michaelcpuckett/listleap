@@ -15,7 +15,7 @@ export function AutoSaveSearchElement(
 ) {
   return (
     <auto-save-search
-      id={`auto-save-search--${props.name}--${props.id}`}
+      id={`auto-save-search--${props.name.replace('[]', '')}--${props.id}`}
       data-inline={props.inline ? '' : undefined}
     >
       <template shadowrootmode="open">
@@ -27,11 +27,10 @@ export function AutoSaveSearchElement(
       </template>
       <input
         form={props.form}
-        id={`auto-save-search--field__${props.name}--${props.id}`}
-        autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="off"
-        spellCheck={false}
+        id={`auto-save-search--field__${props.name.replace('[]', '')}--${
+          props.id
+        }`}
+        autoComplete="turn-off"
         aria-label={props.label}
         placeholder={props.placeholder}
         className="input"
