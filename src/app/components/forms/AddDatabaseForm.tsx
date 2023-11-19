@@ -1,5 +1,4 @@
 import React from 'react';
-import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 import { PostFormElement } from 'components/elements/PostFormElement';
 
 export function AddDatabaseForm() {
@@ -8,10 +7,11 @@ export function AddDatabaseForm() {
       id="new-database"
       action="/databases"
     >
-      <AutoSaveTextElement
+      <input
         name="name"
-        label="Name"
+        aria-label="Name"
         value=""
+        className="input"
         id="new-database-name"
       />
       <select
