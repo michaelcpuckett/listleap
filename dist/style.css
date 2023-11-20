@@ -164,10 +164,6 @@ flyout-menu .button {
   width: 100%;
 }
 
-.view--table [role='rowgroup']:last-of-type [role='row']:last-child {
-  color: var(--swatch-table-border);
-}
-
 .view {
   width: 100%;
   display: grid;

@@ -49,35 +49,39 @@ export function HomePage(
           <a href="/settings">Settings</a>
         </nav>
         <main>
-          <h1>Home</h1>
-          <table
+          <h1>ListLeap</h1>
+          <div
+            role="grid"
             className="view"
             style={{
               '--grid-columns': gridColumnsCss,
             }}
           >
-            <thead>
-              <tr>
-                <th>Database</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+            <div role="rowgroup">
+              <div role="row">
+                <div role="columnheader">Database</div>
+                <div role="columnheader">Actions</div>
+              </div>
+            </div>
+            <div role="rowgroup">
               {props.databases.map((database) => (
-                <tr key={database.id}>
-                  <td>
+                <div
+                  role="row"
+                  key={database.id}
+                >
+                  <div role="columnheader">
                     <a href={`/databases/${database.id}`}>{database.name}</a>
-                  </td>
-                  <td>
+                  </div>
+                  <div role="gridcell">
                     <DatabaseActionsFlyoutMenu
                       database={database}
                       referrer={props.referrer}
                     />
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
           <AddDatabaseForm />
         </main>
       </div>
