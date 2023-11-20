@@ -56,12 +56,10 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   const handleFocus = () => {
-    sessionStorage.setItem(
-      FOCUSED_ELEMENT_ID_STORAGE_KEY,
-      window.document.activeElement?.id || '',
-    );
+    const focusedElement = window.document.activeElement;
+    const focusedElementId = focusedElement?.id ?? '';
+    sessionStorage.setItem(FOCUSED_ELEMENT_ID_STORAGE_KEY, focusedElementId);
   };
 
   window.document.body.addEventListener('focusin', handleFocus);
-  window.document.body.addEventListener('focusout', handleFocus);
 });

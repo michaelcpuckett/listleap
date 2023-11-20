@@ -1,17 +1,9 @@
 import React from 'react';
-import {
-  AnyTable,
-  AnyTableRow,
-  Property,
-  Referrer,
-  Table,
-  TableRow,
-} from 'shared/types';
+import { AnyTable, AnyTableRow, Referrer } from 'shared/types';
 import { RowActionsFlyoutMenu } from 'components/menus/RowActionsFlyoutMenu';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 // import {DateContentEditable} from 'components/elements/DateContentEditable';
 import { AutoSaveCheckboxElement } from 'components/elements/AutoSaveCheckboxElement';
-import { PostFormElement } from 'components/elements/PostFormElement';
 import { PropertyActionsFlyoutMenu } from 'components/menus/PropertyActionsFlyoutMenu';
 import { SelectAllCheckboxElement } from 'components/elements/SelectAllCheckboxElement';
 import { AddPropertyForm } from 'components/forms/AddPropertyForm';
@@ -47,22 +39,12 @@ export function TableView(
           '--grid-columns': gridColumnsCss,
         }}
       >
-        <div role="rowgroup">
-          <div
-            role="row"
-            aria-label="Properties"
-          >
-            <div
-              role="columnheader"
+        <RowGroupElement>
+          <RowElement label="Properties">
+            <ColumnHeaderElement
               className="align-center"
-              aria-label="Select"
+              label="Select"
             >
-              <template
-                shadowrootmode="open"
-                shadowrootdelegatesfocus="true"
-              >
-                <slot></slot>
-              </template>
               <SelectAllCheckboxElement>
                 <AutoSaveCheckboxElement
                   form="select-multiple-rows-form"
@@ -73,18 +55,9 @@ export function TableView(
                   checked={false}
                 />
               </SelectAllCheckboxElement>
-            </div>
+            </ColumnHeaderElement>
             {properties.map((property, index) => (
-              <div
-                role="columnheader"
-                aria-label={property.name}
-              >
-                <template
-                  shadowrootmode="open"
-                  shadowrootdelegatesfocus="true"
-                >
-                  <slot></slot>
-                </template>
+              <ColumnHeaderElement label={property.name}>
                 <form
                   id={`edit-property-form--${property.id}`}
                   autoComplete="off"
@@ -117,24 +90,17 @@ export function TableView(
                   nextProperty={properties[index + 1]}
                   referrer={props.referrer}
                 />
-              </div>
+              </ColumnHeaderElement>
             ))}
-            <div
-              role="columnheader"
+            <ColumnHeaderElement
               className="align-center"
-              aria-label="Actions"
+              label="Actions"
             >
-              <template
-                shadowrootmode="open"
-                shadowrootdelegatesfocus="true"
-              >
-                <slot></slot>
-              </template>
               <AddPropertyForm database={props.database} />
-            </div>
-          </div>
-        </div>
-        <div role="rowgroup">
+            </ColumnHeaderElement>
+          </RowElement>{' '}
+        </RowGroupElement>
+        <RowGroupElement>
           {rows.map((row) => {
             const filteredIndex = props.queriedRows.findIndex(
               (t) => t.id === row.id,
@@ -147,20 +113,8 @@ export function TableView(
             const formId = `edit-row-inline-form--${row.id}`;
 
             return (
-              <div
-                role="row"
-                aria-rowindex={rows.indexOf(row) + 1}
-              >
-                <div
-                  role="gridcell"
-                  className="align-center"
-                >
-                  <template
-                    shadowrootmode="open"
-                    shadowrootdelegatesfocus="true"
-                  >
-                    <slot></slot>
-                  </template>
+              <RowElement>
+                <CellElement className="align-center">
                   <AutoSaveCheckboxElement
                     form="select-multiple-rows-form"
                     id={row.id}
@@ -169,15 +123,9 @@ export function TableView(
                     label="Select row"
                     checked={false}
                   />
-                </div>
+                </CellElement>
                 {properties.map((property, index) => (
-                  <div role={index === 0 ? 'rowheader' : 'gridcell'}>
-                    <template
-                      shadowrootmode="open"
-                      shadowrootdelegatesfocus="true"
-                    >
-                      <slot></slot>
-                    </template>
+                  <CellElement role={index === 0 ? 'rowheader' : undefined}>
                     {property.type === String ? (
                       <AutoSaveTextElement
                         inline
@@ -204,19 +152,12 @@ export function TableView(
                         value={row[property.id]}
                       />
                     ) : null}
-                  </div>
+                  </CellElement>
                 ))}
-                <div
-                  role="gridcell"
+                <CellElement
                   className="align-center"
                   aria-label="Actions"
                 >
-                  <template
-                    shadowrootmode="open"
-                    shadowrootdelegatesfocus="true"
-                  >
-                    <slot></slot>
-                  </template>
                   <RowActionsFlyoutMenu
                     row={row}
                     previousRow={props.queriedRows[filteredIndex - 1]}
@@ -248,39 +189,96 @@ export function TableView(
                       Update
                     </button>
                   </form>
-                </div>
-              </div>
+                </CellElement>
+              </RowElement>
             );
           })}
-          <div role="row">
-            <div
-              role="gridcell"
-              style={{
-                gridColumn: '1 / -1',
-              }}
-            >
-              <template
-                shadowrootmode="open"
-                shadowrootdelegatesfocus="true"
-              >
-                <slot></slot>
-              </template>
-              <PostFormElement
-                action={`/databases/${props.database.id}/rows`}
-                id="add-row-form"
-              >
-                <button
-                  className="button--full-width"
-                  id="add-new-row-button"
-                  type="submit"
-                >
-                  Add New Row
-                </button>
-              </PostFormElement>
-            </div>
-          </div>
-        </div>
+        </RowGroupElement>
       </div>
     </GridKeyboardNavigationElement>
+  );
+}
+
+/**
+ * Column Header Element
+ *
+ * Uses shadowrootdelegatesfocus to focus the first focusable element when
+ * #focus() is called.
+ **/
+function ColumnHeaderElement(
+  props: React.PropsWithChildren<{ className?: string; label?: string }>,
+) {
+  return (
+    <div
+      role="columnheader"
+      className={props.className}
+      aria-label={props.label}
+    >
+      <template
+        shadowrootmode="open"
+        shadowrootdelegatesfocus="true"
+      >
+        <slot></slot>
+      </template>
+      {props.children}
+    </div>
+  );
+}
+
+/**
+ * Cell (td, th) Element
+ *
+ * Uses shadowrootdelegatesfocus to focus the first focusable element when
+ * #focus() is called.
+ **/
+function CellElement(
+  props: React.PropsWithChildren<{
+    role?: string;
+    className?: string;
+    label?: string;
+  }>,
+) {
+  return (
+    <div
+      role={props.role || 'gridcell'}
+      className={props.className}
+      aria-label={props.label}
+    >
+      <template
+        shadowrootmode="open"
+        shadowrootdelegatesfocus="true"
+      >
+        <slot></slot>
+      </template>
+      {props.children}
+    </div>
+  );
+}
+
+/**
+ * Row (tr) Element
+ */
+function RowElement(props: React.PropsWithChildren<{ label?: string }>) {
+  return (
+    <div
+      role="row"
+      aria-label={props.label}
+    >
+      {props.children}
+    </div>
+  );
+}
+
+/**
+ * Row Group (thead, tbody) Element
+ */
+function RowGroupElement(props: React.PropsWithChildren<{ label?: string }>) {
+  return (
+    <div
+      role="rowgroup"
+      aria-label={props.label}
+    >
+      {props.children}
+    </div>
   );
 }

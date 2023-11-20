@@ -19,6 +19,7 @@ import { EditPropertyModalDialog } from 'components/dialogs/EditPropertyModalDia
 import { DeletePropertyModalDialog } from 'components/dialogs/DeletePropertyModalDialog';
 import { ModalDialogElement } from 'components/elements/ModalDialogElement';
 import { ERROR_MESSAGES } from 'utilities/errors';
+import { PostFormElement } from 'components/elements/PostFormElement';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
@@ -196,6 +197,18 @@ export function DatabasePage(
                 referrer={props.referrer}
                 queriedRows={queriedRows}
               />
+              <PostFormElement
+                action={`/databases/${props.database.id}/rows`}
+                id="add-row-form"
+              >
+                <button
+                  className="button--full-width button--bordered"
+                  id="add-new-row-button"
+                  type="submit"
+                >
+                  Add New Row
+                </button>
+              </PostFormElement>
               {props.database.rows.length - queriedRows.length > 0 ? (
                 <p className="notice">
                   Not showing {props.database.rows.length - queriedRows.length}{' '}

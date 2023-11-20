@@ -1,5 +1,7 @@
 const FOCUSABLE_ELEMENTS_SELECTOR =
   'input:not([type="hidden"]):not([hidden]), button:not([hidden]), a:not([hidden]), textarea:not([hidden]), select:not([hidden]), [tabindex]:not([hidden])';
+const CELL_ELEMENT_SELECTOR =
+  '[role="gridcell"], [role="columnheader"], [role="rowheader"]';
 
 const FOCUS_STORAGE_KEY = 'focus-element-id';
 
@@ -23,9 +25,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
         return;
       }
 
-      const cellElement = target.closest(
-        '[role="gridcell"], [role="columnheader"]',
-      );
+      const cellElement = target.closest(CELL_ELEMENT_SELECTOR);
 
       if (!(cellElement instanceof HTMLElement)) {
         return;
@@ -51,15 +51,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
         return;
       }
 
-      const nextFocusableElement = nextCellElement.querySelector(
-        FOCUSABLE_ELEMENTS_SELECTOR,
-      );
-
-      if (!(nextFocusableElement instanceof HTMLElement)) {
-        return;
-      }
-
-      nextFocusableElement.focus();
+      nextCellElement.focus();
     });
   }
 
@@ -77,28 +69,24 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       focusableElement.setAttribute('tabindex', '-1');
     }
 
-    const autofocusElement = this.querySelector('[data-auto-focus="true"]');
-    const focusElementId = sessionStorage.getItem(FOCUS_STORAGE_KEY) || '';
-    const focusElement = focusElementId
-      ? this.querySelector(`#${focusElementId}`)
+    const autoFocusedElementId =
+      sessionStorage.getItem(FOCUS_STORAGE_KEY) || '';
+    const autoFocusedElement = autoFocusedElementId
+      ? this.querySelector(`#${autoFocusedElementId}`)
       : null;
-    const autoFocusedElement = autofocusElement || focusElement;
 
-    if (autoFocusedElement instanceof HTMLElement) {
+    const firstFocusableElement =
+      autoFocusedElement || this.querySelector(FOCUSABLE_ELEMENTS_SELECTOR);
+
+    if (!(firstFocusableElement instanceof HTMLElement)) {
       return;
     }
 
-    const firstRow = this.querySelector('[role="row"]');
-
-    if (!firstRow) {
-      return;
-    }
-
-    const firstCell = firstRow.querySelector(
-      '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
+    const firstFocusedCellElement = firstFocusableElement.closest(
+      CELL_ELEMENT_SELECTOR,
     );
 
-    if (!firstCell) {
+    if (!(firstFocusedCellElement instanceof HTMLElement)) {
       return;
     }
 
@@ -109,7 +97,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
     }
 
     const firstCellFocusableElements = Array.from(
-      firstCell.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
+      firstFocusedCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
     ).filter(isHtmlElement);
 
     for (const focusableElement of firstCellFocusableElements) {
@@ -139,10 +127,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
 
     const cellElement = event.composedPath().find((element) => {
       return (
-        element instanceof HTMLElement &&
-        element.matches(
-          '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
-        )
+        element instanceof HTMLElement && element.matches(CELL_ELEMENT_SELECTOR)
       );
     });
 
@@ -164,45 +149,38 @@ export class GridKeyboardNavigationElement extends HTMLElement {
     }
   }
 
-  async handleFocusout(event: Event) {
+  handleFocusout(event: Event) {
     if (!(event instanceof FocusEvent)) {
       return;
     }
 
     const previousCellElement = event.composedPath().find((element) => {
       return (
-        element instanceof HTMLElement &&
-        element.matches(
-          '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
-        )
+        element instanceof HTMLElement && element.matches(CELL_ELEMENT_SELECTOR)
       );
     });
 
-    const focusedElement = window.document.activeElement;
-    const focusedCellElement =
-      focusedElement && this.contains(focusedElement)
-        ? focusedElement.closest(
-            '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
-          )
-        : previousCellElement;
+    if (!(previousCellElement instanceof HTMLElement)) {
+      return;
+    }
 
-    const unfocusedCellElements = Array.from(
-      this.querySelectorAll(
-        '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
-      ),
-    ).filter((cellElement) => {
-      return cellElement !== focusedCellElement;
-    });
+    const focusedElement = event.relatedTarget || window.document.activeElement;
 
-    for (const unfocusedCellElement of unfocusedCellElements) {
-      const focusableElements = Array.from(
-        unfocusedCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-      );
+    if (!(focusedElement instanceof HTMLElement)) {
+      return;
+    }
 
-      for (const focusableElement of focusableElements) {
-        if (focusableElement instanceof HTMLElement) {
-          focusableElement.setAttribute('tabindex', '-1');
-        }
+    if (!this.contains(focusedElement)) {
+      return;
+    }
+
+    const focusableElements = Array.from(
+      previousCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
+    );
+
+    for (const focusableElement of focusableElements) {
+      if (focusableElement instanceof HTMLElement) {
+        focusableElement.setAttribute('tabindex', '-1');
       }
     }
   }
@@ -214,10 +192,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
 
     const target = event.composedPath().find((element) => {
       return (
-        element instanceof HTMLElement &&
-        element.matches(
-          '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
-        )
+        element instanceof HTMLElement && element.matches(CELL_ELEMENT_SELECTOR)
       );
     });
 
@@ -225,9 +200,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    const cellElement = target.closest(
-      '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
-    );
+    const cellElement = target.closest(CELL_ELEMENT_SELECTOR);
 
     if (!(cellElement instanceof HTMLElement)) {
       return;
