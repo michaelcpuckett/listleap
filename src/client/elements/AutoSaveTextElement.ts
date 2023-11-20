@@ -8,6 +8,7 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
   connectedCallback() {
     this.inputElement.addEventListener('pointerdown', this.boundClickHandler);
     this.inputElement.addEventListener('change', this.boundChangeHandler);
+    this.inputElement.addEventListener('input', this.boundInputHandler);
     this.inputElement.addEventListener('keydown', this.boundKeydownHandler);
     this.inputElement.addEventListener('blur', this.boundBlurHandler);
   }
@@ -18,8 +19,23 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
       this.boundClickHandler,
     );
     this.inputElement.removeEventListener('change', this.boundChangeHandler);
+    this.inputElement.removeEventListener('input', this.boundInputHandler);
     this.inputElement.removeEventListener('keydown', this.boundKeydownHandler);
     this.inputElement.removeEventListener('blur', this.boundBlurHandler);
+  }
+
+  handleInput() {
+    if (this.inputElement.readOnly) {
+      return;
+    }
+
+    const value = this.inputElement.value;
+
+    if (value === this.inputElement.getAttribute('value')) {
+      this.markClean();
+    } else {
+      this.markDirty();
+    }
   }
 
   handleClick() {
@@ -110,6 +126,7 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
       this.patch(formAction, value)
         .then(() => {
           this.inputElement.setAttribute('value', value);
+          this.markClean();
         })
         .catch(() => {
           this.markDirty();
