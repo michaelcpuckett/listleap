@@ -32,8 +32,6 @@ export class UnloadHandlerElement extends HTMLElement {
   }
 
   handleBeforeUnload(event: BeforeUnloadEvent) {
-    console.log(event);
-    console.log(event.composedPath());
     event.preventDefault();
     event.returnValue = '';
   }
