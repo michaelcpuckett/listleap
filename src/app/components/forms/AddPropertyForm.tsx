@@ -9,7 +9,7 @@ export function AddPropertyForm(
   return (
     <PostFormElement
       action={`/databases/${props.database.id}/properties`}
-      id="add-row-form"
+      id="add-property-form"
     >
       <input
         type="hidden"
@@ -19,6 +19,7 @@ export function AddPropertyForm(
       <button
         type="submit"
         className="text-color--currentColor button--full-width"
+        id="add-property-button"
         aria-label="Add Property"
         tabIndex={-1}
       >
