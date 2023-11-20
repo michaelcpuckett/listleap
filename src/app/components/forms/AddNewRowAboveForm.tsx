@@ -5,7 +5,6 @@ import { LexoRank } from 'lexorank';
 
 export function AddNewRowAboveForm(
   props: React.PropsWithChildren<{
-    role: string;
     prevPosition: string;
     nextPosition?: string;
     row: AnyRow;
@@ -31,7 +30,6 @@ export function AddNewRowAboveForm(
       />
       <button
         type="submit"
-        role={props.role}
         className="button"
       >
         Add Row Above

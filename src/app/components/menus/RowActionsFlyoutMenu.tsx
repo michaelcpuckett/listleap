@@ -42,23 +42,17 @@ export function RowActionsFlyoutMenu(
         nextPosition={
           props.previousRow ? props.previousRow.position : undefined
         }
-        role="menuitem"
       />
       <AddNewRowBelowForm
         row={props.row}
         prevPosition={props.row.position}
         nextPosition={props.nextRow ? props.nextRow.position : undefined}
-        role="menuitem"
       />
       <TriggerEditRowForm
         row={props.row}
         referrer={props.referrer}
-        role="menuitem"
       />
-      <DeleteRowForm
-        row={props.row}
-        role="menuitem"
-      />
+      <DeleteRowForm row={props.row} />
     </FlyoutMenu>
   );
 }

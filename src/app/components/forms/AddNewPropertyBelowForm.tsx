@@ -5,7 +5,6 @@ import { LexoRank } from 'lexorank';
 
 export function AddNewPropertyBelowForm(
   props: React.PropsWithChildren<{
-    role: string;
     prevPosition: string;
     nextPosition?: string;
     property: AnyProperty;
@@ -31,7 +30,6 @@ export function AddNewPropertyBelowForm(
       />
       <button
         type="submit"
-        role={props.role}
         className="button"
       >
         Add Property to Right

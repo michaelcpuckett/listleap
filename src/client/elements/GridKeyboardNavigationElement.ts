@@ -5,6 +5,28 @@ const CELL_ELEMENT_SELECTOR =
 
 const FOCUS_STORAGE_KEY = 'focus-element-id';
 
+const FLYOUT_MENU_SELECTOR = 'flyout-menu [role="menu"]';
+
+function isNotInFlyoutMenu(element: Element | HTMLElement | EventTarget) {
+  if (!(element instanceof Element)) {
+    return true;
+  }
+
+  const flyoutMenuElement = element.closest(FLYOUT_MENU_SELECTOR);
+
+  return !(flyoutMenuElement instanceof HTMLElement);
+}
+
+function isInFlyoutMenu(element: Element | HTMLElement | EventTarget) {
+  if (!(element instanceof Element)) {
+    return false;
+  }
+
+  const flyoutMenuElement = element.closest(FLYOUT_MENU_SELECTOR);
+
+  return flyoutMenuElement instanceof HTMLElement;
+}
+
 export class GridKeyboardNavigationElement extends HTMLElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundFocusinHandler = this.handleFocusin.bind(this);
@@ -58,7 +80,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
   setInitialTabIndices() {
     const focusableElements = Array.from(
       this.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    );
+    ).filter(isNotInFlyoutMenu);
 
     for (const focusableElement of focusableElements) {
       if (focusableElement instanceof HTMLElement) {
@@ -98,7 +120,9 @@ export class GridKeyboardNavigationElement extends HTMLElement {
 
     const firstCellFocusableElements = Array.from(
       firstFocusedCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    ).filter(isHtmlElement);
+    )
+      .filter(isHtmlElement)
+      .filter(isNotInFlyoutMenu);
 
     for (const focusableElement of firstCellFocusableElements) {
       focusableElement.setAttribute(
@@ -137,7 +161,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
 
     const focusableElements = Array.from(
       cellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    );
+    ).filter(isNotInFlyoutMenu);
 
     for (const focusableElement of focusableElements) {
       if (focusableElement instanceof HTMLElement) {
@@ -176,7 +200,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
 
     const focusableElements = Array.from(
       previousCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    );
+    ).filter(isNotInFlyoutMenu);
 
     for (const focusableElement of focusableElements) {
       if (focusableElement instanceof HTMLElement) {
@@ -190,17 +214,11 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    const target = event.composedPath().find((element) => {
+    const cellElement = event.composedPath().find((element) => {
       return (
         element instanceof HTMLElement && element.matches(CELL_ELEMENT_SELECTOR)
       );
     });
-
-    if (!(target instanceof HTMLElement)) {
-      return;
-    }
-
-    const cellElement = target.closest(CELL_ELEMENT_SELECTOR);
 
     if (!(cellElement instanceof HTMLElement)) {
       return;
@@ -211,12 +229,18 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       .find((element) => {
         return (
           element instanceof HTMLInputElement &&
-          element.closest('auto-save-text') &&
+          element.matches('auto-save-text') &&
           !element.readOnly
         );
       });
 
     if (editableAutoSaveTextInputElement) {
+      return;
+    }
+
+    const flyoutMenuElement = event.composedPath().find(isInFlyoutMenu);
+
+    if (flyoutMenuElement) {
       return;
     }
 

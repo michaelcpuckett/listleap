@@ -27,13 +27,11 @@ export function PropertyActionsFlyoutMenu(
         property={props.property}
         prevProperty={props.previousProperty}
         isDisabled={!props.previousProperty}
-        role="menuitem"
       />
       <ReorderPropertyDownForm
         property={props.property}
         nextProperty={props.nextProperty}
         isDisabled={!props.nextProperty}
-        role="menuitem"
       />
       <AddNewPropertyAboveForm
         property={props.property}
@@ -41,7 +39,6 @@ export function PropertyActionsFlyoutMenu(
         nextPosition={
           props.previousProperty ? props.previousProperty.position : undefined
         }
-        role="menuitem"
       />
       <AddNewPropertyBelowForm
         property={props.property}
@@ -49,17 +46,14 @@ export function PropertyActionsFlyoutMenu(
         nextPosition={
           props.nextProperty ? props.nextProperty.position : undefined
         }
-        role="menuitem"
       />
       <TriggerEditPropertyForm
         property={props.property}
         referrer={props.referrer}
-        role="menuitem"
       />
       <TriggerDeletePropertyForm
         property={props.property}
         referrer={props.referrer}
-        role="menuitem"
       />
     </FlyoutMenu>
   );

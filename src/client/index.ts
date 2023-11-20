@@ -5,6 +5,6 @@ import 'elements/ClearSearchElement';
 import 'elements/UnloadHandlerElement';
 import 'elements/PostFormElement';
 import 'elements/SelectAllCheckboxElement';
-import 'elements/GridKeyboardNavigationElement';
 import 'elements/ModalDialogElement';
+import 'elements/GridKeyboardNavigationElement';
 import 'elements/FlyoutMenuElement';
