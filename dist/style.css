@@ -159,7 +159,7 @@ flyout-menu .button {
   width: 100%;
 }
 
-.view--table tbody tr:last-child {
+.view--table [role='rowgroup']:last-of-type [role='row']:last-child {
   color: var(--swatch-table-border);
 }
 
@@ -168,28 +168,22 @@ flyout-menu .button {
   display: grid;
   grid-template-columns: var(--grid-columns);
 
-  & td,
-  th {
+  & :is([role='gridcell'], [role='columnheader'], [role='rowheader']) {
     min-height: 48px;
   }
 
-  & tbody th {
-    font-weight: normal;
-  }
-
-  & thead,
-  tbody {
+  & [role='rowgroup'] {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
   }
 
-  & thead,
-  thead input[type='text'] {
+  & [role='rowgroup']:first-of-type,
+  [role='rowgroup']:first-of-type input[type='text'] {
     color: var(--swatch-table-border);
   }
 
-  & tr {
+  & [role='row'] {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
@@ -201,21 +195,23 @@ flyout-menu .button {
       background: var(--swatch-gray-background);
       color: var(--swatch-gray-text);
 
-      & th,
-      td {
+      & :is([role='columnheader'], [role='rowheader'], [role='gridcell']) {
         text-decoration: line-through;
       }
     }
   }
 
-  & thead tr:first-of-type {
+  & [role='rowgroup']:first-of-type [role='row']:first-of-type {
     border-top: 1px solid var(--swatch-table-border);
   }
 
-  & th,
-  td {
+  & :is([role='columnheader'], [role='rowheader'], [role='gridcell']) {
     display: flex;
     place-items: center;
+
+    &:not(:last-child) {
+      border-right: 1px solid var(--swatch-table-border);
+    }
 
     & input[type='text'] {
       height: 100%;
@@ -252,10 +248,6 @@ flyout-menu .button {
       box-sizing: content-box;
     }
 
-    &:not(:last-child) {
-      border-right: 1px solid var(--swatch-table-border);
-    }
-
     &.align-center {
       place-content: center;
     }
@@ -265,7 +257,7 @@ flyout-menu .button {
     }
   }
 
-  & th {
+  & :is([role='columnheader'], [role='rowheader']) {
     text-align: start;
     place-content: space-between;
   }
@@ -283,8 +275,8 @@ form {
   display: contents;
 }
 
-table,
-tbody {
+[role='grid'],
+[role='rowgroup'] {
   display: grid;
 }
 

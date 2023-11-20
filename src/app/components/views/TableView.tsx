@@ -39,19 +39,30 @@ export function TableView(
 
   return (
     <GridKeyboardNavigationElement>
-      <table
+      <div
+        role="grid"
         aria-rowcount={rows.length}
         className="view view--table"
         style={{
           '--grid-columns': gridColumnsCss,
         }}
       >
-        <thead>
-          <tr aria-label="Properties">
-            <th
+        <div role="rowgroup">
+          <div
+            role="row"
+            aria-label="Properties"
+          >
+            <div
+              role="columnheader"
               className="align-center"
               aria-label="Select"
             >
+              <template
+                shadowrootmode="open"
+                shadowrootdelegatesfocus="true"
+              >
+                <slot></slot>
+              </template>
               <SelectAllCheckboxElement>
                 <AutoSaveCheckboxElement
                   form="select-multiple-rows-form"
@@ -62,9 +73,18 @@ export function TableView(
                   checked={false}
                 />
               </SelectAllCheckboxElement>
-            </th>
+            </div>
             {properties.map((property, index) => (
-              <th aria-label={property.name}>
+              <div
+                role="columnheader"
+                aria-label={property.name}
+              >
+                <template
+                  shadowrootmode="open"
+                  shadowrootdelegatesfocus="true"
+                >
+                  <slot></slot>
+                </template>
                 <form
                   id={`edit-property-form--${property.id}`}
                   autoComplete="off"
@@ -97,17 +117,24 @@ export function TableView(
                   nextProperty={properties[index + 1]}
                   referrer={props.referrer}
                 />
-              </th>
+              </div>
             ))}
-            <th
+            <div
+              role="columnheader"
               className="align-center"
               aria-label="Actions"
             >
+              <template
+                shadowrootmode="open"
+                shadowrootdelegatesfocus="true"
+              >
+                <slot></slot>
+              </template>
               <AddPropertyForm database={props.database} />
-            </th>
-          </tr>
-        </thead>
-        <tbody>
+            </div>
+          </div>
+        </div>
+        <div role="rowgroup">
           {rows.map((row) => {
             const filteredIndex = props.queriedRows.findIndex(
               (t) => t.id === row.id,
@@ -120,8 +147,20 @@ export function TableView(
             const formId = `edit-row-inline-form--${row.id}`;
 
             return (
-              <tr aria-rowindex={rows.indexOf(row) + 1}>
-                <td className="align-center">
+              <div
+                role="row"
+                aria-rowindex={rows.indexOf(row) + 1}
+              >
+                <div
+                  role="gridcell"
+                  className="align-center"
+                >
+                  <template
+                    shadowrootmode="open"
+                    shadowrootdelegatesfocus="true"
+                  >
+                    <slot></slot>
+                  </template>
                   <AutoSaveCheckboxElement
                     form="select-multiple-rows-form"
                     id={row.id}
@@ -130,51 +169,54 @@ export function TableView(
                     label="Select row"
                     checked={false}
                   />
-                </td>
-                {properties.map((property, index) => {
-                  const tagName = index === 0 ? 'th' : 'td';
-
-                  return React.createElement(tagName, {}, [
-                    ...(property.type === String
-                      ? [
-                          <AutoSaveTextElement
-                            inline
-                            form={formId}
-                            id={row.id}
-                            label={property.name}
-                            name={property.id}
-                            value={row[property.id]}
-                          />,
-                        ]
-                      : []),
-                    ...(property.type === Boolean
-                      ? [
-                          <AutoSaveCheckboxElement
-                            form={formId}
-                            id={row.id}
-                            label={property.name}
-                            name={property.id}
-                            checked={row[property.id]}
-                          />,
-                        ]
-                      : []),
-                    ...(property.type === Number
-                      ? [
-                          <AutoSaveTextElement
-                            form={formId}
-                            id={row.id}
-                            label={property.name}
-                            name={property.id}
-                            value={row[property.id]}
-                          />,
-                        ]
-                      : []),
-                  ]);
-                })}
-                <td
+                </div>
+                {properties.map((property, index) => (
+                  <div role={index === 0 ? 'rowheader' : 'gridcell'}>
+                    <template
+                      shadowrootmode="open"
+                      shadowrootdelegatesfocus="true"
+                    >
+                      <slot></slot>
+                    </template>
+                    {property.type === String ? (
+                      <AutoSaveTextElement
+                        inline
+                        form={formId}
+                        id={row.id}
+                        label={property.name}
+                        name={property.id}
+                        value={row[property.id]}
+                      />
+                    ) : property.type === Boolean ? (
+                      <AutoSaveCheckboxElement
+                        form={formId}
+                        id={row.id}
+                        label={property.name}
+                        name={property.id}
+                        checked={row[property.id]}
+                      />
+                    ) : property.type === Number ? (
+                      <AutoSaveTextElement
+                        form={formId}
+                        id={row.id}
+                        label={property.name}
+                        name={property.id}
+                        value={row[property.id]}
+                      />
+                    ) : null}
+                  </div>
+                ))}
+                <div
+                  role="gridcell"
                   className="align-center"
                   aria-label="Actions"
                 >
+                  <template
+                    shadowrootmode="open"
+                    shadowrootdelegatesfocus="true"
+                  >
+                    <slot></slot>
+                  </template>
                   <RowActionsFlyoutMenu
                     row={row}
                     previousRow={props.queriedRows[filteredIndex - 1]}
@@ -206,17 +248,23 @@ export function TableView(
                       Update
                     </button>
                   </form>
-                </td>
-              </tr>
+                </div>
+              </div>
             );
           })}
-          <tr>
-            <td
-              colSpan={properties.length + 4}
+          <div role="row">
+            <div
+              role="gridcell"
               style={{
                 gridColumn: '1 / -1',
               }}
             >
+              <template
+                shadowrootmode="open"
+                shadowrootdelegatesfocus="true"
+              >
+                <slot></slot>
+              </template>
               <PostFormElement
                 action={`/databases/${props.database.id}/rows`}
                 id="add-row-form"
@@ -229,10 +277,10 @@ export function TableView(
                   Add New Row
                 </button>
               </PostFormElement>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </GridKeyboardNavigationElement>
   );
 }

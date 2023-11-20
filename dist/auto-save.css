@@ -17,6 +17,7 @@
   background: Canvas;
   width: 100%;
   display: flex;
+  will-change: transform;
 }
 
 :host([data-inline]) ::slotted(input) {

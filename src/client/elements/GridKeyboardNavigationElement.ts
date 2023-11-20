@@ -23,13 +23,15 @@ export class GridKeyboardNavigationElement extends HTMLElement {
         return;
       }
 
-      const cellElement = target.closest('td, th');
+      const cellElement = target.closest(
+        '[role="gridcell"], [role="columnheader"]',
+      );
 
       if (!(cellElement instanceof HTMLElement)) {
         return;
       }
 
-      const rowElement = cellElement.closest('tr');
+      const rowElement = cellElement.closest('[role="row"]');
 
       if (!(rowElement instanceof HTMLElement)) {
         return;
@@ -86,32 +88,36 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    const firstRow = this.querySelector('tr');
+    const firstRow = this.querySelector('[role="row"]');
 
     if (!firstRow) {
       return;
     }
 
-    const firstCell = firstRow.querySelector('td, th');
+    const firstCell = firstRow.querySelector(
+      '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
+    );
 
     if (!firstCell) {
       return;
     }
 
-    const firstCellFocusableElements = Array.from(
-      firstCell.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    );
-
-    const [firstFocusableElement] = firstCellFocusableElements;
-
-    if (!(firstFocusableElement instanceof HTMLElement)) {
-      return;
+    function isHtmlElement(
+      element: HTMLElement | Element,
+    ): element is HTMLElement {
+      return element instanceof HTMLElement;
     }
 
-    firstFocusableElement.setAttribute(
-      'tabindex',
-      firstFocusableElement.dataset.originalTabindex || '0',
-    );
+    const firstCellFocusableElements = Array.from(
+      firstCell.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
+    ).filter(isHtmlElement);
+
+    for (const focusableElement of firstCellFocusableElements) {
+      focusableElement.setAttribute(
+        'tabindex',
+        focusableElement.dataset.originalTabindex || '0',
+      );
+    }
   }
 
   connectedCallback() {
@@ -132,7 +138,12 @@ export class GridKeyboardNavigationElement extends HTMLElement {
     }
 
     const cellElement = event.composedPath().find((element) => {
-      return element instanceof HTMLElement && element.matches('td, th');
+      return (
+        element instanceof HTMLElement &&
+        element.matches(
+          '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
+        )
+      );
     });
 
     if (!(cellElement instanceof HTMLElement)) {
@@ -159,19 +170,28 @@ export class GridKeyboardNavigationElement extends HTMLElement {
     }
 
     const previousCellElement = event.composedPath().find((element) => {
-      return element instanceof HTMLElement && element.matches('td, th');
+      return (
+        element instanceof HTMLElement &&
+        element.matches(
+          '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
+        )
+      );
     });
 
     const focusedElement = window.document.activeElement;
     const focusedCellElement =
       focusedElement && this.contains(focusedElement)
-        ? focusedElement.closest('td, th')
-        : null;
+        ? focusedElement.closest(
+            '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
+          )
+        : previousCellElement;
 
     const unfocusedCellElements = Array.from(
-      this.querySelectorAll('td, th'),
+      this.querySelectorAll(
+        '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
+      ),
     ).filter((cellElement) => {
-      return cellElement !== (focusedCellElement || previousCellElement);
+      return cellElement !== focusedCellElement;
     });
 
     for (const unfocusedCellElement of unfocusedCellElements) {
@@ -193,14 +213,21 @@ export class GridKeyboardNavigationElement extends HTMLElement {
     }
 
     const target = event.composedPath().find((element) => {
-      return element instanceof HTMLElement && element.matches('td, th');
+      return (
+        element instanceof HTMLElement &&
+        element.matches(
+          '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
+        )
+      );
     });
 
     if (!(target instanceof HTMLElement)) {
       return;
     }
 
-    const cellElement = target.closest('td, th');
+    const cellElement = target.closest(
+      '[role="gridcell"], [role="columnheader"], [role="rowheader"]',
+    );
 
     if (!(cellElement instanceof HTMLElement)) {
       return;
@@ -236,7 +263,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
   }
 
   handleArrowUp(cellElement: HTMLElement) {
-    const rowElement = cellElement.closest('tr');
+    const rowElement = cellElement.closest('[role="row"]');
 
     if (!rowElement) {
       return;
@@ -244,13 +271,15 @@ export class GridKeyboardNavigationElement extends HTMLElement {
 
     const cellIndex = Array.from(rowElement.children).indexOf(cellElement);
 
-    const tableElement = rowElement.closest('table');
+    const gridElement = rowElement.closest('[role="grid"]');
 
-    if (!(tableElement instanceof HTMLElement)) {
+    if (!(gridElement instanceof HTMLElement)) {
       return;
     }
 
-    const rowElements = Array.from(tableElement.querySelectorAll('tr'));
+    const rowElements = Array.from(
+      gridElement.querySelectorAll('[role="row"]'),
+    );
 
     const rowIndex = rowElements.indexOf(rowElement);
 
@@ -275,7 +304,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
   }
 
   handleArrowDown(cellElement: HTMLElement) {
-    const rowElement = cellElement.closest('tr');
+    const rowElement = cellElement.closest('[role="row"]');
 
     if (!rowElement) {
       return;
@@ -283,13 +312,15 @@ export class GridKeyboardNavigationElement extends HTMLElement {
 
     const cellIndex = Array.from(rowElement.children).indexOf(cellElement);
 
-    const tableElement = rowElement.closest('table');
+    const gridElement = rowElement.closest('[role="grid"]');
 
-    if (!(tableElement instanceof HTMLElement)) {
+    if (!(gridElement instanceof HTMLElement)) {
       return;
     }
 
-    const rowElements = Array.from(tableElement.querySelectorAll('tr'));
+    const rowElements = Array.from(
+      gridElement.querySelectorAll('[role="row"]'),
+    );
 
     const rowIndex = rowElements.indexOf(rowElement);
 
@@ -334,15 +365,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
   }
 
   focusElement(targetCellElement: HTMLElement) {
-    const targetCellElementFocusableElements = Array.from(
-      targetCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    );
-
-    const [firstFocusableElement] = targetCellElementFocusableElements;
-
-    if (firstFocusableElement instanceof HTMLElement) {
-      firstFocusableElement.focus();
-    }
+    targetCellElement.focus();
   }
 }
 
