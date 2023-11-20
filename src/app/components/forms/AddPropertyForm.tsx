@@ -28,11 +28,10 @@ export function AddPropertyForm(
           width="24"
           height="24"
           fill="currentColor"
-          viewBox="125 175 250 250"
         >
           <use
             xmlnsXlink="http://www.w3.org/1999/xlink"
-            xlinkHref="/icons.svg#plus"
+            xlinkHref="#plus"
           ></use>
         </svg>
       </button>

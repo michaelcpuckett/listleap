@@ -11,11 +11,11 @@ export function ModalDialogElement(
     <modal-dialog>
       <template
         shadowrootmode="open"
-        shadowrootdelegatesfocus="true"
+        shadowrootdelegatesfocus=""
       >
         <link
           rel="stylesheet"
-          href="/modal-dialog.css"
+          href="/host.css"
         />
         <slot></slot>
       </template>

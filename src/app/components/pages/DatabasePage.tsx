@@ -153,11 +153,10 @@ export function DatabasePage(
                   width="16"
                   height="16"
                   fill="currentColor"
-                  viewBox="0 0 96.154 96.154"
                 >
                   <use
                     xmlnsXlink="http://www.w3.org/1999/xlink"
-                    xlinkHref="/icons.svg#arrow-down"
+                    xlinkHref="#arrow-down"
                   ></use>
                 </svg>
                 Bulk Actions

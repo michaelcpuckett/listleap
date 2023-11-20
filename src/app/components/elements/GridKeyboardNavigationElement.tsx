@@ -5,10 +5,13 @@ export function GridKeyboardNavigationElement(
 ) {
   return (
     <grid-keyboard-navigation>
-      <template shadowrootmode="open">
+      <template
+        shadowrootmode="open"
+        shadowrootdelegatesfocus=""
+      >
         <link
           rel="stylesheet"
-          href="/grid-keyboard-navigation.css"
+          href="/host.css"
         />
         <slot></slot>
       </template>

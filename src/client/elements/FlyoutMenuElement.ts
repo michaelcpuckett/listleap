@@ -5,11 +5,7 @@ export class FlyoutMenuElement extends HTMLElement {
   constructor() {
     super();
 
-    if (!this.shadowRoot) {
-      throw new Error('Could not attach shadow root');
-    }
-
-    const detailsElement = this.shadowRoot.querySelector('details');
+    const detailsElement = this.querySelector('details');
 
     if (!(detailsElement instanceof HTMLDetailsElement)) {
       throw new Error('Could not find details element');

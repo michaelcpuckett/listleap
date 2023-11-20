@@ -9,7 +9,6 @@ import {
 } from 'shared/types';
 import { RowActionsFlyoutMenu } from 'components/menus/RowActionsFlyoutMenu';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
-import { NumericalContentEditable } from 'components/elements/NumericalContentEditable';
 // import {DateContentEditable} from 'components/elements/DateContentEditable';
 import { AutoSaveCheckboxElement } from 'components/elements/AutoSaveCheckboxElement';
 import { PostFormElement } from 'components/elements/PostFormElement';
@@ -161,7 +160,7 @@ export function TableView(
                       : []),
                     ...(property.type === Number
                       ? [
-                          <NumericalContentEditable
+                          <AutoSaveTextElement
                             form={formId}
                             id={row.id}
                             label={property.name}

@@ -5,10 +5,13 @@ export function PostFormElement(
 ) {
   return (
     <post-form>
-      <template shadowrootmode="open">
+      <template
+        shadowrootmode="open"
+        shadowrootdelegatesfocus=""
+      >
         <link
           rel="stylesheet"
-          href="/post-form.css"
+          href="/host.css"
         />
         <slot></slot>
       </template>
