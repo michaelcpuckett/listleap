@@ -1,6 +1,7 @@
 export class FlyoutMenuElement extends HTMLElement {
   private detailsElement: HTMLDetailsElement;
   private boundKeydownHandler = this.handleKeydown.bind(this);
+  private boundToggleHandler = this.handleToggle.bind(this);
 
   constructor() {
     super();
@@ -16,6 +17,7 @@ export class FlyoutMenuElement extends HTMLElement {
 
   connectedCallback() {
     this.addEventListener('keydown', this.boundKeydownHandler);
+    this.detailsElement.addEventListener('toggle', this.boundToggleHandler);
   }
 
   disconnectedCallback() {
@@ -29,6 +31,18 @@ export class FlyoutMenuElement extends HTMLElement {
 
     if (event.key === 'Escape') {
       this.detailsElement.open = false;
+    }
+  }
+
+  handleToggle() {
+    if (this.detailsElement.open) {
+      const firstMenuItem = this.querySelector('[role="menuitem"]');
+
+      if (!(firstMenuItem instanceof HTMLElement)) {
+        return;
+      }
+
+      firstMenuItem.focus();
     }
   }
 }
