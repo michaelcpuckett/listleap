@@ -1,6 +1,5 @@
 import React from 'react';
 import { Database, AnyProperty, Row } from 'shared/types';
-import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 
 export function EditRowForm(
   props: React.PropsWithoutRef<{
@@ -24,10 +23,11 @@ export function EditRowForm(
         return (
           <label key={property.id}>
             <span>{property.name}</span>
-            <AutoSaveTextElement
+            <input
+              className="input"
               id={'edit-' + props.row.id + '-' + property.id}
               name={property.id}
-              label={property.name}
+              aria-label={property.name}
               value={`${props.row[property.id] || ''}`}
             />
           </label>
