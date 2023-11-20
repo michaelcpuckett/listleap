@@ -2,6 +2,7 @@ import React from 'react';
 import { Database, AnyProperty } from 'shared/types';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 import { PostFormElement } from 'components/elements/PostFormElement';
+import { Icon } from 'components/icons/Icon';
 
 export function AddPropertyForm(
   props: React.PropsWithChildren<{ database: Database<AnyProperty[]> }>,
@@ -22,18 +23,7 @@ export function AddPropertyForm(
         id="add-property-button"
         aria-label="Add Property"
       >
-        <svg
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="currentColor"
-        >
-          <use
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-            xlinkHref="#plus"
-          ></use>
-        </svg>
+        <Icon name="plus" />
       </button>
     </PostFormElement>
   );

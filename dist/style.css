@@ -450,7 +450,7 @@ flyout-menu summary {
   list-style: none;
   color: currentColor;
   padding: 10px 10px 6px 10px;
-  margin: 0.25rem;
+  margin: 0;
   position: relative;
 }
 

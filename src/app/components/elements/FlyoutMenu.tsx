@@ -1,3 +1,4 @@
+import { Icon } from 'components/icons/Icon';
 import React from 'react';
 import { getUniqueId } from 'shared/getUniqueId';
 
@@ -32,18 +33,7 @@ export function FlyoutMenu(
           aria-label={`Actions for ${props.label}`}
           aria-haspopup="true"
         >
-          <svg
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            fill="currentColor"
-          >
-            <use
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-              xlinkHref="#dots-vertical"
-            ></use>
-          </svg>
+          <Icon name="dots-vertical" />
         </summary>
         <div
           role="menu"

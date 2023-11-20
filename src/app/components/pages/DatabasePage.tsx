@@ -20,6 +20,7 @@ import { DeletePropertyModalDialog } from 'components/dialogs/DeletePropertyModa
 import { ModalDialogElement } from 'components/elements/ModalDialogElement';
 import { ERROR_MESSAGES } from 'utilities/errors';
 import { PostFormElement } from 'components/elements/PostFormElement';
+import { Icon } from 'components/icons/Icon';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
@@ -148,18 +149,11 @@ export function DatabasePage(
           <aside aria-label="Actions">
             <details>
               <summary className="summary button--full-width">
-                <svg
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                >
-                  <use
-                    xmlnsXlink="http://www.w3.org/1999/xlink"
-                    xlinkHref="#arrow-down"
-                  ></use>
-                </svg>
+                <Icon
+                  name="arrow-down"
+                  height={16}
+                  width={16}
+                />
                 Bulk Actions
               </summary>
               <form
