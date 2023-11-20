@@ -183,6 +183,10 @@ flyout-menu .button {
     grid-template-columns: subgrid;
   }
 
+  & [role='rowgroup']:first-of-type {
+    border-bottom: 3px solid var(--swatch-table-border);
+  }
+
   & [role='rowgroup']:first-of-type,
   [role='rowgroup']:first-of-type input[type='text'] {
     color: var(--swatch-table-border);

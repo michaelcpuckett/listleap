@@ -1,4 +1,9 @@
-import { addPropertyToIndexedDb, getIdb } from 'utilities/idb';
+import {
+  addBlankRowToIndexedDb,
+  addPropertyToIndexedDb,
+  getDatabaseFromIndexedDb,
+  getIdb,
+} from 'utilities/idb';
 import { getUniqueId } from 'shared/getUniqueId';
 import { addPartialDatabaseToIndexedDb } from 'utilities/idb';
 import { assertIsDatabase } from 'shared/assertions';
@@ -27,7 +32,7 @@ export async function PostDatabase(
 
   const titleProperty: Omit<Property<StringConstructor>, 'position'> = {
     id: 'title',
-    name: 'Title',
+    name: '',
     databaseId: id,
     type: String,
   };
@@ -35,6 +40,19 @@ export async function PostDatabase(
   const idb = await getIdb();
 
   await addPropertyToIndexedDb(titleProperty, idb);
+
+  const database = await getDatabaseFromIndexedDb(id, idb);
+
+  if (!database) {
+    idb.close();
+    return new Response('Not found', {
+      status: 404,
+    });
+  }
+
+  await addBlankRowToIndexedDb(database, idb);
+  await addBlankRowToIndexedDb(database, idb);
+  await addBlankRowToIndexedDb(database, idb);
 
   idb.close();
 

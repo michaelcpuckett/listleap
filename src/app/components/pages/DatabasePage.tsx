@@ -154,7 +154,7 @@ export function DatabasePage(
                   height={16}
                   width={16}
                 />
-                Bulk Actions
+                Actions
               </summary>
               <form
                 role="none"
