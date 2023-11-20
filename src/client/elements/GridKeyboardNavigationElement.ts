@@ -164,7 +164,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    const focusedElement = event.relatedTarget || window.document.activeElement;
+    const focusedElement = event.relatedTarget;
 
     if (!(focusedElement instanceof HTMLElement)) {
       return;

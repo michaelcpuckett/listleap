@@ -21,7 +21,6 @@ export function AddPropertyForm(
         className="text-color--currentColor button--full-width"
         id="add-property-button"
         aria-label="Add Property"
-        tabIndex={-1}
       >
         <svg
           aria-hidden="true"
