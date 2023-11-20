@@ -41,13 +41,11 @@ export class GridKeyboardNavigationElement extends HTMLElement {
         return;
       }
 
-      const target = event.target;
-
-      if (!(target instanceof HTMLElement)) {
+      if (!(event.target instanceof HTMLElement)) {
         return;
       }
 
-      const cellElement = target.closest(CELL_ELEMENT_SELECTOR);
+      const cellElement = event.target.closest(CELL_ELEMENT_SELECTOR);
 
       if (!(cellElement instanceof HTMLElement)) {
         return;

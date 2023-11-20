@@ -83,6 +83,10 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
 
   toggleEditMode() {
     this.inputElement.readOnly = !this.inputElement.readOnly;
+
+    if (!this.inputElement.readOnly) {
+      this.handleChange();
+    }
   }
 
   override handleChange() {
