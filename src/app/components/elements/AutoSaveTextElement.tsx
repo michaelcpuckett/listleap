@@ -42,7 +42,7 @@ export function AutoSaveTextElement(
         name={props.name}
         value={props.value}
         tabIndex={props.tabindex}
-        readOnly
+        data-read-only=""
       />
     </auto-save-text>
   );

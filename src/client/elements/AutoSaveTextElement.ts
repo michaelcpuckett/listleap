@@ -2,55 +2,49 @@ import { BaseAutoSaveElement } from 'elements/BaseAutoSaveElement';
 
 export class AutoSaveTextElement extends BaseAutoSaveElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
-  private boundEnterEditModeHandler = this.enterEditMode.bind(this);
-  private boundExitEditModeHandler = this.exitEditMode.bind(this);
-  private isWebKit =
-    RegExp(' AppleWebKit/').test(navigator.userAgent) && !('chrome' in window);
+  private boundClickHandler = this.handleClick.bind(this);
+  private boundBlurHandler = this.handleBlur.bind(this);
 
   connectedCallback() {
-    this.inputElement.addEventListener('click', this.boundEnterEditModeHandler);
     this.inputElement.addEventListener('change', this.boundChangeHandler);
     this.inputElement.addEventListener('keydown', this.boundKeydownHandler);
-    this.inputElement.addEventListener('blur', this.boundExitEditModeHandler);
-
-    if (this.isWebKit) {
-      this.inputElement.addEventListener(
-        'touchstart',
-        this.boundEnterEditModeHandler,
-      );
-    }
+    this.inputElement.addEventListener('blur', this.boundBlurHandler);
+    this.inputElement.addEventListener('click', this.boundClickHandler);
   }
 
   disconnectedCallback() {
-    this.inputElement.removeEventListener(
-      'click',
-      this.boundEnterEditModeHandler,
-    );
     this.inputElement.removeEventListener('change', this.boundChangeHandler);
     this.inputElement.removeEventListener('keydown', this.boundKeydownHandler);
-    this.inputElement.removeEventListener(
-      'blur',
-      this.boundExitEditModeHandler,
-    );
-
-    if (this.isWebKit) {
-      this.inputElement.removeEventListener(
-        'touchstart',
-        this.boundEnterEditModeHandler,
-      );
-    }
+    this.inputElement.removeEventListener('blur', this.boundBlurHandler);
+    this.inputElement.removeEventListener('click', this.boundClickHandler);
   }
 
   enterEditMode() {
-    this.inputElement.readOnly = false;
+    this.inputElement.removeAttribute('data-read-only');
   }
 
   exitEditMode() {
-    this.inputElement.readOnly = true;
+    this.inputElement.setAttribute('data-read-only', '');
 
     this.submitData().then(() => {
       this.markClean();
     });
+  }
+
+  toggleEditMode() {
+    if (this.inputElement.dataset.readOnly === '') {
+      this.enterEditMode();
+    } else {
+      this.exitEditMode();
+    }
+  }
+
+  handleClick() {
+    this.enterEditMode();
+  }
+
+  handleBlur() {
+    this.exitEditMode();
   }
 
   handleKeydown(event: Event) {
@@ -59,7 +53,7 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
     }
 
     if (event.key === 'Escape') {
-      if (!this.inputElement.readOnly) {
+      if (this.inputElement.dataset.readOnly !== '') {
         const currentValue = this.inputElement.value;
         const savedValue = this.inputElement.getAttribute('value') || '';
 
@@ -76,7 +70,7 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
       event.preventDefault();
       this.toggleEditMode();
 
-      if (this.inputElement.readOnly) {
+      if (this.inputElement.dataset.readOnly === '') {
         this.dispatchEvent(
           new CustomEvent('auto-save-text:toggle-edit-mode', {
             composed: true,
@@ -99,17 +93,13 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
     }
 
     if (event.key.length === 1 && /[a-zA-Z0-9-_ ]/.test(event.key)) {
-      if (this.inputElement.readOnly) {
+      if (this.inputElement.dataset.readOnly === '') {
         this.toggleEditMode();
         this.inputElement.value = '';
         this.inputElement.selectionStart = this.inputElement.selectionEnd =
           this.inputElement.value.length;
       }
     }
-  }
-
-  toggleEditMode() {
-    this.inputElement.readOnly = !this.inputElement.readOnly;
   }
 
   async submitData() {

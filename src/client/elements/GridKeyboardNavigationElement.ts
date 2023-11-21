@@ -82,7 +82,7 @@ export class GridKeyboardNavigationElement extends HTMLElement {
     }
 
     const editableAutoSaveTextInputElement = cellElement.querySelector(
-      'auto-save-text input[type="text"]:not([readonly])',
+      'auto-save-text input[type="text"]:not([data-read-only])',
     );
 
     if (editableAutoSaveTextInputElement) {

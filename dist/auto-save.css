@@ -26,7 +26,7 @@
   color: CanvasText;
 }
 
-::slotted(input[type='text']:not([readonly])) {
+::slotted(input[type='text']:not([data-read-only])) {
   background: CanvasText;
   color: Canvas;
 }
