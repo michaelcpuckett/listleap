@@ -101,19 +101,91 @@ export class GridKeyboardNavigationElement extends HTMLElement {
       return;
     }
 
-    if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      this.handleArrowUp(cellElement);
-    } else if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      this.handleArrowDown(cellElement);
-    } else if (event.key === 'ArrowLeft') {
-      event.preventDefault();
-      this.handleArrowLeft(cellElement);
-    } else if (event.key === 'ArrowRight') {
-      event.preventDefault();
-      this.handleArrowRight(cellElement);
+    switch (event.key) {
+      case 'ArrowUp':
+        event.preventDefault();
+        this.handleArrowUp(cellElement);
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        this.handleArrowDown(cellElement);
+        break;
+      case 'ArrowLeft':
+        event.preventDefault();
+        this.handleArrowLeft(cellElement);
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        this.handleArrowRight(cellElement);
+        break;
+      case 'Home':
+        event.preventDefault();
+        this.handleHome(cellElement);
+        break;
+      case 'End':
+        event.preventDefault();
+        this.handleEnd(cellElement);
+        break;
+      default:
+        break;
     }
+  }
+
+  handleHome(cellElement: HTMLElement) {
+    const gridElement = cellElement.closest('[role="grid"]');
+
+    if (!(gridElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const rowElements = Array.from(
+      gridElement.querySelectorAll('[role="row"]'),
+    );
+
+    const targetRowElement = rowElements[0];
+
+    if (!(targetRowElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const targetRowElementCells = Array.from(targetRowElement.children);
+
+    const targetCellElement = targetRowElementCells[0];
+
+    if (!(targetCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    this.focusElement(targetCellElement);
+  }
+
+  handleEnd(cellElement: HTMLElement) {
+    const gridElement = cellElement.closest('[role="grid"]');
+
+    if (!(gridElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const rowElements = Array.from(
+      gridElement.querySelectorAll('[role="row"]'),
+    );
+
+    const targetRowElement = rowElements[rowElements.length - 1];
+
+    if (!(targetRowElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const targetRowElementCells = Array.from(targetRowElement.children);
+
+    const targetCellElement =
+      targetRowElementCells[targetRowElementCells.length - 1];
+
+    if (!(targetCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    this.focusElement(targetCellElement);
   }
 
   handleArrowUp(cellElement: HTMLElement) {

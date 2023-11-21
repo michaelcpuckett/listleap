@@ -43,9 +43,6 @@ export async function PutDatabaseRow(
     });
   }
 
-  // const isLastRow =
-  //   database.rows.indexOf(existingRow) === database.rows.length - 1;
-
   const rowToPut = {
     id: existingRow.id,
     position: existingRow.position,
@@ -93,9 +90,6 @@ export async function PutDatabaseRow(
 
   await editRowInIndexedDb<typeof database>(rowToPut, idb);
 
-  // if (isLastRow) {
-  //   await addBlankRowToIndexedDb(database, idb);
-  // }
   idb.close();
 
   const redirectUrl = new URL(
