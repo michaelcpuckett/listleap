@@ -26,7 +26,7 @@ export function TableView(
     .map((row) => row.id);
 
   const gridColumnsCss = `auto ${
-    properties.length ? `repeat(${properties.length}, minmax(250px, 1fr))` : ''
+    properties.length ? `repeat(${properties.length}, minmax(235px, 1fr))` : ''
   } auto`;
 
   return (
