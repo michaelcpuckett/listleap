@@ -4,12 +4,21 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundEnterEditModeHandler = this.enterEditMode.bind(this);
   private boundExitEditModeHandler = this.exitEditMode.bind(this);
+  private isWebKit =
+    RegExp(' AppleWebKit/').test(navigator.userAgent) && !('chrome' in window);
 
   connectedCallback() {
     this.inputElement.addEventListener('click', this.boundEnterEditModeHandler);
     this.inputElement.addEventListener('change', this.boundChangeHandler);
     this.inputElement.addEventListener('keydown', this.boundKeydownHandler);
     this.inputElement.addEventListener('blur', this.boundExitEditModeHandler);
+
+    if (this.isWebKit) {
+      this.inputElement.addEventListener(
+        'touchstart',
+        this.boundEnterEditModeHandler,
+      );
+    }
   }
 
   disconnectedCallback() {
@@ -23,22 +32,17 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
       'blur',
       this.boundExitEditModeHandler,
     );
+
+    if (this.isWebKit) {
+      this.inputElement.removeEventListener(
+        'touchstart',
+        this.boundEnterEditModeHandler,
+      );
+    }
   }
 
   enterEditMode() {
-    const isWebKit =
-      RegExp(' AppleWebKit/').test(navigator.userAgent) &&
-      !('chrome' in window);
-
-    if (isWebKit) {
-      this.inputElement.blur();
-      this.inputElement.readOnly = false;
-      new Promise(window.requestAnimationFrame).then(() => {
-        this.inputElement.focus();
-      });
-    } else {
-      this.inputElement.readOnly = false;
-    }
+    this.inputElement.readOnly = false;
   }
 
   exitEditMode() {
