@@ -19,9 +19,9 @@ export function EditPropertyForm(
         name="_method"
         value="PATCH"
       />
-      <AutoSaveTextElement
+      <input
         id={props.property.id}
-        label="Name"
+        aria-label="Name"
         name="name"
         value={props.property.name}
       />

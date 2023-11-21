@@ -7,6 +7,14 @@ window.addEventListener('pageshow', (event) => {
 });
 
 (() => {
+  const currentUrl = new URL(window.location.href);
+
+  if (currentUrl.searchParams.get('autofocus')) {
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.delete('autofocus');
+    window.history.replaceState({}, '', nextUrl.href);
+  }
+
   const SCROLL_STORAGE_KEY = 'scroll-position-y';
 
   const scrollValue = sessionStorage.getItem(SCROLL_STORAGE_KEY) || 0;

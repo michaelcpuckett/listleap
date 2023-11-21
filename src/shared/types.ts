@@ -6,6 +6,7 @@ export type Referrer = {
   query?: string;
   filter?: string;
   error?: string;
+  autofocus?: string;
 };
 
 export interface Settings {

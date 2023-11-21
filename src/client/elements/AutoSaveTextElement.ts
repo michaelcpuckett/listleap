@@ -70,9 +70,9 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
     }
 
     if (event.key === 'Enter') {
-      this.toggleEditMode();
-
       event.preventDefault();
+
+      this.toggleEditMode();
 
       if (this.inputElement.readOnly) {
         this.dispatchEvent(
@@ -81,6 +81,15 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
             bubbles: true,
           }),
         );
+
+        this.submitData().then(() => {
+          this.dispatchEvent(
+            new CustomEvent('auto-save-text:save', {
+              composed: true,
+              bubbles: true,
+            }),
+          );
+        });
       } else {
         this.inputElement.selectionStart = this.inputElement.selectionEnd =
           this.inputElement.value.length;
@@ -99,13 +108,9 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
 
   toggleEditMode() {
     this.inputElement.readOnly = !this.inputElement.readOnly;
-
-    if (!this.inputElement.readOnly) {
-      this.handleChange();
-    }
   }
 
-  override handleChange() {
+  async submitData() {
     const value = this.inputElement.value;
     const formElement = this.inputElement.form;
 
@@ -123,7 +128,7 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
     const method = new FormData(formElement).get('_method')?.toString() || '';
 
     if (['PUT', 'PATCH'].includes(method)) {
-      this.patch(formAction, value)
+      return this.patch(formAction, value)
         .then(() => {
           this.inputElement.setAttribute('value', value);
           this.markClean();

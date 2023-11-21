@@ -1,10 +1,10 @@
 import React from 'react';
-import escapeStringRegexp from 'escape-string-regexp';
-import { getUniqueId } from 'shared/getUniqueId';
+import { Referrer } from 'shared/types';
 
 export function AutoSaveTextElement(
   props: React.PropsWithChildren<{
     form?: string;
+    referrer: Referrer;
     placeholder?: string;
     inline?: boolean;
     id: string;
@@ -14,6 +14,10 @@ export function AutoSaveTextElement(
     tabindex?: number;
   }>,
 ) {
+  const id = `auto-save-text--field__${props.name.replace('[]', '')}--${
+    props.id
+  }`;
+
   return (
     <auto-save-text
       id={`auto-save-text--${props.name.replace('[]', '')}--${props.id}`}
@@ -28,9 +32,8 @@ export function AutoSaveTextElement(
       </template>
       <input
         form={props.form}
-        id={`auto-save-text--field__${props.name.replace('[]', '')}--${
-          props.id
-        }`}
+        id={id}
+        data-auto-focus={props.referrer.autofocus === id}
         autoComplete="turn-off"
         aria-label={props.label}
         placeholder={props.placeholder}

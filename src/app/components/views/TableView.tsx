@@ -73,6 +73,7 @@ export function TableView(
                   <AutoSaveTextElement
                     inline
                     id={property.id}
+                    referrer={props.referrer}
                     name="name"
                     label={property.name}
                     value={property.name}
@@ -132,6 +133,7 @@ export function TableView(
                         form={formId}
                         id={row.id}
                         label={property.name}
+                        referrer={props.referrer}
                         name={property.id}
                         value={row[property.id]}
                       />
@@ -146,6 +148,7 @@ export function TableView(
                     ) : property.type === Number ? (
                       <AutoSaveTextElement
                         form={formId}
+                        referrer={props.referrer}
                         id={row.id}
                         label={property.name}
                         name={property.id}

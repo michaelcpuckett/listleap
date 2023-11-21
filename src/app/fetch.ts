@@ -39,12 +39,14 @@ export function handleFetch(event: Event) {
   const filter = url.searchParams.get('filter') || '';
   const query = url.searchParams.get('query') || '';
   const error = url.searchParams.get('error') || '';
+  const autofocus = url.searchParams.get('autofocus') || '';
   const referrer: Referrer = {
     filter,
     query,
     mode,
     index,
     error,
+    autofocus,
     id,
     url: event.request.url,
   };

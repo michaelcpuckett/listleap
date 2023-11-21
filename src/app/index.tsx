@@ -37,6 +37,7 @@ declare global {
       'post-form': CustomElement;
       'grid-keyboard-navigation': CustomElement;
       'modal-dialog': CustomElement;
+      'view-container': CustomElement;
     }
   }
 }

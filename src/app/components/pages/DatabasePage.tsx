@@ -21,6 +21,7 @@ import { ModalDialogElement } from 'components/elements/ModalDialogElement';
 import { ERROR_MESSAGES } from 'utilities/errors';
 import { PostFormElement } from 'components/elements/PostFormElement';
 import { Icon } from 'components/icons/Icon';
+import { ViewContainerElement } from 'components/elements/ViewContainerElement';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
@@ -184,39 +185,42 @@ export function DatabasePage(
               </form>
             </details>
           </aside>
-          {guardIsTable(props.database) ? (
-            <>
-              <TableView
-                database={props.database}
-                referrer={props.referrer}
-                queriedRows={queriedRows}
-              />
-              <PostFormElement
-                action={`/databases/${props.database.id}/rows`}
-                id="add-row-form"
-              >
-                <button
-                  className="button--full-width button--bordered"
-                  id="add-new-row-button"
-                  type="submit"
+          <ViewContainerElement>
+            {guardIsTable(props.database) ? (
+              <>
+                <TableView
+                  database={props.database}
+                  referrer={props.referrer}
+                  queriedRows={queriedRows}
+                />
+                <PostFormElement
+                  action={`/databases/${props.database.id}/rows`}
+                  id="add-row-form"
                 >
-                  Add New Row
-                </button>
-              </PostFormElement>
-              {props.database.rows.length - queriedRows.length > 0 ? (
-                <p className="notice">
-                  Not showing {props.database.rows.length - queriedRows.length}{' '}
-                  rows due to search filter.{' '}
-                  <a
-                    className="text-color--currentColor"
-                    href={clearSearchUrl.href}
+                  <button
+                    className="button--full-width button--bordered"
+                    id="add-new-row-button"
+                    type="submit"
                   >
-                    Clear
-                  </a>
-                </p>
-              ) : null}
-            </>
-          ) : null}
+                    Add New Row
+                  </button>
+                </PostFormElement>
+                {props.database.rows.length - queriedRows.length > 0 ? (
+                  <p className="notice">
+                    Not showing{' '}
+                    {props.database.rows.length - queriedRows.length} rows due
+                    to search filter.{' '}
+                    <a
+                      className="text-color--currentColor"
+                      href={clearSearchUrl.href}
+                    >
+                      Clear
+                    </a>
+                  </p>
+                ) : null}
+              </>
+            ) : null}
+          </ViewContainerElement>
         </main>
       </div>
     </PageShell>

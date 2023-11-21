@@ -97,5 +97,13 @@ export async function PostDatabaseRows(
   await addRowToIndexedDb<typeof database>(rowToAdd, idb);
   idb.close();
 
-  return Response.redirect(event.request.referrer, 303);
+  const redirectUrl = new URL(
+    `/databases/${database.id}`,
+    new URL(event.request.url).origin,
+  );
+  const firstPropertyName = database.properties[0]?.id || '';
+  const autoFocusId = `auto-save-text--field__${firstPropertyName}--${rowToAdd.id}`;
+  redirectUrl.searchParams.set('autofocus', autoFocusId);
+
+  return Response.redirect(redirectUrl.href, 303);
 }

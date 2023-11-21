@@ -17,10 +17,11 @@ export function EditDatabaseForm(
         value="PATCH"
       />
       <h1>
-        <AutoSaveTextElement
-          inline
+        <input
+          type="text"
+          className="input"
           name="name"
-          label="Name"
+          aria-label="Name"
           value={props.database.name}
           id={props.database.id}
         />
