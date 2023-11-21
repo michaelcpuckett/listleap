@@ -26,177 +26,179 @@ export function TableView(
     .map((row) => row.id);
 
   const gridColumnsCss = `auto ${
-    properties.length ? `repeat(${properties.length}, minmax(0, 1fr))` : ''
+    properties.length ? `repeat(${properties.length}, minmax(250px, 1fr))` : ''
   } auto`;
 
   return (
     <GridKeyboardNavigationElement>
-      <div
-        role="grid"
-        aria-rowcount={rows.length}
-        className="view view--table"
-        style={{
-          '--grid-columns': gridColumnsCss,
-        }}
-      >
-        <RowGroupElement>
-          <RowElement label="Properties">
-            <ColumnHeaderElement
-              className="align-center"
-              label="Select"
-            >
-              <SelectAllCheckboxElement>
-                <AutoSaveCheckboxElement
-                  form="select-multiple-rows-form"
-                  id="select-all-rows"
-                  value={rowIds.join(',')}
-                  name="row[]"
-                  label="Select all rows"
-                  checked={false}
-                />
-              </SelectAllCheckboxElement>
-            </ColumnHeaderElement>
-            {properties.map((property, index) => (
-              <ColumnHeaderElement label={property.name}>
-                <form
-                  id={`edit-property-form--${property.id}`}
-                  autoComplete="off"
-                  action={`/databases/${property.databaseId}/properties/${property.id}`}
-                  method="POST"
-                  role="none"
-                >
-                  <input
-                    type="hidden"
-                    name="_method"
-                    value="PATCH"
-                  />
-                  <AutoSaveTextElement
-                    inline
-                    id={property.id}
-                    referrer={props.referrer}
-                    name="name"
-                    label={property.name}
-                    value={property.name}
-                  />
-                  <button
-                    type="submit"
-                    hidden
-                  >
-                    Submit
-                  </button>
-                </form>
-                <PropertyActionsFlyoutMenu
-                  property={property}
-                  previousProperty={properties[index - 1]}
-                  nextProperty={properties[index + 1]}
-                  referrer={props.referrer}
-                />
-              </ColumnHeaderElement>
-            ))}
-            <ColumnHeaderElement
-              className="align-center"
-              label="Actions"
-            >
-              <AddPropertyForm database={props.database} />
-            </ColumnHeaderElement>
-          </RowElement>{' '}
-        </RowGroupElement>
-        <RowGroupElement>
-          {rows.map((row) => {
-            const filteredIndex = props.queriedRows.findIndex(
-              (t) => t.id === row.id,
-            );
-
-            if (filteredIndex === -1) {
-              return null;
-            }
-
-            const formId = `edit-row-inline-form--${row.id}`;
-
-            return (
-              <RowElement>
-                <CellElement className="align-center">
+      <div className="view-scroll-container">
+        <div
+          role="grid"
+          aria-rowcount={rows.length}
+          className="view view--table"
+          style={{
+            '--grid-columns': gridColumnsCss,
+          }}
+        >
+          <RowGroupElement>
+            <RowElement label="Properties">
+              <ColumnHeaderElement
+                className="align-center"
+                label="Select"
+              >
+                <SelectAllCheckboxElement>
                   <AutoSaveCheckboxElement
                     form="select-multiple-rows-form"
-                    id={row.id}
-                    value={row.id}
+                    id="select-all-rows"
+                    value={rowIds.join(',')}
                     name="row[]"
-                    label="Select row"
+                    label="Select all rows"
                     checked={false}
                   />
-                </CellElement>
-                {properties.map((property, index) => (
-                  <CellElement role={index === 0 ? 'rowheader' : undefined}>
-                    {property.type === String ? (
-                      <AutoSaveTextElement
-                        inline
-                        form={formId}
-                        id={row.id}
-                        label={property.name}
-                        referrer={props.referrer}
-                        name={property.id}
-                        value={row[property.id]}
-                      />
-                    ) : property.type === Boolean ? (
-                      <AutoSaveCheckboxElement
-                        form={formId}
-                        id={row.id}
-                        label={property.name}
-                        name={property.id}
-                        checked={row[property.id]}
-                      />
-                    ) : property.type === Number ? (
-                      <AutoSaveTextElement
-                        form={formId}
-                        referrer={props.referrer}
-                        id={row.id}
-                        label={property.name}
-                        name={property.id}
-                        value={row[property.id]}
-                      />
-                    ) : null}
-                  </CellElement>
-                ))}
-                <CellElement
-                  className="align-center"
-                  aria-label="Actions"
-                >
-                  <RowActionsFlyoutMenu
-                    row={row}
-                    previousRow={props.queriedRows[filteredIndex - 1]}
-                    nextRow={props.queriedRows[filteredIndex + 1]}
-                    referrer={props.referrer}
-                  />
+                </SelectAllCheckboxElement>
+              </ColumnHeaderElement>
+              {properties.map((property, index) => (
+                <ColumnHeaderElement label={property.name}>
                   <form
-                    noValidate
+                    id={`edit-property-form--${property.id}`}
                     autoComplete="off"
-                    action={`/databases/${props.database.id}/rows/${row.id}`}
+                    action={`/databases/${property.databaseId}/properties/${property.id}`}
                     method="POST"
-                    id={formId}
                     role="none"
                   >
                     <input
                       type="hidden"
                       name="_method"
-                      value="PUT"
+                      value="PATCH"
                     />
-                    <input
-                      type="hidden"
-                      name="position"
-                      value={row.position}
+                    <AutoSaveTextElement
+                      inline
+                      id={property.id}
+                      referrer={props.referrer}
+                      name="name"
+                      label={property.name}
+                      value={property.name}
                     />
                     <button
                       type="submit"
                       hidden
                     >
-                      Update
+                      Submit
                     </button>
                   </form>
-                </CellElement>
-              </RowElement>
-            );
-          })}
-        </RowGroupElement>
+                  <PropertyActionsFlyoutMenu
+                    property={property}
+                    previousProperty={properties[index - 1]}
+                    nextProperty={properties[index + 1]}
+                    referrer={props.referrer}
+                  />
+                </ColumnHeaderElement>
+              ))}
+              <ColumnHeaderElement
+                className="align-center"
+                label="Actions"
+              >
+                <AddPropertyForm database={props.database} />
+              </ColumnHeaderElement>
+            </RowElement>{' '}
+          </RowGroupElement>
+          <RowGroupElement>
+            {rows.map((row) => {
+              const filteredIndex = props.queriedRows.findIndex(
+                (t) => t.id === row.id,
+              );
+
+              if (filteredIndex === -1) {
+                return null;
+              }
+
+              const formId = `edit-row-inline-form--${row.id}`;
+
+              return (
+                <RowElement>
+                  <CellElement className="align-center">
+                    <AutoSaveCheckboxElement
+                      form="select-multiple-rows-form"
+                      id={row.id}
+                      value={row.id}
+                      name="row[]"
+                      label="Select row"
+                      checked={false}
+                    />
+                  </CellElement>
+                  {properties.map((property, index) => (
+                    <CellElement role={index === 0 ? 'rowheader' : undefined}>
+                      {property.type === String ? (
+                        <AutoSaveTextElement
+                          inline
+                          form={formId}
+                          id={row.id}
+                          label={property.name}
+                          referrer={props.referrer}
+                          name={property.id}
+                          value={row[property.id]}
+                        />
+                      ) : property.type === Boolean ? (
+                        <AutoSaveCheckboxElement
+                          form={formId}
+                          id={row.id}
+                          label={property.name}
+                          name={property.id}
+                          checked={row[property.id]}
+                        />
+                      ) : property.type === Number ? (
+                        <AutoSaveTextElement
+                          form={formId}
+                          referrer={props.referrer}
+                          id={row.id}
+                          label={property.name}
+                          name={property.id}
+                          value={row[property.id]}
+                        />
+                      ) : null}
+                    </CellElement>
+                  ))}
+                  <CellElement
+                    className="align-center"
+                    aria-label="Actions"
+                  >
+                    <RowActionsFlyoutMenu
+                      row={row}
+                      previousRow={props.queriedRows[filteredIndex - 1]}
+                      nextRow={props.queriedRows[filteredIndex + 1]}
+                      referrer={props.referrer}
+                    />
+                    <form
+                      noValidate
+                      autoComplete="off"
+                      action={`/databases/${props.database.id}/rows/${row.id}`}
+                      method="POST"
+                      id={formId}
+                      role="none"
+                    >
+                      <input
+                        type="hidden"
+                        name="_method"
+                        value="PUT"
+                      />
+                      <input
+                        type="hidden"
+                        name="position"
+                        value={row.position}
+                      />
+                      <button
+                        type="submit"
+                        hidden
+                      >
+                        Update
+                      </button>
+                    </form>
+                  </CellElement>
+                </RowElement>
+              );
+            })}
+          </RowGroupElement>
+        </div>
       </div>
     </GridKeyboardNavigationElement>
   );

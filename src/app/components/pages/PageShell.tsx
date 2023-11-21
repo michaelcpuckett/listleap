@@ -24,7 +24,7 @@ export function PageShell(
           name="viewport"
           content="width=device-width, initial-scale=1"
         />
-        <script src="/bfcache.js"></script>
+        <script src="/head.js"></script>
         {cssUrls.map((url) => (
           <link
             rel="stylesheet"

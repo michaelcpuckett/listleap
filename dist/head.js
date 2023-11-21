@@ -18,9 +18,16 @@ window.addEventListener('pageshow', (event) => {
   const SCROLL_STORAGE_KEY = 'scroll-position-y';
 
   const scrollValue = sessionStorage.getItem(SCROLL_STORAGE_KEY) || 0;
-  const cssSafeHeightValue = `calc(${scrollValue}px + 100vh)`;
-
+  const cssSafeHeightValue = `calc(${scrollValue}px + 101vh)`;
   window.document.documentElement.style.minHeight = cssSafeHeightValue;
+
+  const scrollbarWidth =
+    window.innerWidth - document.documentElement.clientWidth;
+  window.document.documentElement.style.setProperty(
+    '--scrollbar-width',
+    `${scrollbarWidth}px`,
+  );
+
   window.scrollTo(0, Number(scrollValue));
   sessionStorage.removeItem(SCROLL_STORAGE_KEY);
 

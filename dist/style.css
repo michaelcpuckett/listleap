@@ -164,8 +164,14 @@ flyout-menu .button {
   width: 100%;
 }
 
+.view-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 .view {
-  width: 100%;
+  width: max-content;
+  min-width: calc(100% - var(--scrollbar-width, 0px));
   display: grid;
   grid-template-columns: var(--grid-columns);
 
