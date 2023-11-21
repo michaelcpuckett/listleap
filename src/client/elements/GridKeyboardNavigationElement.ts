@@ -1,21 +1,7 @@
-const FOCUSABLE_ELEMENTS_SELECTOR =
-  'input:not([type="hidden"]):not([hidden]), button:not([hidden]), a:not([hidden]), textarea:not([hidden]), select:not([hidden]), [tabindex]:not([hidden])';
 const CELL_ELEMENT_SELECTOR =
   '[role="gridcell"], [role="columnheader"], [role="rowheader"]';
 
-const FOCUS_STORAGE_KEY = 'focus-element-id';
-
 const FLYOUT_MENU_SELECTOR = 'flyout-menu [role="menu"]';
-
-function isNotInFlyoutMenu(element: Element | HTMLElement | EventTarget) {
-  if (!(element instanceof Element)) {
-    return true;
-  }
-
-  const flyoutMenuElement = element.closest(FLYOUT_MENU_SELECTOR);
-
-  return !(flyoutMenuElement instanceof HTMLElement);
-}
 
 function isInFlyoutMenu(element: Element | HTMLElement | EventTarget) {
   if (!(element instanceof Element)) {
@@ -29,12 +15,9 @@ function isInFlyoutMenu(element: Element | HTMLElement | EventTarget) {
 
 export class GridKeyboardNavigationElement extends HTMLElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
-  private boundFocusinHandler = this.handleFocusin.bind(this);
-  private boundFocusoutHandler = this.handleFocusout.bind(this);
 
   constructor() {
     super();
-    this.setInitialTabIndices();
 
     this.addEventListener('auto-save-text:toggle-edit-mode', (event: Event) => {
       if (!(event instanceof CustomEvent)) {
@@ -75,136 +58,12 @@ export class GridKeyboardNavigationElement extends HTMLElement {
     });
   }
 
-  setInitialTabIndices() {
-    const focusableElements = Array.from(
-      this.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    ).filter(isNotInFlyoutMenu);
-
-    for (const focusableElement of focusableElements) {
-      if (focusableElement instanceof HTMLElement) {
-        focusableElement.dataset.originalTabindex =
-          focusableElement.tabIndex.toString();
-      }
-
-      focusableElement.setAttribute('tabindex', '-1');
-    }
-
-    const autoFocusedElementId =
-      sessionStorage.getItem(FOCUS_STORAGE_KEY) || '';
-    const autoFocusedElement = autoFocusedElementId
-      ? this.querySelector(`#${autoFocusedElementId}`)
-      : null;
-
-    const firstFocusableElement =
-      autoFocusedElement || this.querySelector(FOCUSABLE_ELEMENTS_SELECTOR);
-
-    if (!(firstFocusableElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const firstFocusedCellElement = firstFocusableElement.closest(
-      CELL_ELEMENT_SELECTOR,
-    );
-
-    if (!(firstFocusedCellElement instanceof HTMLElement)) {
-      return;
-    }
-
-    function isHtmlElement(
-      element: HTMLElement | Element,
-    ): element is HTMLElement {
-      return element instanceof HTMLElement;
-    }
-
-    const firstCellFocusableElements = Array.from(
-      firstFocusedCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    )
-      .filter(isHtmlElement)
-      .filter(isNotInFlyoutMenu);
-
-    for (const focusableElement of firstCellFocusableElements) {
-      focusableElement.setAttribute(
-        'tabindex',
-        focusableElement.dataset.originalTabindex || '0',
-      );
-    }
-  }
-
   connectedCallback() {
     this.addEventListener('keydown', this.boundKeydownHandler);
-    this.addEventListener('focusin', this.boundFocusinHandler);
-    this.addEventListener('focusout', this.boundFocusoutHandler);
   }
 
   disconnected() {
     this.removeEventListener('keydown', this.boundKeydownHandler);
-    this.removeEventListener('focusin', this.boundFocusinHandler);
-    this.removeEventListener('focusout', this.boundFocusoutHandler);
-  }
-
-  handleFocusin(event: Event) {
-    if (!(event instanceof FocusEvent)) {
-      return;
-    }
-
-    const cellElement = event.composedPath().find((element) => {
-      return (
-        element instanceof HTMLElement && element.matches(CELL_ELEMENT_SELECTOR)
-      );
-    });
-
-    if (!(cellElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const focusableElements = Array.from(
-      cellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    ).filter(isNotInFlyoutMenu);
-
-    for (const focusableElement of focusableElements) {
-      if (focusableElement instanceof HTMLElement) {
-        focusableElement.setAttribute(
-          'tabindex',
-          focusableElement.dataset.originalTabindex || '0',
-        );
-      }
-    }
-  }
-
-  handleFocusout(event: Event) {
-    if (!(event instanceof FocusEvent)) {
-      return;
-    }
-
-    const previousCellElement = event.composedPath().find((element) => {
-      return (
-        element instanceof HTMLElement && element.matches(CELL_ELEMENT_SELECTOR)
-      );
-    });
-
-    if (!(previousCellElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const focusedElement = event.relatedTarget;
-
-    if (!(focusedElement instanceof HTMLElement)) {
-      return;
-    }
-
-    if (!this.contains(focusedElement)) {
-      return;
-    }
-
-    const focusableElements = Array.from(
-      previousCellElement.querySelectorAll(FOCUSABLE_ELEMENTS_SELECTOR),
-    ).filter(isNotInFlyoutMenu);
-
-    for (const focusableElement of focusableElements) {
-      if (focusableElement instanceof HTMLElement) {
-        focusableElement.setAttribute('tabindex', '-1');
-      }
-    }
   }
 
   handleKeydown(event: Event) {
