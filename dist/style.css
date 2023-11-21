@@ -166,7 +166,6 @@ flyout-menu .button {
 
 .view-scroll-container {
   overflow-x: auto;
-  overflow-y: hidden;
 }
 
 .view {
