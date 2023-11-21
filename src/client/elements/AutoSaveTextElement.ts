@@ -2,40 +2,39 @@ import { BaseAutoSaveElement } from 'elements/BaseAutoSaveElement';
 
 export class AutoSaveTextElement extends BaseAutoSaveElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
-  private boundClickHandler = this.handleClick.bind(this);
-  private boundBlurHandler = this.handleBlur.bind(this);
+  private boundEnterEditModeHandler = this.enterEditMode.bind(this);
+  private boundExitEditModeHandler = this.exitEditMode.bind(this);
 
   connectedCallback() {
-    this.inputElement.addEventListener('pointerdown', this.boundClickHandler);
+    this.inputElement.addEventListener('click', this.boundEnterEditModeHandler);
     this.inputElement.addEventListener('change', this.boundChangeHandler);
     this.inputElement.addEventListener('keydown', this.boundKeydownHandler);
-    this.inputElement.addEventListener('blur', this.boundBlurHandler);
+    this.inputElement.addEventListener('blur', this.boundExitEditModeHandler);
   }
 
   disconnectedCallback() {
     this.inputElement.removeEventListener(
-      'pointerdown',
-      this.boundClickHandler,
+      'click',
+      this.boundEnterEditModeHandler,
     );
     this.inputElement.removeEventListener('change', this.boundChangeHandler);
     this.inputElement.removeEventListener('keydown', this.boundKeydownHandler);
-    this.inputElement.removeEventListener('blur', this.boundBlurHandler);
+    this.inputElement.removeEventListener(
+      'blur',
+      this.boundExitEditModeHandler,
+    );
   }
 
-  handleClick() {
-    if (this.inputElement.readOnly) {
-      this.toggleEditMode();
-    }
+  enterEditMode() {
+    this.inputElement.readOnly = false;
   }
 
-  handleBlur() {
-    if (!this.inputElement.readOnly) {
-      this.toggleEditMode();
+  exitEditMode() {
+    this.inputElement.readOnly = true;
 
-      this.submitData().then(() => {
-        this.markClean();
-      });
-    }
+    this.submitData().then(() => {
+      this.markClean();
+    });
   }
 
   handleKeydown(event: Event) {
@@ -59,7 +58,6 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
 
     if (event.key === 'Enter') {
       event.preventDefault();
-
       this.toggleEditMode();
 
       if (this.inputElement.readOnly) {
