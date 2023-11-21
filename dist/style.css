@@ -12,7 +12,7 @@ html {
   --swatch-button-text: #fff;
   --swatch-table-border: #878787;
   --unsaved-color: yellow;
-  --highlight-color: rgba(255, 255, 0, 0.5);
+  --highlight-color: rgba(100, 150, 150, 0.5);
 
   &.theme--dark {
     color-scheme: dark;
@@ -281,6 +281,10 @@ flyout-menu .button {
     text-align: start;
     place-content: space-between;
   }
+
+  & [draggable] {
+    display: flow-root;
+  }
 }
 
 .no-bullet {
@@ -514,4 +518,48 @@ flyout-menu [role='menu'] {
   position: fixed;
   z-index: 2;
   pointer-events: none;
+}
+
+:is(auto-save-search, auto-save-text, auto-save-checkbox) input {
+  padding: 0.5rem 0;
+  margin: 0;
+  border: 1px solid;
+  border-radius: 0;
+  box-shadow: none;
+  font: inherit;
+  color: CanvasText;
+  background: Canvas;
+  width: 100%;
+  display: flex;
+  will-change: transform;
+}
+
+[data-inline]:is(auto-save-search, auto-save-text, auto-save-checkbox) input {
+  background: transparent;
+  border: 1px solid transparent;
+  color: CanvasText;
+}
+
+:is(auto-save-search, auto-save-text, auto-save-checkbox)
+  input[type='text']:not([data-read-only]) {
+  background: CanvasText;
+  color: Canvas;
+}
+
+[aria-selected='true']
+  :is(auto-save-search, auto-save-text, auto-save-checkbox)
+  input[type='text'] {
+  background: var(--highlight-color);
+}
+
+:is(auto-save-search, auto-save-text, auto-save-checkbox)
+  input[type='checkbox'] {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+:is(auto-save-search, auto-save-text, auto-save-checkbox)
+  input[data-dirty]:not(:focus) {
+  outline: 1px solid var(--unsaved-color);
+  outline-offset: 2px;
 }

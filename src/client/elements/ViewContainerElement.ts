@@ -28,6 +28,69 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.addEventListener('dragstart', (event) => {
+      if (!(event instanceof DragEvent)) {
+        return;
+      }
+
+      const selectedCells = Array.from(
+        gridElement.querySelectorAll(
+          `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+        ),
+      );
+
+      for (const selectedCell of selectedCells) {
+        selectedCell.removeAttribute('aria-selected');
+      }
+
+      const autoSaveTextElement = event.composedPath().find((element) => {
+        if (!(element instanceof HTMLElement)) {
+          return false;
+        }
+
+        return element.matches('auto-save-text input');
+      });
+
+      if (!(autoSaveTextElement instanceof HTMLInputElement)) {
+        return;
+      }
+
+      const closestCellElement = autoSaveTextElement.closest(
+        CELL_ELEMENT_SELECTOR,
+      );
+
+      if (!(closestCellElement instanceof HTMLElement)) {
+        return;
+      }
+
+      event.dataTransfer?.setData('text/plain', autoSaveTextElement.id);
+      const img = new Image();
+      img.src = '/empty.gif';
+      event.dataTransfer?.setDragImage(img, 10, 10);
+
+      this.draggedCellElement = closestCellElement;
+
+      this.highlightElement = window.document.createElement('div');
+      this.highlightElement.classList.add('highlight');
+      const { left, top, height, width } =
+        closestCellElement.getBoundingClientRect();
+      this.highlightElement.style.width = `${width}px`;
+      this.highlightElement.style.height = `${height}px`;
+      this.highlightElement.style.top = `${top}px`;
+      this.highlightElement.style.left = `${left}px`;
+
+      this.appendChild(this.highlightElement);
+    });
+
+    this.addEventListener('drop', (event) => {
+      event.preventDefault();
+      if (!this.draggedCellElement) {
+        return;
+      }
+
+      if (!this.highlightElement) {
+        return;
+      }
+
       const autoSaveTextElement = event.composedPath().find((element) => {
         if (!(element instanceof HTMLElement)) {
           return false;
@@ -48,24 +111,14 @@ export class ViewContainerElement extends HTMLElement {
         return;
       }
 
-      this.draggedCellElement = closestCellElement;
-
-      this.highlightElement = window.document.createElement('div');
-      this.highlightElement.classList.add('highlight');
-      const { left, top, height, width } =
-        closestCellElement.getBoundingClientRect();
-      this.highlightElement.style.width = `${width}px`;
-      this.highlightElement.style.height = `${height}px`;
-      this.highlightElement.style.top = `${top}px`;
-      this.highlightElement.style.left = `${left}px`;
-
-      this.appendChild(this.highlightElement);
+      closestCellElement.focus();
     });
 
     this.addEventListener('dragend', () => {
       if (!this.highlightElement) {
         return;
       }
+
       const { top, left, bottom, right, height, width } =
         this.highlightElement.getBoundingClientRect();
       this.highlightElement?.remove();
@@ -75,10 +128,10 @@ export class ViewContainerElement extends HTMLElement {
         const cellBounds = cellElement.getBoundingClientRect();
 
         if (
-          cellBounds.top >= top &&
-          cellBounds.top <= top + height &&
-          cellBounds.left >= left &&
-          cellBounds.left <= left + width
+          Math.ceil(cellBounds.top) >= Math.ceil(top) &&
+          Math.ceil(cellBounds.bottom) <= Math.ceil(bottom) &&
+          Math.ceil(cellBounds.left) >= Math.ceil(left) &&
+          Math.ceil(cellBounds.right) <= Math.ceil(right)
         ) {
           cellElement.setAttribute('aria-selected', 'true');
 
