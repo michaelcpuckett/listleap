@@ -12,6 +12,7 @@ html {
   --swatch-button-text: #fff;
   --swatch-table-border: #878787;
   --unsaved-color: yellow;
+  --highlight-color: rgba(255, 255, 0, 0.5);
 
   &.theme--dark {
     color-scheme: dark;
@@ -65,7 +66,7 @@ a {
 }
 
 .container {
-  width: min(100% - 2rem, 960px);
+  width: min(100% - 2rem, 1240px);
   margin-left: auto;
   margin-right: auto;
 }
@@ -174,6 +175,10 @@ flyout-menu .button {
   margin-bottom: var(--scrollbar-width, 0px);
   display: grid;
   grid-template-columns: var(--grid-columns);
+
+  &.dragging {
+    cursor: grabbing;
+  }
 
   & :is([role='gridcell'], [role='columnheader'], [role='rowheader']) {
     min-height: 48px;
@@ -502,4 +507,11 @@ flyout-menu [role='menu'] {
 
 :not(:defined) {
   display: contents;
+}
+
+.highlight {
+  background: var(--highlight-color);
+  position: fixed;
+  z-index: 2;
+  pointer-events: none;
 }

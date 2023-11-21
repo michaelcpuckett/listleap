@@ -43,6 +43,7 @@ export function AutoSaveTextElement(
         value={props.value}
         tabIndex={props.tabindex}
         data-read-only=""
+        draggable="true"
       />
     </auto-save-text>
   );
