@@ -462,7 +462,6 @@ flyout-menu summary {
   padding: 10px 10px 6px 10px;
   margin: 0;
   position: relative;
-  anchor-name: 'flyout-menu';
 }
 
 flyout-menu summary:after {
@@ -499,8 +498,10 @@ flyout-menu [role='menu'] {
   padding: 1rem;
   margin: 0;
   position: fixed;
-  right: var(--popover-right, 0);
+  inset: unset;
+  left: var(--popover-left, 0);
   top: var(--popover-top, 0);
+  transform: var(--popover-transform);
   min-width: 300px;
   z-index: 2;
   display: flex;

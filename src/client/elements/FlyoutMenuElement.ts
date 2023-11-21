@@ -60,9 +60,18 @@ export class FlyoutMenuElement extends HTMLElement {
   }
 
   positionPopover() {
-    const { right, top } = this.summaryElement.getBoundingClientRect();
+    const { left, top, width } = this.summaryElement.getBoundingClientRect();
 
-    this.style.setProperty('--popover-right', `${right}px`);
+    if (left > window.innerWidth / 2) {
+      this.style.setProperty(
+        '--popover-transform',
+        `translateX(calc(-100% - ${width}px)`,
+      );
+    } else {
+      this.style.setProperty('--popover-transform', 'translateX(0)');
+    }
+
+    this.style.setProperty('--popover-left', `${left + width}px`);
     this.style.setProperty('--popover-top', `${top}px`);
   }
 
