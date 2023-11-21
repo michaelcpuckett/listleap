@@ -8,6 +8,7 @@ export class FlyoutMenuElement extends HTMLElement {
   private menuItemElements: HTMLElement[];
   private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundToggleHandler = this.handleToggle.bind(this);
+  private boundClickHandler = this.handleClick.bind(this);
 
   constructor() {
     super();
@@ -61,29 +62,32 @@ export class FlyoutMenuElement extends HTMLElement {
 
       menuItemElements.push(focusableElement);
       focusableElement.setAttribute('role', 'menuitem');
-      focusableElement.setAttribute('tabindex', index === 0 ? '0' : '-1');
     }
 
     this.menuItemElements = menuItemElements;
-
-    this.initialize();
-  }
-
-  initialize() {
-    for (const [index, menuItemElement] of this.menuItemElements.entries()) {
-      menuItemElement.setAttribute('role', 'menuitem');
-      menuItemElement.setAttribute('tabindex', index === 0 ? '0' : '-1');
-    }
   }
 
   connectedCallback() {
     this.addEventListener('keydown', this.boundKeydownHandler);
+    this.summaryElement.addEventListener('click', this.boundClickHandler);
     this.detailsElement.addEventListener('toggle', this.boundToggleHandler);
   }
 
   disconnectedCallback() {
     this.removeEventListener('keydown', this.boundKeydownHandler);
+    this.summaryElement.removeEventListener('click', this.boundClickHandler);
     this.detailsElement.removeEventListener('toggle', this.boundToggleHandler);
+  }
+
+  positionPopover() {
+    const { right, top } = this.summaryElement.getBoundingClientRect();
+
+    this.style.setProperty('--popover-left', `${right}px`);
+    this.style.setProperty('--popover-top', `${top}px`);
+  }
+
+  handleClick(event: Event) {
+    this.positionPopover();
   }
 
   handleKeydown(event: Event) {
@@ -92,6 +96,10 @@ export class FlyoutMenuElement extends HTMLElement {
     }
 
     if (!this.detailsElement.open) {
+      if ([' ', 'Enter'].includes(event.key)) {
+        this.positionPopover();
+      }
+
       return;
     }
 
@@ -138,8 +146,6 @@ export class FlyoutMenuElement extends HTMLElement {
     }
 
     previousMenuItemElement.focus();
-    previousMenuItemElement.setAttribute('tabindex', '0');
-    menuItemElement.setAttribute('tabindex', '-1');
   }
 
   handleArrowDown(menuItemElement: HTMLElement) {
@@ -153,8 +159,6 @@ export class FlyoutMenuElement extends HTMLElement {
     }
 
     nextMenuItemElement.focus();
-    nextMenuItemElement.setAttribute('tabindex', '0');
-    menuItemElement.setAttribute('tabindex', '-1');
   }
 
   handleToggle() {
