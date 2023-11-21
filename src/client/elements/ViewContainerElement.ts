@@ -3,7 +3,6 @@ const CELL_ELEMENT_SELECTOR =
 
 export class ViewContainerElement extends HTMLElement {
   private draggedCellElement: HTMLElement | null = null;
-  private dropTargetCellElementAtBounds: HTMLElement | null = null;
   private highlightElement: HTMLElement | null = null;
 
   constructor() {
@@ -79,6 +78,18 @@ export class ViewContainerElement extends HTMLElement {
       this.highlightElement.style.left = `${left}px`;
 
       this.appendChild(this.highlightElement);
+    });
+
+    this.addEventListener('pointerdown', () => {
+      const selectedCells = Array.from(
+        gridElement.querySelectorAll(
+          `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+        ),
+      );
+
+      for (const selectedCell of selectedCells) {
+        selectedCell.removeAttribute('aria-selected');
+      }
     });
 
     this.addEventListener('drop', (event) => {
