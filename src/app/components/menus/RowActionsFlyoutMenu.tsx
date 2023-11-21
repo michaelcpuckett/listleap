@@ -29,17 +29,17 @@ export function RowActionsFlyoutMenu(
           row={props.row}
           prevRow={props.previousRow}
           isDisabled={!props.previousRow}
-          role="menuitem"
         />
       </FlyoutMenuItem>
+
       <FlyoutMenuItem>
         <ReorderRowDownForm
           row={props.row}
           nextRow={props.nextRow}
           isDisabled={!props.nextRow}
-          role="menuitem"
         />
       </FlyoutMenuItem>
+
       <FlyoutMenuItem>
         <AddNewRowAboveForm
           row={props.row}
@@ -49,6 +49,7 @@ export function RowActionsFlyoutMenu(
           }
         />
       </FlyoutMenuItem>
+
       <FlyoutMenuItem>
         <AddNewRowBelowForm
           row={props.row}
@@ -56,12 +57,14 @@ export function RowActionsFlyoutMenu(
           nextPosition={props.nextRow ? props.nextRow.position : undefined}
         />
       </FlyoutMenuItem>
+
       <FlyoutMenuItem>
         <TriggerEditRowForm
           row={props.row}
           referrer={props.referrer}
         />
       </FlyoutMenuItem>
+
       <FlyoutMenuItem>
         <DeleteRowForm row={props.row} />
       </FlyoutMenuItem>

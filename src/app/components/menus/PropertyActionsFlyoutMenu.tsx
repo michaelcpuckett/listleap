@@ -30,6 +30,7 @@ export function PropertyActionsFlyoutMenu(
           isDisabled={!props.previousProperty}
         />
       </FlyoutMenuItem>
+
       <FlyoutMenuItem>
         <ReorderPropertyDownForm
           property={props.property}
@@ -46,6 +47,7 @@ export function PropertyActionsFlyoutMenu(
           }
         />
       </FlyoutMenuItem>
+
       <FlyoutMenuItem>
         <AddNewPropertyBelowForm
           property={props.property}
@@ -55,12 +57,14 @@ export function PropertyActionsFlyoutMenu(
           }
         />
       </FlyoutMenuItem>
+
       <FlyoutMenuItem>
         <TriggerEditPropertyForm
           property={props.property}
           referrer={props.referrer}
         />
       </FlyoutMenuItem>
+
       <FlyoutMenuItem>
         <TriggerDeletePropertyForm
           property={props.property}

@@ -1,7 +1,6 @@
 export class FlyoutMenuElement extends HTMLElement {
   private detailsElement: HTMLDetailsElement;
   private summaryElement: HTMLElement;
-  private menuElement: HTMLElement;
   private menuItemElements: HTMLElement[];
   private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundToggleHandler = this.handleToggle.bind(this);
@@ -31,8 +30,6 @@ export class FlyoutMenuElement extends HTMLElement {
     if (!(menuElement instanceof HTMLElement)) {
       throw new Error('Could not find menu element');
     }
-
-    this.menuElement = menuElement;
 
     function isHtmlElement(
       element: Element | HTMLElement,
@@ -74,7 +71,7 @@ export class FlyoutMenuElement extends HTMLElement {
     this.style.setProperty('--popover-top', `${top}px`);
   }
 
-  handleClick(event: Event) {
+  handleClick() {
     this.positionPopover();
   }
 
@@ -125,6 +122,11 @@ export class FlyoutMenuElement extends HTMLElement {
 
   handleArrowUp(menuItemElement: HTMLElement) {
     const menuItemElementIndex = this.menuItemElements.indexOf(menuItemElement);
+
+    if (menuItemElementIndex === -1) {
+      return;
+    }
+
     const previousMenuItemElement =
       this.menuItemElements[menuItemElementIndex - 1] ||
       this.menuItemElements[this.menuItemElements.length - 1];
