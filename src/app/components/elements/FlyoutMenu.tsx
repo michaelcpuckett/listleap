@@ -2,6 +2,24 @@ import { Icon } from 'components/icons/Icon';
 import React from 'react';
 import { getUniqueId } from 'shared/getUniqueId';
 
+export function FlyoutMenuItem(props: React.PropsWithChildren<{}>) {
+  return (
+    <flyout-menu-item role="menuitem">
+      <template
+        shadowrootmode="open"
+        shadowrootdelegatesfocus="true"
+      >
+        <link
+          rel="stylesheet"
+          href="/host.css"
+        />
+        <slot></slot>
+      </template>
+      {props.children}
+    </flyout-menu-item>
+  );
+}
+
 export function FlyoutMenu(
   props: React.PropsWithChildren<{
     id: string;

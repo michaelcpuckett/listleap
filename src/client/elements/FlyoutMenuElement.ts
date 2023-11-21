@@ -1,6 +1,3 @@
-const FOCUSABLE_ELEMENTS_SELECTOR =
-  'input:not([type="hidden"]):not([hidden]), button:not([hidden]), a:not([hidden]), textarea:not([hidden]), select:not([hidden]), [tabindex]:not([hidden])';
-
 export class FlyoutMenuElement extends HTMLElement {
   private detailsElement: HTMLDetailsElement;
   private summaryElement: HTMLElement;
@@ -43,26 +40,9 @@ export class FlyoutMenuElement extends HTMLElement {
       return element instanceof HTMLElement;
     }
 
-    const menuChildren = Array.from(this.menuElement.children).filter(
-      isHtmlElement,
-    );
-
-    const menuItemElements: HTMLElement[] = [];
-
-    for (const [index, menuItemElement] of menuChildren.entries()) {
-      const focusableElement = menuItemElement.matches(
-        FOCUSABLE_ELEMENTS_SELECTOR,
-      )
-        ? menuItemElement
-        : menuItemElement.querySelector(FOCUSABLE_ELEMENTS_SELECTOR);
-
-      if (!(focusableElement instanceof HTMLElement)) {
-        continue;
-      }
-
-      menuItemElements.push(focusableElement);
-      focusableElement.setAttribute('role', 'menuitem');
-    }
+    const menuItemElements = Array.from(
+      menuElement.querySelectorAll('[role="menuitem"]'),
+    ).filter(isHtmlElement);
 
     this.menuItemElements = menuItemElements;
   }
@@ -82,7 +62,7 @@ export class FlyoutMenuElement extends HTMLElement {
   positionPopover() {
     const { right, top } = this.summaryElement.getBoundingClientRect();
 
-    this.style.setProperty('--popover-left', `${right}px`);
+    this.style.setProperty('--popover-right', `${right}px`);
     this.style.setProperty('--popover-top', `${top}px`);
   }
 
@@ -163,7 +143,7 @@ export class FlyoutMenuElement extends HTMLElement {
 
   handleToggle() {
     if (this.detailsElement.open) {
-      const firstMenuItem = this.querySelector('[role="menuitem"]');
+      const [firstMenuItem] = this.menuItemElements;
 
       if (!(firstMenuItem instanceof HTMLElement)) {
         return;

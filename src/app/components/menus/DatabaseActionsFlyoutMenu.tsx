@@ -1,6 +1,6 @@
 import React from 'react';
 import { Referrer, AnyDatabase, PartialDatabase } from 'shared/types';
-import { FlyoutMenu } from 'components/elements/FlyoutMenu';
+import { FlyoutMenu, FlyoutMenuItem } from 'components/elements/FlyoutMenu';
 import { TriggerDeleteDatabaseForm } from 'components/forms/TriggerDeleteDatabaseForm';
 
 export function DatabaseActionsFlyoutMenu(
@@ -16,10 +16,12 @@ export function DatabaseActionsFlyoutMenu(
       label={props.database.name}
       tabindex={props.tabindex}
     >
-      <TriggerDeleteDatabaseForm
-        referrer={props.referrer}
-        database={props.database}
-      />
+      <FlyoutMenuItem>
+        <TriggerDeleteDatabaseForm
+          referrer={props.referrer}
+          database={props.database}
+        />
+      </FlyoutMenuItem>
     </FlyoutMenu>
   );
 }

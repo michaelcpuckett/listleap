@@ -32,6 +32,7 @@ declare global {
       'auto-save-search': CustomElement;
       'clear-search': CustomElement;
       'flyout-menu': CustomElement;
+      'flyout-menu-item': CustomElement;
       'select-all-checkbox': CustomElement;
       'unload-handler': CustomElement;
       'post-form': CustomElement;

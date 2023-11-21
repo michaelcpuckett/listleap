@@ -171,6 +171,7 @@ flyout-menu .button {
 .view {
   width: max-content;
   min-width: calc(100% - var(--scrollbar-width, 0px));
+  margin-bottom: var(--scrollbar-width, 0px);
   display: grid;
   grid-template-columns: var(--grid-columns);
 
@@ -498,7 +499,7 @@ flyout-menu [role='menu'] {
   padding: 1rem;
   margin: 0;
   position: fixed;
-  left: var(--popover-left, 0);
+  right: var(--popover-right, 0);
   top: var(--popover-top, 0);
   min-width: 300px;
   z-index: 2;
