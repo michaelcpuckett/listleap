@@ -459,19 +459,12 @@ svg {
 flyout-menu summary {
   list-style: none;
   color: currentColor;
-  padding: 10px 10px 6px 10px;
   margin: 0;
+  padding: 0;
   position: relative;
-}
-
-flyout-menu summary:after {
-  content: '';
-  height: 100%;
-  width: 100%;
-  inset: -1rem;
-  position: absolute;
-  padding: 1rem;
-  box-sizing: content-box;
+  display: flex;
+  place-content: center;
+  place-items: center;
 }
 
 flyout-menu summary::-webkit-details-marker {
