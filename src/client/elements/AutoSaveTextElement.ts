@@ -26,10 +26,19 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
   }
 
   enterEditMode() {
-    // TODO(): Gate blur/focus logic for Safari only.
-    this.inputElement.blur();
-    this.inputElement.readOnly = false;
-    this.inputElement.focus();
+    const isWebKit =
+      RegExp(' AppleWebKit/').test(navigator.userAgent) &&
+      !('chrome' in window);
+
+    if (isWebKit) {
+      this.inputElement.blur();
+      this.inputElement.readOnly = false;
+      new Promise(window.requestAnimationFrame).then(() => {
+        this.inputElement.focus();
+      });
+    } else {
+      this.inputElement.readOnly = false;
+    }
   }
 
   exitEditMode() {
