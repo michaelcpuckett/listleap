@@ -1,5 +1,4 @@
-const CELL_ELEMENT_SELECTOR =
-  '[role="gridcell"], [role="columnheader"], [role="rowheader"]';
+const CELL_ELEMENT_SELECTOR = '[role="gridcell"], [role="rowheader"]';
 
 export class ViewContainerElement extends HTMLElement {
   private gridElement: HTMLElement;
