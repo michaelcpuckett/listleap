@@ -1,6 +1,6 @@
 * {
   box-sizing: border-box;
-  /* touch-action: manipulation; */
+  touch-action: manipulation;
 }
 
 html {
@@ -41,6 +41,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
+}
+
+body.prevent-scroll {
+  overflow: hidden;
+  padding-right: var(--scrollbar-width, 0px);
 }
 
 html,

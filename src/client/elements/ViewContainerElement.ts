@@ -24,10 +24,13 @@ export class ViewContainerElement extends HTMLElement {
 
   connectedCallback() {
     // this.addEventListener('dragstart', this.boundDragstartHandler);
-    this.addEventListener('pointerdown', this.boundDragstartHandler);
+    this.addEventListener('mousedown', this.boundDragstartHandler);
+    this.addEventListener('touchstart', this.boundDragstartHandler);
     // this.addEventListener('dragover', this.boundDragoverHandler);
     this.addEventListener('mouseover', this.boundDragoverHandler);
-    this.addEventListener('touchmove', this.boundDragoverHandler);
+    this.addEventListener('touchmove', this.boundDragoverHandler, {
+      passive: false,
+    });
     // this.addEventListener('dragend', this.boundDragendHandler);
     this.addEventListener('mouseup', this.boundDragendHandler);
     this.addEventListener('touchend', this.boundDragendHandler);
@@ -93,6 +96,11 @@ export class ViewContainerElement extends HTMLElement {
 
     this.draggedCellElement = closestCellElement;
 
+    if (event instanceof TouchEvent) {
+      // event.preventDefault();
+      window.document.body.classList.add('prevent-scroll');
+    }
+
     const selectedCells = Array.from(
       this.gridElement.querySelectorAll(
         `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
@@ -121,6 +129,8 @@ export class ViewContainerElement extends HTMLElement {
       if (event.touches.length > 0) {
         return;
       }
+
+      window.document.body.classList.remove('prevent-scroll');
     }
 
     const { top, left, bottom, right, height, width } =
@@ -242,6 +252,10 @@ export class ViewContainerElement extends HTMLElement {
     const diffX = closestCellLeft - draggedCellLeft;
     const diffY = closestRowTop - draggedRowTop;
 
+    if (event instanceof TouchEvent) {
+      // event.preventDefault();
+    }
+
     this.highlightElement.style.height = `${
       Math.abs(diffY) + this.draggedCellElement.getBoundingClientRect().height
     }px`;
@@ -267,19 +281,6 @@ export class ViewContainerElement extends HTMLElement {
       this.highlightElement.style.top = `${
         this.draggedCellElement.getBoundingClientRect().top
       }px`;
-    }
-  }
-
-  handlePointerdown(event: Event) {
-    window.document.body.style.overflow = 'hidden';
-    const selectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
-      ),
-    );
-
-    for (const selectedCell of selectedCells) {
-      selectedCell.removeAttribute('aria-selected');
     }
   }
 
