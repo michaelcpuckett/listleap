@@ -547,12 +547,6 @@ flyout-menu [role='menu'] {
   color: CanvasText;
 }
 
-:is(auto-save-search, auto-save-text, auto-save-checkbox)
-  input[type='text']:not([data-read-only]) {
-  background: CanvasText;
-  color: Canvas;
-}
-
 [aria-selected='true']
   :is(auto-save-search, auto-save-text, auto-save-checkbox)
   input[type='text'] {
@@ -569,4 +563,10 @@ flyout-menu [role='menu'] {
   input[data-dirty]:not(:focus) {
   outline: 1px solid var(--unsaved-color);
   outline-offset: 2px;
+}
+
+:is(auto-save-search, auto-save-text, auto-save-checkbox)
+  input[type='text']:not([data-read-only]) {
+  background: CanvasText;
+  color: Canvas;
 }

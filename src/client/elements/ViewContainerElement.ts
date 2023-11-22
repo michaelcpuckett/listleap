@@ -32,20 +32,20 @@ export class ViewContainerElement extends HTMLElement {
     // this.addEventListener('dragover', this.boundDragoverHandler);
     this.addEventListener('mouseover', this.boundDragoverHandler);
     this.addEventListener('touchmove', this.boundDragoverHandler);
-    /*, {
-      passive: false,
-    });
-    */
     // this.addEventListener('dragend', this.boundDragendHandler);
-    this.addEventListener('mouseup', this.boundDragendHandler);
-    this.addEventListener('touchend', this.boundDragendHandler);
-    this.addEventListener('touchcancel', this.boundDragendHandler);
+    this.addEventListener('mouseup', this.boundDragendHandler, {
+      capture: true,
+    });
+    this.addEventListener('touchend', this.boundDragendHandler, {
+      capture: true,
+    });
+    this.addEventListener('touchcancel', this.boundDragendHandler, {
+      capture: true,
+    });
     this.addEventListener('keydown', this.boundKeydownHandler);
     this.addEventListener('keyup', this.boundKeyupHandler);
-    // this.addEventListener('pointercancel', this.boundDragendHandler);
-    // this.addEventListener('drop', this.boundDropHandler);
     // this.addEventListener('pointerdown', this.boundPointerdownHandler);
-    this.addEventListener('click', this.boundClickHandler);
+    // this.addEventListener('click', this.boundClickHandler);
     this.addEventListener(
       'auto-save-text:save',
       this.boundHandleAutoSaveTextSave,
@@ -129,9 +129,70 @@ export class ViewContainerElement extends HTMLElement {
       window.document.body.classList.remove('prevent-scroll');
     }
 
+    const prevDraggedCellElement = this.draggedCellElement;
+
     this.highlightElement.remove();
     this.highlightElement = null;
     this.draggedCellElement = null;
+
+    let closestCellElement: Element | null = null;
+
+    if (event instanceof TouchEvent) {
+      const touchLocation = event.changedTouches[0];
+      const touchTarget = window.document.elementFromPoint(
+        touchLocation.clientX,
+        touchLocation.clientY,
+      );
+
+      if (touchTarget instanceof Element) {
+        closestCellElement = touchTarget.matches(CELL_ELEMENT_SELECTOR)
+          ? touchTarget
+          : touchTarget.closest(CELL_ELEMENT_SELECTOR);
+      }
+    } else {
+      for (const element of Array.from(event.composedPath())) {
+        if (!(element instanceof Element)) {
+          continue;
+        }
+
+        if (element.matches(CELL_ELEMENT_SELECTOR)) {
+          closestCellElement = element;
+          break;
+        }
+      }
+    }
+
+    if (!(closestCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    event.stopImmediatePropagation();
+    event.stopPropagation();
+    event.preventDefault();
+    closestCellElement.focus();
+
+    if (closestCellElement.getAttribute('aria-selected') === 'true') {
+      if (
+        this.isShiftKeyPressed &&
+        prevDraggedCellElement === closestCellElement
+      ) {
+        closestCellElement.removeAttribute('aria-selected');
+      }
+    } else {
+      if (this.isShiftKeyPressed) {
+        closestCellElement.setAttribute('aria-selected', 'true');
+      } else {
+        const selectedCells = Array.from(
+          this.gridElement.querySelectorAll(
+            `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+          ),
+        );
+
+        for (const selectedCell of selectedCells) {
+          selectedCell.removeAttribute('aria-selected');
+        }
+      }
+    }
   }
 
   handleDragover(event: Event) {
@@ -390,7 +451,11 @@ export class ViewContainerElement extends HTMLElement {
     }
   }
 
-  handleClick(event: Event) {
+  handleClick() {
+    if (this.isShiftKeyPressed) {
+      return;
+    }
+
     const selectedCells = Array.from(
       this.gridElement.querySelectorAll(
         `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
