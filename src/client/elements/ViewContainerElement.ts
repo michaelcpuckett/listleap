@@ -30,9 +30,11 @@ export class ViewContainerElement extends HTMLElement {
     this.addEventListener('touchstart', this.boundDragstartHandler);
     // this.addEventListener('dragover', this.boundDragoverHandler);
     this.addEventListener('mouseover', this.boundDragoverHandler);
-    this.addEventListener('touchmove', this.boundDragoverHandler, {
+    this.addEventListener('touchmove', this.boundDragoverHandler);
+    /*, {
       passive: false,
     });
+    */
     // this.addEventListener('dragend', this.boundDragendHandler);
     this.addEventListener('mouseup', this.boundDragendHandler);
     this.addEventListener('touchend', this.boundDragendHandler);
