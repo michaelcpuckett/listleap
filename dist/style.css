@@ -1,6 +1,6 @@
 * {
   box-sizing: border-box;
-  touch-action: manipulation;
+  /* touch-action: manipulation; */
 }
 
 html {
@@ -41,6 +41,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  overscroll-behavior: none;
 }
 
 :focus {
@@ -280,10 +285,6 @@ flyout-menu .button {
   & :is([role='columnheader'], [role='rowheader']) {
     text-align: start;
     place-content: space-between;
-  }
-
-  & [draggable] {
-    display: flow-root;
   }
 }
 
