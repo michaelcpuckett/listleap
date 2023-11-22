@@ -139,34 +139,9 @@ export class ViewContainerElement extends HTMLElement {
       window.document.body.classList.remove('prevent-scroll');
     }
 
-    const { top, left, bottom, right, height, width } =
-      this.highlightElement.getBoundingClientRect();
     this.highlightElement.remove();
     this.highlightElement = null;
     this.draggedCellElement = null;
-
-    for (const cellElement of Array.from(
-      this.gridElement.querySelectorAll(CELL_ELEMENT_SELECTOR),
-    )) {
-      const cellBounds = cellElement.getBoundingClientRect();
-
-      if (
-        Math.ceil(cellBounds.top) >= Math.ceil(top) &&
-        Math.ceil(cellBounds.bottom) <= Math.ceil(bottom) &&
-        Math.ceil(cellBounds.left) >= Math.ceil(left) &&
-        Math.ceil(cellBounds.right) <= Math.ceil(right)
-      ) {
-        cellElement.setAttribute('aria-selected', 'true');
-
-        const inputElement = cellElement.querySelector('auto-save-text input');
-
-        if (!(inputElement instanceof HTMLInputElement)) {
-          continue;
-        }
-
-        inputElement.classList.add('selected');
-      }
-    }
   }
 
   handleDragover(event: Event) {
@@ -288,6 +263,32 @@ export class ViewContainerElement extends HTMLElement {
         this.draggedCellElement.getBoundingClientRect().top
       }px`;
     }
+
+    const { top, left, bottom, right, height, width } =
+      this.highlightElement.getBoundingClientRect();
+
+    for (const cellElement of Array.from(
+      this.gridElement.querySelectorAll(CELL_ELEMENT_SELECTOR),
+    )) {
+      const cellBounds = cellElement.getBoundingClientRect();
+
+      if (
+        Math.ceil(cellBounds.top) >= Math.ceil(top) &&
+        Math.ceil(cellBounds.bottom) <= Math.ceil(bottom) &&
+        Math.ceil(cellBounds.left) >= Math.ceil(left) &&
+        Math.ceil(cellBounds.right) <= Math.ceil(right)
+      ) {
+        cellElement.setAttribute('aria-selected', 'true');
+
+        const inputElement = cellElement.querySelector('auto-save-text input');
+
+        if (!(inputElement instanceof HTMLInputElement)) {
+          continue;
+        }
+
+        inputElement.classList.add('selected');
+      }
+    }
   }
 
   handleAutoSaveTextSave(event: Event) {
@@ -338,8 +339,6 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.isShiftKeyPressed = event.shiftKey || event.key === 'Shift';
-
-    console.log(this.isShiftKeyPressed, event.key);
 
     if (event.key === 'Escape') {
       const selectedCells = Array.from(
