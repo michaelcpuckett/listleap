@@ -278,7 +278,10 @@ export class ViewContainerElement extends HTMLElement {
 
         inputElement.classList.add('selected');
       } else {
-        if (!this.isShiftKeyPressed) {
+        if (
+          !this.isShiftKeyPressed &&
+          !cellElement.hasAttribute('data-selected')
+        ) {
           cellElement.removeAttribute('aria-selected');
 
           const inputElement = cellElement.querySelector(
@@ -344,6 +347,18 @@ export class ViewContainerElement extends HTMLElement {
 
     this.isShiftKeyPressed = event.shiftKey || event.key === 'Shift';
 
+    if (this.isShiftKeyPressed) {
+      const selectedCells = Array.from(
+        this.gridElement.querySelectorAll(
+          `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+        ),
+      );
+
+      for (const selectedCell of selectedCells) {
+        selectedCell.setAttribute('data-selected', '');
+      }
+    }
+
     if (event.key === 'Escape') {
       const selectedCells = Array.from(
         this.gridElement.querySelectorAll(
@@ -363,6 +378,16 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.isShiftKeyPressed = false;
+
+    const selectedCells = Array.from(
+      this.gridElement.querySelectorAll(
+        `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+      ),
+    );
+
+    for (const selectedCell of selectedCells) {
+      selectedCell.removeAttribute('data-selected');
+    }
   }
 
   handleClick(event: Event) {
