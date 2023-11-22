@@ -4,10 +4,12 @@ export class ViewContainerElement extends HTMLElement {
   private gridElement: HTMLElement;
   private draggedCellElement: HTMLElement | null = null;
   private highlightElement: HTMLElement | null = null;
+  private isShiftKeyPressed = false;
   private boundDragstartHandler = this.handleDragstart.bind(this);
   private boundDragendHandler = this.handleDragend.bind(this);
   private boundDragoverHandler = this.handleDragover.bind(this);
   private boundKeydownHandler = this.handleKeydown.bind(this);
+  private boundKeyupHandler = this.handleKeyup.bind(this);
   private boundHandleAutoSaveTextSave = this.handleAutoSaveTextSave.bind(this);
 
   constructor() {
@@ -36,6 +38,7 @@ export class ViewContainerElement extends HTMLElement {
     this.addEventListener('touchend', this.boundDragendHandler);
     this.addEventListener('touchcancel', this.boundDragendHandler);
     this.addEventListener('keydown', this.boundKeydownHandler);
+    this.addEventListener('keyup', this.boundKeyupHandler);
     // this.addEventListener('pointercancel', this.boundDragendHandler);
     // this.addEventListener('drop', this.boundDropHandler);
     // this.addEventListener('pointerdown', this.boundPointerdownHandler);
@@ -67,6 +70,12 @@ export class ViewContainerElement extends HTMLElement {
       }
     }
 
+    const selectedCells = Array.from(
+      this.gridElement.querySelectorAll(
+        `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+      ),
+    );
+
     const autoSaveTextElement = event.composedPath().find((element) => {
       if (!(element instanceof HTMLElement)) {
         return false;
@@ -95,20 +104,15 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.draggedCellElement = closestCellElement;
-
     if (event instanceof TouchEvent) {
       // event.preventDefault();
       window.document.body.classList.add('prevent-scroll');
     }
 
-    const selectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
-      ),
-    );
-
-    for (const selectedCell of selectedCells) {
-      selectedCell.removeAttribute('aria-selected');
+    if (!this.isShiftKeyPressed) {
+      for (const selectedCell of selectedCells) {
+        selectedCell.removeAttribute('aria-selected');
+      }
     }
 
     this.highlightElement = window.document.createElement('div');
@@ -331,6 +335,10 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    this.isShiftKeyPressed = event.shiftKey || event.key === 'Shift';
+
+    console.log(this.isShiftKeyPressed, event.key);
+
     if (event.key === 'Escape') {
       const selectedCells = Array.from(
         this.gridElement.querySelectorAll(
@@ -342,6 +350,14 @@ export class ViewContainerElement extends HTMLElement {
         selectedCell.removeAttribute('aria-selected');
       }
     }
+  }
+
+  handleKeyup(event: Event) {
+    if (!(event instanceof KeyboardEvent)) {
+      return;
+    }
+
+    this.isShiftKeyPressed = false;
   }
 }
 
