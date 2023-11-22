@@ -11,6 +11,7 @@ export class ViewContainerElement extends HTMLElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundKeyupHandler = this.handleKeyup.bind(this);
   private boundHandleAutoSaveTextSave = this.handleAutoSaveTextSave.bind(this);
+  private boundClickHandler = this.handleClick.bind(this);
 
   constructor() {
     super();
@@ -44,6 +45,7 @@ export class ViewContainerElement extends HTMLElement {
     // this.addEventListener('pointercancel', this.boundDragendHandler);
     // this.addEventListener('drop', this.boundDropHandler);
     // this.addEventListener('pointerdown', this.boundPointerdownHandler);
+    this.addEventListener('click', this.boundClickHandler);
     this.addEventListener(
       'auto-save-text:save',
       this.boundHandleAutoSaveTextSave,
@@ -71,12 +73,6 @@ export class ViewContainerElement extends HTMLElement {
         event.target.releasePointerCapture(event.pointerId);
       }
     }
-
-    const selectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
-      ),
-    );
 
     const autoSaveTextElement = event.composedPath().find((element) => {
       if (!(element instanceof HTMLElement)) {
@@ -109,12 +105,6 @@ export class ViewContainerElement extends HTMLElement {
     if (event instanceof TouchEvent) {
       // event.preventDefault();
       window.document.body.classList.add('prevent-scroll');
-    }
-
-    if (!this.isShiftKeyPressed) {
-      for (const selectedCell of selectedCells) {
-        selectedCell.removeAttribute('aria-selected');
-      }
     }
 
     this.highlightElement = window.document.createElement('div');
@@ -219,9 +209,9 @@ export class ViewContainerElement extends HTMLElement {
     if (!(draggedRow instanceof HTMLElement)) {
       return;
     }
-    if (closestCellElement === this.draggedCellElement) {
-      return;
-    }
+    // if (closestCellElement === this.draggedCellElement) {
+    //   return;
+    // }
 
     const draggedRowTop = draggedRow.getBoundingClientRect().top;
     const closestRowTop = closestRowElement.getBoundingClientRect().top;
@@ -287,6 +277,20 @@ export class ViewContainerElement extends HTMLElement {
         }
 
         inputElement.classList.add('selected');
+      } else {
+        if (!this.isShiftKeyPressed) {
+          cellElement.removeAttribute('aria-selected');
+
+          const inputElement = cellElement.querySelector(
+            'auto-save-text input',
+          );
+
+          if (!(inputElement instanceof HTMLInputElement)) {
+            continue;
+          }
+
+          inputElement.classList.remove('selected');
+        }
       }
     }
   }
@@ -359,6 +363,18 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.isShiftKeyPressed = false;
+  }
+
+  handleClick(event: Event) {
+    const selectedCells = Array.from(
+      this.gridElement.querySelectorAll(
+        `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+      ),
+    );
+
+    for (const selectedCell of selectedCells) {
+      selectedCell.removeAttribute('aria-selected');
+    }
   }
 }
 
