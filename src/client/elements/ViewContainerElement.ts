@@ -116,85 +116,6 @@ export class ViewContainerElement extends HTMLElement {
     this.appendChild(this.highlightElement);
   }
 
-  handleDragend(event: Event) {
-    if (!this.highlightElement) {
-      return;
-    }
-
-    if (event instanceof TouchEvent) {
-      if (event.touches.length > 0) {
-        return;
-      }
-
-      window.document.body.classList.remove('prevent-scroll');
-    }
-
-    const prevDraggedCellElement = this.draggedCellElement;
-
-    this.highlightElement.remove();
-    this.highlightElement = null;
-    this.draggedCellElement = null;
-
-    let closestCellElement: Element | null = null;
-
-    if (event instanceof TouchEvent) {
-      const touchLocation = event.changedTouches[0];
-      const touchTarget = window.document.elementFromPoint(
-        touchLocation.clientX,
-        touchLocation.clientY,
-      );
-
-      if (touchTarget instanceof Element) {
-        closestCellElement = touchTarget.matches(CELL_ELEMENT_SELECTOR)
-          ? touchTarget
-          : touchTarget.closest(CELL_ELEMENT_SELECTOR);
-      }
-    } else {
-      for (const element of Array.from(event.composedPath())) {
-        if (!(element instanceof Element)) {
-          continue;
-        }
-
-        if (element.matches(CELL_ELEMENT_SELECTOR)) {
-          closestCellElement = element;
-          break;
-        }
-      }
-    }
-
-    if (!(closestCellElement instanceof HTMLElement)) {
-      return;
-    }
-
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-    event.preventDefault();
-    closestCellElement.focus();
-
-    if (closestCellElement.getAttribute('aria-selected') === 'true') {
-      if (
-        this.isShiftKeyPressed &&
-        prevDraggedCellElement === closestCellElement
-      ) {
-        closestCellElement.removeAttribute('aria-selected');
-      }
-    } else {
-      if (this.isShiftKeyPressed) {
-        closestCellElement.setAttribute('aria-selected', 'true');
-      } else {
-        const selectedCells = Array.from(
-          this.gridElement.querySelectorAll(
-            `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
-          ),
-        );
-
-        for (const selectedCell of selectedCells) {
-          selectedCell.removeAttribute('aria-selected');
-        }
-      }
-    }
-  }
-
   handleDragover(event: Event) {
     if (!this.draggedCellElement) {
       return;
@@ -322,38 +243,153 @@ export class ViewContainerElement extends HTMLElement {
       this.gridElement.querySelectorAll(CELL_ELEMENT_SELECTOR),
     )) {
       const cellBounds = cellElement.getBoundingClientRect();
-
-      if (
+      const isWithinBounds =
         Math.ceil(cellBounds.top) >= Math.ceil(top) &&
         Math.ceil(cellBounds.bottom) <= Math.ceil(bottom) &&
         Math.ceil(cellBounds.left) >= Math.ceil(left) &&
-        Math.ceil(cellBounds.right) <= Math.ceil(right)
-      ) {
+        Math.ceil(cellBounds.right) <= Math.ceil(right);
+
+      function markCellSelected() {
         cellElement.setAttribute('aria-selected', 'true');
 
         const inputElement = cellElement.querySelector('auto-save-text input');
 
         if (!(inputElement instanceof HTMLInputElement)) {
-          continue;
+          return;
         }
 
         inputElement.classList.add('selected');
+      }
+
+      function markCellUnselected() {
+        cellElement.removeAttribute('aria-selected');
+        cellElement.removeAttribute('data-selected');
+
+        const inputElement = cellElement.querySelector('auto-save-text input');
+
+        if (!(inputElement instanceof HTMLInputElement)) {
+          return;
+        }
+
+        inputElement.classList.remove('selected');
+      }
+
+      if (isWithinBounds) {
+        if (this.isShiftKeyPressed) {
+          markCellUnselected();
+        } else {
+          markCellSelected();
+        }
       } else {
-        if (
-          !this.isShiftKeyPressed &&
-          !cellElement.hasAttribute('data-selected')
-        ) {
-          cellElement.removeAttribute('aria-selected');
+        if (!this.isShiftKeyPressed) {
+          markCellUnselected();
+        }
+      }
+    }
+  }
 
-          const inputElement = cellElement.querySelector(
-            'auto-save-text input',
-          );
+  handleDragend(event: Event) {
+    if (!this.highlightElement) {
+      return;
+    }
 
-          if (!(inputElement instanceof HTMLInputElement)) {
-            continue;
-          }
+    if (event instanceof TouchEvent) {
+      if (event.touches.length > 0) {
+        return;
+      }
 
-          inputElement.classList.remove('selected');
+      window.document.body.classList.remove('prevent-scroll');
+    }
+
+    const prevDraggedCellElement = this.draggedCellElement;
+
+    this.highlightElement.remove();
+    this.highlightElement = null;
+    this.draggedCellElement = null;
+
+    let closestCellElement: Element | null = null;
+
+    if (event instanceof TouchEvent) {
+      const touchLocation = event.changedTouches[0];
+      const touchTarget = window.document.elementFromPoint(
+        touchLocation.clientX,
+        touchLocation.clientY,
+      );
+
+      if (touchTarget instanceof Element) {
+        closestCellElement = touchTarget.matches(CELL_ELEMENT_SELECTOR)
+          ? touchTarget
+          : touchTarget.closest(CELL_ELEMENT_SELECTOR);
+      }
+    } else {
+      for (const element of Array.from(event.composedPath())) {
+        if (!(element instanceof Element)) {
+          continue;
+        }
+
+        if (element.matches(CELL_ELEMENT_SELECTOR)) {
+          closestCellElement = element;
+          break;
+        }
+      }
+    }
+
+    if (!(closestCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    event.stopImmediatePropagation();
+    event.stopPropagation();
+    event.preventDefault();
+    closestCellElement.focus();
+
+    function markCellSelected(cellElement: Element) {
+      if (!(cellElement instanceof HTMLElement)) {
+        return;
+      }
+
+      cellElement.setAttribute('aria-selected', 'true');
+
+      const inputElement = cellElement.querySelector('auto-save-text input');
+
+      if (!(inputElement instanceof HTMLInputElement)) {
+        return;
+      }
+
+      inputElement.classList.add('selected');
+    }
+
+    function markCellUnselected(cellElement: Element) {
+      if (!(cellElement instanceof HTMLElement)) {
+        return;
+      }
+
+      cellElement.removeAttribute('aria-selected');
+      cellElement.removeAttribute('data-selected');
+
+      const inputElement = cellElement.querySelector('auto-save-text input');
+
+      if (!(inputElement instanceof HTMLInputElement)) {
+        return;
+      }
+
+      inputElement.classList.remove('selected');
+    }
+
+    if (closestCellElement.getAttribute('aria-selected') === 'true') {
+      if (this.isShiftKeyPressed) {
+        markCellUnselected(closestCellElement);
+      }
+    } else {
+      if (!this.isShiftKeyPressed) {
+        const selectedCells = Array.from(
+          this.gridElement.querySelectorAll(
+            `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+          ),
+        );
+
+        for (const selectedCell of selectedCells) {
+          markCellUnselected(selectedCell);
         }
       }
     }
@@ -429,6 +465,7 @@ export class ViewContainerElement extends HTMLElement {
 
       for (const selectedCell of selectedCells) {
         selectedCell.removeAttribute('aria-selected');
+        selectedCell.removeAttribute('data-selected');
       }
     }
   }
@@ -464,6 +501,7 @@ export class ViewContainerElement extends HTMLElement {
 
     for (const selectedCell of selectedCells) {
       selectedCell.removeAttribute('aria-selected');
+      selectedCell.removeAttribute('data-selected');
     }
   }
 }
