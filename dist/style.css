@@ -12,7 +12,7 @@ html {
   --swatch-button-text: #fff;
   --swatch-table-border: #878787;
   --unsaved-color: yellow;
-  --highlight-color: rgba(100, 150, 150, 0.5);
+  --highlight-color: rgba(90, 190, 190, 0.333);
 
   &.theme--dark {
     color-scheme: dark;

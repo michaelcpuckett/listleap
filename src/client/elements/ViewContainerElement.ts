@@ -8,8 +8,7 @@ export class ViewContainerElement extends HTMLElement {
   private boundDragstartHandler = this.handleDragstart.bind(this);
   private boundDragendHandler = this.handleDragend.bind(this);
   private boundDragoverHandler = this.handleDragover.bind(this);
-  private boundPointerdownHandler = this.handlePointerdown.bind(this);
-  private boundDropHandler = this.handleDrop.bind(this);
+  private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundHandleAutoSaveTextSave = this.handleAutoSaveTextSave.bind(this);
 
   constructor() {
@@ -28,9 +27,13 @@ export class ViewContainerElement extends HTMLElement {
     // this.addEventListener('dragstart', this.boundDragstartHandler);
     this.addEventListener('pointerdown', this.boundDragstartHandler);
     // this.addEventListener('dragover', this.boundDragoverHandler);
-    this.addEventListener('pointerover', this.boundDragoverHandler);
+    this.addEventListener('mouseover', this.boundDragoverHandler);
+    this.addEventListener('touchmove', this.boundDragoverHandler);
     // this.addEventListener('dragend', this.boundDragendHandler);
-    this.addEventListener('pointerup', this.boundDragendHandler);
+    this.addEventListener('mouseup', this.boundDragendHandler);
+    this.addEventListener('touchend', this.boundDragendHandler);
+    this.addEventListener('touchcancel', this.boundDragendHandler);
+    this.addEventListener('keydown', this.boundKeydownHandler);
     // this.addEventListener('pointercancel', this.boundDragendHandler);
     // this.addEventListener('drop', this.boundDropHandler);
     // this.addEventListener('pointerdown', this.boundPointerdownHandler);
@@ -56,10 +59,9 @@ export class ViewContainerElement extends HTMLElement {
   }
 
   handleDragstart(event: Event) {
-    console.log('DRAGSTART...');
     if (event instanceof PointerEvent) {
       if (event.target instanceof HTMLElement) {
-        // event.target.releasePointerCapture(event.pointerId);
+        event.target.releasePointerCapture(event.pointerId);
       }
     }
 
@@ -104,23 +106,22 @@ export class ViewContainerElement extends HTMLElement {
 
     this.highlightElement = window.document.createElement('div');
     this.highlightElement.classList.add('highlight');
-    const { left, top, height, width } =
-      closestCellElement.getBoundingClientRect();
-    // this.highlightElement.style.width = `${width}px`;
-    // this.highlightElement.style.height = `${height}px`;
+    const { left, top } = closestCellElement.getBoundingClientRect();
     this.highlightElement.style.top = `${top}px`;
     this.highlightElement.style.left = `${left}px`;
 
     this.appendChild(this.highlightElement);
-
-    console.log('HIGHLIGHT ELEMENT CREATED.');
   }
 
-  handleDragend() {
-    console.log('DRAG END...');
-
+  handleDragend(event: Event) {
     if (!this.highlightElement) {
       return;
+    }
+
+    if (event instanceof TouchEvent) {
+      if (event.touches.length > 0) {
+        return;
+      }
     }
 
     const { top, left, bottom, right, height, width } =
@@ -128,7 +129,6 @@ export class ViewContainerElement extends HTMLElement {
     this.highlightElement.remove();
     this.highlightElement = null;
     this.draggedCellElement = null;
-    console.log('REMOVED HIGHLIGHT');
 
     for (const cellElement of Array.from(
       this.gridElement.querySelectorAll(CELL_ELEMENT_SELECTOR),
@@ -163,25 +163,42 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    console.log('dragover');
+    let closestCellElement: Element | null = null;
 
-    const autoSaveTextElement = event.composedPath().find((element) => {
-      if (!(element instanceof HTMLElement)) {
-        return false;
+    if (event instanceof TouchEvent) {
+      const touchLocation = event.changedTouches[0];
+      const touchTarget = window.document.elementFromPoint(
+        touchLocation.clientX,
+        touchLocation.clientY,
+      );
+
+      if (touchTarget instanceof Element) {
+        closestCellElement = touchTarget.matches(CELL_ELEMENT_SELECTOR)
+          ? touchTarget
+          : touchTarget.closest(CELL_ELEMENT_SELECTOR);
       }
+    } else {
+      for (const element of Array.from(event.composedPath())) {
+        if (!(element instanceof Element)) {
+          continue;
+        }
 
-      return element.matches('auto-save-text input');
-    });
+        if (element.matches(CELL_ELEMENT_SELECTOR)) {
+          closestCellElement = element;
+          break;
+        }
+      }
+    }
 
-    if (!(autoSaveTextElement instanceof HTMLElement)) {
+    if (!closestCellElement) {
       return;
     }
 
-    const closestCellElement = autoSaveTextElement.closest(
-      CELL_ELEMENT_SELECTOR,
+    const autoSaveTextElement = closestCellElement.querySelector(
+      'auto-save-text input',
     );
 
-    if (!(closestCellElement instanceof HTMLElement)) {
+    if (!(autoSaveTextElement instanceof HTMLElement)) {
       return;
     }
 
@@ -213,7 +230,6 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
     if (closestCellElement === this.draggedCellElement) {
-      console.log('same, no change...');
       return;
     }
 
@@ -268,40 +284,6 @@ export class ViewContainerElement extends HTMLElement {
     }
   }
 
-  handleDrop(event: Event) {
-    event.preventDefault();
-
-    if (!this.draggedCellElement) {
-      return;
-    }
-
-    if (!this.highlightElement) {
-      return;
-    }
-
-    const autoSaveTextElement = event.composedPath().find((element) => {
-      if (!(element instanceof HTMLElement)) {
-        return false;
-      }
-
-      return element.matches('auto-save-text input');
-    });
-
-    if (!(autoSaveTextElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const closestCellElement = autoSaveTextElement.closest(
-      CELL_ELEMENT_SELECTOR,
-    );
-
-    if (!(closestCellElement instanceof HTMLElement)) {
-      return;
-    }
-
-    closestCellElement.focus();
-  }
-
   handleAutoSaveTextSave(event: Event) {
     if (!(event instanceof CustomEvent)) {
       return;
@@ -342,6 +324,24 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     addRowFormElement.submit();
+  }
+
+  handleKeydown(event: Event) {
+    if (!(event instanceof KeyboardEvent)) {
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      const selectedCells = Array.from(
+        this.gridElement.querySelectorAll(
+          `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+        ),
+      );
+
+      for (const selectedCell of selectedCells) {
+        selectedCell.removeAttribute('aria-selected');
+      }
+    }
   }
 }
 
