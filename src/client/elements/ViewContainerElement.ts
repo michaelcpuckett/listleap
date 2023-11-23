@@ -17,7 +17,6 @@ export class ViewContainerElement extends HTMLElement {
   private boundKeyupHandler = this.handleKeyup.bind(this);
   private boundHandleAutoSaveTextSave = this.handleAutoSaveTextSave.bind(this);
   private boundDeleteCellHandler = this.handleDeleteCell.bind(this);
-  private boundDeleteRowHandler = this.handleDeleteRow.bind(this);
 
   constructor() {
     super();
@@ -89,15 +88,20 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    if (this.isShiftKeyPressed) {
-      const selectedCells = Array.from(
-        this.gridElement.querySelectorAll(
-          `[aria-selected]:is(${CELL_ELEMENT_SELECTOR})`,
-        ),
-      );
+    const selectedCells = Array.from(
+      this.gridElement.querySelectorAll(
+        `[aria-selected]:is(${CELL_ELEMENT_SELECTOR})`,
+      ),
+    );
 
+    if (this.isShiftKeyPressed) {
       for (const selectedCell of selectedCells) {
         selectedCell.setAttribute('data-selected', '');
+      }
+    } else {
+      for (const selectedCell of selectedCells) {
+        selectedCell.removeAttribute('aria-selected');
+        selectedCell.removeAttribute('data-selected');
       }
     }
 
@@ -578,18 +582,6 @@ export class ViewContainerElement extends HTMLElement {
     this.highlightElement.style.left = `${left}px`;
 
     this.appendChild(this.highlightElement);
-  }
-
-  handleDeleteRow(event: Event) {
-    if (!(event instanceof CustomEvent)) {
-      return;
-    }
-
-    const { detail: rowElement } = event;
-
-    if (!(rowElement instanceof HTMLElement)) {
-      return;
-    }
   }
 
   handleDeleteCell(event: Event) {
