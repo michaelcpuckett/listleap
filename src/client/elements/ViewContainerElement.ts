@@ -337,7 +337,6 @@ export class ViewContainerElement extends HTMLElement {
     event.stopImmediatePropagation();
     event.stopPropagation();
     event.preventDefault();
-    closestCellElement.focus();
 
     function markCellSelected(cellElement: Element) {
       if (!(cellElement instanceof HTMLElement)) {
@@ -345,6 +344,7 @@ export class ViewContainerElement extends HTMLElement {
       }
 
       cellElement.setAttribute('aria-selected', 'true');
+      cellElement.setAttribute('data-read-only', '');
 
       const inputElement = cellElement.querySelector('auto-save-text input');
 
@@ -362,6 +362,7 @@ export class ViewContainerElement extends HTMLElement {
 
       cellElement.removeAttribute('aria-selected');
       cellElement.removeAttribute('data-selected');
+      cellElement.setAttribute('data-read-only', '');
 
       const inputElement = cellElement.querySelector('auto-save-text input');
 
@@ -393,6 +394,8 @@ export class ViewContainerElement extends HTMLElement {
         }
       }
     }
+
+    closestCellElement.focus();
   }
 
   handleAutoSaveTextSave(event: Event) {
