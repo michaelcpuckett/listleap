@@ -73,6 +73,13 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
       this.toggleEditMode();
 
       if (this.inputElement.dataset.readOnly === '') {
+        this.dispatchEvent(
+          new CustomEvent('auto-save-text:toggle-edit-mode', {
+            composed: true,
+            bubbles: true,
+          }),
+        );
+
         this.submitData().then(() => {
           this.dispatchEvent(
             new CustomEvent('auto-save-text:save', {
