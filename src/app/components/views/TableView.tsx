@@ -25,7 +25,7 @@ export function TableView(
     })
     .map((row) => row.id);
 
-  const gridColumnsCss = `${
+  const gridColumnsCss = `auto ${
     properties.length ? `repeat(${properties.length}, minmax(235px, 1fr))` : ''
   } auto`;
 
@@ -42,6 +42,16 @@ export function TableView(
         >
           <RowGroupElement>
             <RowElement label="Properties">
+              <ColumnHeaderElement className="align-center">
+                <SelectAllCheckboxElement>
+                  <input
+                    className="input"
+                    type="checkbox"
+                    aria-label="Select all rows"
+                    name="selected"
+                  />
+                </SelectAllCheckboxElement>
+              </ColumnHeaderElement>
               {properties.map((property, index) => (
                 <ColumnHeaderElement label={property.name}>
                   <form
@@ -101,6 +111,16 @@ export function TableView(
 
               return (
                 <RowElement>
+                  <CellElement className="align-center">
+                    <input
+                      className="input"
+                      type="checkbox"
+                      aria-label="Select row"
+                      name="selected"
+                      checked={row.selected}
+                      value={row.id}
+                    />
+                  </CellElement>
                   {properties.map((property, index) => (
                     <CellElement role={index === 0 ? 'rowheader' : undefined}>
                       {property.type === String ? (
