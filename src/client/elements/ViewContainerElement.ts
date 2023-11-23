@@ -16,7 +16,6 @@ export class ViewContainerElement extends HTMLElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundKeyupHandler = this.handleKeyup.bind(this);
   private boundHandleAutoSaveTextSave = this.handleAutoSaveTextSave.bind(this);
-  private boundClickHandler = this.handleClick.bind(this);
 
   constructor() {
     super();
@@ -567,23 +566,6 @@ export class ViewContainerElement extends HTMLElement {
     );
 
     for (const selectedCell of selectedCells) {
-      selectedCell.removeAttribute('data-selected');
-    }
-  }
-
-  handleClick() {
-    if (this.isShiftKeyPressed) {
-      return;
-    }
-
-    const selectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `[aria-selected]:is(${CELL_ELEMENT_SELECTOR})`,
-      ),
-    );
-
-    for (const selectedCell of selectedCells) {
-      selectedCell.removeAttribute('aria-selected');
       selectedCell.removeAttribute('data-selected');
     }
   }
