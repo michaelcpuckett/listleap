@@ -5,6 +5,7 @@ export class ViewContainerElement extends HTMLElement {
   private draggedCellElement: HTMLElement | null = null;
   private highlightElement: HTMLElement | null = null;
   private isShiftKeyPressed = false;
+  private isInvertingSelection = false;
   private boundDragstartHandler = this.handleDragstart.bind(this);
   private boundDragendHandler = this.handleDragend.bind(this);
   private boundDragoverHandler = this.handleDragover.bind(this);
@@ -68,12 +69,6 @@ export class ViewContainerElement extends HTMLElement {
   }
 
   handleDragstart(event: Event) {
-    if (event instanceof PointerEvent) {
-      if (event.target instanceof HTMLElement) {
-        event.target.releasePointerCapture(event.pointerId);
-      }
-    }
-
     const autoSaveTextElement = event.composedPath().find((element) => {
       if (!(element instanceof HTMLElement)) {
         return false;
@@ -94,17 +89,21 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    if (event instanceof DragEvent) {
-      event.dataTransfer?.setData('text/plain', autoSaveTextElement.id);
-      const img = new Image();
-      img.src = '/empty.gif';
-      event.dataTransfer?.setDragImage(img, 10, 10);
+    this.draggedCellElement = closestCellElement;
+
+    this.isInvertingSelection =
+      this.draggedCellElement.hasAttribute('aria-selected');
+
+    if (event instanceof TouchEvent) {
+      window.document.body.classList.add('prevent-scroll');
     }
 
-    this.draggedCellElement = closestCellElement;
-    if (event instanceof TouchEvent) {
-      // event.preventDefault();
-      window.document.body.classList.add('prevent-scroll');
+    if (this.isShiftKeyPressed) {
+      if (this.isInvertingSelection) {
+        this.draggedCellElement.removeAttribute('aria-selected');
+      } else {
+        this.draggedCellElement.setAttribute('aria-selected', 'true');
+      }
     }
 
     this.highlightElement = window.document.createElement('div');
@@ -191,9 +190,6 @@ export class ViewContainerElement extends HTMLElement {
     if (!(draggedRow instanceof HTMLElement)) {
       return;
     }
-    // if (closestCellElement === this.draggedCellElement) {
-    //   return;
-    // }
 
     const draggedRowTop = draggedRow.getBoundingClientRect().top;
     const closestRowTop = closestRowElement.getBoundingClientRect().top;
@@ -204,10 +200,6 @@ export class ViewContainerElement extends HTMLElement {
 
     const diffX = closestCellLeft - draggedCellLeft;
     const diffY = closestRowTop - draggedRowTop;
-
-    if (event instanceof TouchEvent) {
-      // event.preventDefault();
-    }
 
     this.highlightElement.style.height = `${
       Math.abs(diffY) + this.draggedCellElement.getBoundingClientRect().height
@@ -276,7 +268,11 @@ export class ViewContainerElement extends HTMLElement {
 
       if (isWithinBounds) {
         if (this.isShiftKeyPressed) {
-          markCellUnselected();
+          if (this.isInvertingSelection) {
+            markCellUnselected();
+          } else {
+            markCellSelected();
+          }
         } else {
           markCellSelected();
         }
@@ -378,7 +374,11 @@ export class ViewContainerElement extends HTMLElement {
 
     if (closestCellElement.getAttribute('aria-selected') === 'true') {
       if (this.isShiftKeyPressed) {
-        markCellUnselected(closestCellElement);
+        if (this.isInvertingSelection) {
+          markCellUnselected(closestCellElement);
+        } else {
+          markCellSelected(closestCellElement);
+        }
       }
     } else {
       if (!this.isShiftKeyPressed) {
