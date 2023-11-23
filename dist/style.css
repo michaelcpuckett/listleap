@@ -41,6 +41,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
+  min-height: 101vh;
 }
 
 body.prevent-scroll {
