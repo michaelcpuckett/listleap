@@ -712,7 +712,7 @@ export class ViewContainerElement extends HTMLElement {
 
     this.isShiftKeyPressed = event.shiftKey || event.key === 'Shift';
 
-    if (this.isShiftKeyPressed) {
+    if (this.isDragging && this.isShiftKeyPressed) {
       const selectedCells = Array.from(
         this.gridElement.querySelectorAll(
           `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
@@ -744,7 +744,8 @@ export class ViewContainerElement extends HTMLElement {
 
     const cellElement = event.composedPath().find((element) => {
       return (
-        element instanceof HTMLElement && element.matches(CELL_ELEMENT_SELECTOR)
+        element instanceof HTMLElement &&
+        element.matches(ANY_CELL_ELEMENT_SELECTOR)
       );
     });
 
@@ -913,9 +914,30 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    const selectedCells = Array.from(
+      this.gridElement.querySelectorAll(
+        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+      ),
+    );
+
+    if (
+      selectedCells.length > 0 &&
+      (!targetCellElement.matches(CELL_ELEMENT_SELECTOR) ||
+        !targetCellElement.querySelector('auto-save-text input'))
+    ) {
+      return;
+    }
+
     this.focusElement(targetCellElement);
 
     if (this.isDragging) {
+      return;
+    }
+
+    if (
+      !targetCellElement.matches(CELL_ELEMENT_SELECTOR) ||
+      !targetCellElement.querySelector('auto-save-text input[type="text"]')
+    ) {
       return;
     }
 
@@ -969,7 +991,28 @@ export class ViewContainerElement extends HTMLElement {
 
     this.focusElement(targetCellElement);
 
+    const selectedCells = Array.from(
+      this.gridElement.querySelectorAll(
+        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+      ),
+    );
+
+    if (
+      selectedCells.length > 0 &&
+      (!targetCellElement.matches(CELL_ELEMENT_SELECTOR) ||
+        !targetCellElement.querySelector('auto-save-text input'))
+    ) {
+      return;
+    }
+
     if (this.isDragging) {
+      return;
+    }
+
+    if (
+      !targetCellElement.matches(CELL_ELEMENT_SELECTOR) ||
+      !targetCellElement.querySelector('auto-save-text input[type="text"]')
+    ) {
       return;
     }
 
@@ -990,9 +1033,30 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    const selectedCells = Array.from(
+      this.gridElement.querySelectorAll(
+        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+      ),
+    );
+
+    if (
+      selectedCells.length > 0 &&
+      (!previousCellElement.matches(CELL_ELEMENT_SELECTOR) ||
+        !previousCellElement.querySelector('auto-save-text input'))
+    ) {
+      return;
+    }
+
     this.focusElement(previousCellElement);
 
     if (this.isDragging) {
+      return;
+    }
+
+    if (
+      !previousCellElement.matches(CELL_ELEMENT_SELECTOR) ||
+      !previousCellElement.querySelector('auto-save-text input[type="text"]')
+    ) {
       return;
     }
 
@@ -1013,9 +1077,30 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    const selectedCells = Array.from(
+      this.gridElement.querySelectorAll(
+        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+      ),
+    );
+
+    if (
+      selectedCells.length > 0 &&
+      (!nextCellElement.matches(CELL_ELEMENT_SELECTOR) ||
+        !nextCellElement.querySelector('auto-save-text input'))
+    ) {
+      return;
+    }
+
     this.focusElement(nextCellElement);
 
     if (this.isDragging) {
+      return;
+    }
+
+    if (
+      !nextCellElement.matches(CELL_ELEMENT_SELECTOR) ||
+      !nextCellElement.querySelector('auto-save-text input[type="text"]')
+    ) {
       return;
     }
 
