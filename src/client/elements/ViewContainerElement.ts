@@ -288,6 +288,9 @@ export class ViewContainerElement extends HTMLElement {
 
     const markCellSelected = (cellElement: HTMLElement) => {
       cellElement.setAttribute('aria-selected', 'true');
+      if (this.isShiftKeyPressed && !this.isInvertingSelection) {
+        cellElement.setAttribute('data-selected', 'true');
+      }
 
       const inputElement = cellElement.querySelector('auto-save-text input');
 
@@ -320,9 +323,15 @@ export class ViewContainerElement extends HTMLElement {
         Math.ceil(cellBounds.right) <= Math.ceil(right);
 
       if (isWithinBounds) {
-        markCellSelected(cellElement);
+        if (this.isInvertingSelection) {
+          markCellUnselected(cellElement);
+        } else {
+          markCellSelected(cellElement);
+        }
       } else {
-        markCellUnselected(cellElement);
+        if (!cellElement.hasAttribute('data-selected')) {
+          markCellUnselected(cellElement);
+        }
       }
     }
   }
@@ -385,6 +394,9 @@ export class ViewContainerElement extends HTMLElement {
       }
 
       cellElement.setAttribute('aria-selected', 'true');
+      if (this.isShiftKeyPressed && !this.isInvertingSelection) {
+        cellElement.setAttribute('data-selected', 'true');
+      }
       cellElement.setAttribute('data-read-only', '');
 
       const inputElement = cellElement.querySelector('auto-save-text input');
