@@ -47,7 +47,6 @@ export async function PostDatabaseRows(
       const cellEntries = formData['cell[]'] || [];
 
       for (const cellEntry of cellEntries) {
-        console.log(cellEntry);
         const [rowId, propertyId] = cellEntry.split(':');
         const existingRow = await getRowByIdFromIndexedDb<typeof database>(
           rowId,
@@ -59,13 +58,9 @@ export async function PostDatabaseRows(
           continue;
         }
 
-        const rowToPatch = {
-          id: existingRow.id,
-          position: existingRow.position,
-          databaseId: database.id,
-        };
+        const rowToPatch = {};
 
-        for (const [key, value] of Object.entries(rowToPatch)) {
+        for (const [key, value] of Object.entries(existingRow)) {
           if (key === propertyId) {
             rowToPatch[key] = '';
           } else {

@@ -634,26 +634,27 @@ export class ViewContainerElement extends HTMLElement {
       throw new Error('Could not find hidden input element');
     }
 
-    hiddenInputElement.setAttribute(
-      'value',
-      cellElements
-        .map((cellElement) => {
-          const rowId = cellElement.getAttribute('data-row-id');
+    const cellsValue = cellElements
+      .map((cellElement) => {
+        const rowId = cellElement.getAttribute('data-row-id');
 
-          if (!rowId) {
-            throw new Error('Could not find id attribute');
-          }
+        if (!rowId) {
+          throw new Error('Could not find id attribute');
+        }
 
-          const propertyId = cellElement.getAttribute('data-property-id');
+        const propertyId = cellElement.getAttribute('data-property-id');
 
-          if (!propertyId) {
-            throw new Error('Could not find id attribute');
-          }
+        if (!propertyId) {
+          throw new Error('Could not find id attribute');
+        }
 
-          return rowId + ':' + propertyId;
-        })
-        .join(','),
-    );
+        return rowId + ':' + propertyId;
+      })
+      .join(',');
+
+    console.log(cellElements, cellsValue);
+
+    hiddenInputElement.setAttribute('value', cellsValue);
 
     fetch(clearCellsFormElement.action, {
       method: clearCellsFormElement.method,
