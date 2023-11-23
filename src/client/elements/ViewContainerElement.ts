@@ -123,7 +123,7 @@ export class ViewContainerElement extends HTMLElement {
     if (this.isShiftKeyPressed) {
       const selectedCells = Array.from(
         this.gridElement.querySelectorAll(
-          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+          `[aria-selected]:is(${CELL_ELEMENT_SELECTOR})`,
         ),
       );
 
@@ -135,6 +135,7 @@ export class ViewContainerElement extends HTMLElement {
     const { closestCellElement } = elements;
 
     this.isInvertingSelection =
+      this.isShiftKeyPressed &&
       closestCellElement.hasAttribute('aria-selected');
 
     if (this.isShiftKeyPressed) {
@@ -312,7 +313,6 @@ export class ViewContainerElement extends HTMLElement {
 
     const markCellUnselected = (cellElement: HTMLElement) => {
       cellElement.removeAttribute('aria-selected');
-      cellElement.removeAttribute('data-selected');
 
       const inputElement = cellElement.querySelector('auto-save-text input');
 
@@ -405,6 +405,16 @@ export class ViewContainerElement extends HTMLElement {
     event.stopPropagation();
     event.preventDefault();
 
+    const dataSelectedCells = Array.from(
+      this.gridElement.querySelectorAll(
+        `[data-selected]:is(${CELL_ELEMENT_SELECTOR})`,
+      ),
+    );
+
+    for (const dataSelectedCell of dataSelectedCells) {
+      dataSelectedCell.removeAttribute('data-selected');
+    }
+
     const markCellSelected = (cellElement: Element) => {
       if (!(cellElement instanceof HTMLElement)) {
         return;
@@ -412,7 +422,7 @@ export class ViewContainerElement extends HTMLElement {
 
       cellElement.setAttribute('aria-selected', 'true');
       if (this.isShiftKeyPressed && !this.isInvertingSelection) {
-        cellElement.setAttribute('data-selected', 'true');
+        cellElement.setAttribute('data-selected', '');
       }
       cellElement.setAttribute('data-read-only', '');
 
@@ -552,7 +562,7 @@ export class ViewContainerElement extends HTMLElement {
 
     const selectedCells = Array.from(
       this.gridElement.querySelectorAll(
-        `[data-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+        `[data-selected]:is(${CELL_ELEMENT_SELECTOR})`,
       ),
     );
 
@@ -568,7 +578,7 @@ export class ViewContainerElement extends HTMLElement {
 
     const selectedCells = Array.from(
       this.gridElement.querySelectorAll(
-        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+        `[aria-selected]:is(${CELL_ELEMENT_SELECTOR})`,
       ),
     );
 

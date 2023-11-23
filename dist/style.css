@@ -547,17 +547,6 @@ flyout-menu [role='menu'] {
   color: CanvasText;
 }
 
-[data-selected]:not([aria-selected='true']):has(
-    auto-save-search,
-    auto-save-text,
-    auto-save-checkbox
-  )
-  :is(auto-save-search, auto-save-text, auto-save-checkbox)
-  input[type='text'] {
-  background: deepskyblue;
-  color: magenta;
-}
-
 [aria-selected='true']
   :is(auto-save-search, auto-save-text, auto-save-checkbox)
   input[type='text'] {
