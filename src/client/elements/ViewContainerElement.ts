@@ -1,4 +1,18 @@
 const CELL_ELEMENT_SELECTOR = '[role="gridcell"], [role="rowheader"]';
+const ANY_CELL_ELEMENT_SELECTOR =
+  '[role="gridcell"], [role="columnheader"], [role="rowheader"]';
+
+const FLYOUT_MENU_SELECTOR = 'flyout-menu [role="menu"]';
+
+function isInFlyoutMenu(element: Element | HTMLElement | EventTarget) {
+  if (!(element instanceof Element)) {
+    return false;
+  }
+
+  const flyoutMenuElement = element.closest(FLYOUT_MENU_SELECTOR);
+
+  return flyoutMenuElement instanceof HTMLElement;
+}
 
 function isHtmlElement(element: unknown): element is HTMLElement {
   return element instanceof HTMLElement;
@@ -51,12 +65,52 @@ export class ViewContainerElement extends HTMLElement {
     this.addEventListener('touchcancel', this.boundDragendHandler, {
       capture: true,
     });
-    this.addEventListener('keydown', this.boundKeydownHandler);
+    this.addEventListener('keydown', this.boundKeydownHandler, {
+      capture: true,
+    });
     this.addEventListener('keyup', this.boundKeyupHandler);
     this.addEventListener(
       'auto-save-text:save',
       this.boundHandleAutoSaveTextSave,
     );
+
+    this.addEventListener('auto-save-text:toggle-edit-mode', (event: Event) => {
+      if (!(event instanceof CustomEvent)) {
+        return;
+      }
+
+      if (!(event.target instanceof HTMLElement)) {
+        return;
+      }
+
+      const cellElement = event.target.closest(CELL_ELEMENT_SELECTOR);
+
+      if (!(cellElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const rowElement = cellElement.closest('[role="row"]');
+
+      if (!(rowElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const cellIndex = Array.from(rowElement.children).indexOf(cellElement);
+
+      const nextRowElement = rowElement.nextElementSibling;
+
+      if (!(nextRowElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const nextCellElement = nextRowElement.children[cellIndex];
+
+      if (!(nextCellElement instanceof HTMLElement)) {
+        return;
+      }
+
+      nextCellElement.focus();
+    });
   }
 
   disconnectedCallback() {
@@ -80,7 +134,9 @@ export class ViewContainerElement extends HTMLElement {
     this.removeEventListener('touchcancel', this.boundDragendHandler, {
       capture: true,
     });
-    this.removeEventListener('keydown', this.boundKeydownHandler);
+    this.removeEventListener('keydown', this.boundKeydownHandler, {
+      capture: true,
+    });
     this.removeEventListener('keyup', this.boundKeyupHandler);
     this.removeEventListener(
       'auto-save-text:save',
@@ -134,6 +190,7 @@ export class ViewContainerElement extends HTMLElement {
 
     this.draggedCellElement = closestCellElement;
   }
+
   handleDragover(event: Event) {
     if (!this.draggedCellElement) {
       return;
@@ -379,39 +436,6 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     addRowFormElement.submit();
-  }
-
-  handleKeydown(event: Event) {
-    if (!(event instanceof KeyboardEvent)) {
-      return;
-    }
-
-    this.isShiftKeyPressed = event.shiftKey || event.key === 'Shift';
-
-    if (this.isShiftKeyPressed) {
-      const selectedCells = Array.from(
-        this.gridElement.querySelectorAll(
-          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
-        ),
-      );
-
-      for (const selectedCell of selectedCells) {
-        selectedCell.setAttribute('data-selected', '');
-      }
-    }
-
-    if (event.key === 'Escape') {
-      const selectedCells = Array.from(
-        this.gridElement.querySelectorAll(
-          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
-        ),
-      );
-
-      for (const selectedCell of selectedCells) {
-        selectedCell.removeAttribute('aria-selected');
-        selectedCell.removeAttribute('data-selected');
-      }
-    }
   }
 
   handleKeyup(event: Event) {
@@ -660,6 +684,277 @@ export class ViewContainerElement extends HTMLElement {
       method: clearCellsFormElement.method,
       body: new FormData(clearCellsFormElement),
     });
+  }
+
+  handleKeydown(event: Event) {
+    if (!(event instanceof KeyboardEvent)) {
+      return;
+    }
+
+    this.isShiftKeyPressed = event.shiftKey || event.key === 'Shift';
+
+    if (this.isShiftKeyPressed) {
+      const selectedCells = Array.from(
+        this.gridElement.querySelectorAll(
+          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+        ),
+      );
+
+      for (const selectedCell of selectedCells) {
+        selectedCell.setAttribute('data-selected', '');
+      }
+    }
+
+    if (event.key === 'Escape') {
+      const selectedCells = Array.from(
+        this.gridElement.querySelectorAll(
+          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+        ),
+      );
+
+      for (const selectedCell of selectedCells) {
+        selectedCell.removeAttribute('aria-selected');
+        selectedCell.removeAttribute('data-selected');
+      }
+    }
+
+    const cellElement = event.composedPath().find((element) => {
+      return (
+        element instanceof HTMLElement && element.matches(CELL_ELEMENT_SELECTOR)
+      );
+    });
+
+    if (!(cellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const editableAutoSaveTextInputElement = cellElement.querySelector(
+      'auto-save-text input[type="text"]:not([data-read-only])',
+    );
+
+    if (editableAutoSaveTextInputElement) {
+      return;
+    }
+
+    const flyoutMenuElement = event.composedPath().find(isInFlyoutMenu);
+
+    if (flyoutMenuElement) {
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowUp':
+        event.preventDefault();
+        this.handleArrowUp(cellElement);
+        break;
+      case 'ArrowDown':
+        event.preventDefault();
+        this.handleArrowDown(cellElement);
+        break;
+      case 'ArrowLeft':
+        event.preventDefault();
+        this.handleArrowLeft(cellElement);
+        break;
+      case 'ArrowRight':
+        event.preventDefault();
+        this.handleArrowRight(cellElement);
+        break;
+      case 'Home':
+        event.preventDefault();
+        this.handleHome(cellElement);
+        break;
+      case 'End':
+        event.preventDefault();
+        this.handleEnd(cellElement);
+        break;
+      default:
+        break;
+    }
+
+    const selectedCellElements = Array.from(
+      this.querySelectorAll(
+        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+      ),
+    );
+
+    if (selectedCellElements.length) {
+      if (['Delete', 'Backspace'].includes(event.key)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+
+        this.dispatchEvent(
+          new CustomEvent('view-container:clear-cells', {
+            bubbles: true,
+            composed: true,
+            detail: selectedCellElements,
+          }),
+        );
+      }
+    }
+  }
+
+  handleHome(cellElement: HTMLElement) {
+    const gridElement = cellElement.closest('[role="grid"]');
+
+    if (!(gridElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const rowElements = Array.from(
+      gridElement.querySelectorAll('[role="row"]'),
+    );
+
+    const targetRowElement = rowElements[0];
+
+    if (!(targetRowElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const targetRowElementCells = Array.from(targetRowElement.children);
+
+    const targetCellElement = targetRowElementCells[0];
+
+    if (!(targetCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    this.focusElement(targetCellElement);
+  }
+
+  handleEnd(cellElement: HTMLElement) {
+    const gridElement = cellElement.closest('[role="grid"]');
+
+    if (!(gridElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const rowElements = Array.from(
+      gridElement.querySelectorAll('[role="row"]'),
+    );
+
+    const targetRowElement = rowElements[rowElements.length - 1];
+
+    if (!(targetRowElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const targetRowElementCells = Array.from(targetRowElement.children);
+
+    const targetCellElement =
+      targetRowElementCells[targetRowElementCells.length - 1];
+
+    if (!(targetCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    this.focusElement(targetCellElement);
+  }
+
+  handleArrowUp(cellElement: HTMLElement) {
+    const rowElement = cellElement.closest('[role="row"]');
+
+    if (!rowElement) {
+      return;
+    }
+
+    const cellIndex = Array.from(rowElement.children).indexOf(cellElement);
+
+    const gridElement = rowElement.closest('[role="grid"]');
+
+    if (!(gridElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const rowElements = Array.from(
+      gridElement.querySelectorAll('[role="row"]'),
+    );
+
+    const rowIndex = rowElements.indexOf(rowElement);
+
+    const targetRowElement = rowElements[rowIndex - 1];
+
+    if (!(targetRowElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const targetRowElementCells = Array.from(targetRowElement.children);
+
+    const targetCellElement =
+      targetRowElementCells[
+        Math.min(targetRowElementCells.length - 1, cellIndex)
+      ];
+
+    if (!(targetCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    this.focusElement(targetCellElement);
+  }
+
+  handleArrowDown(cellElement: HTMLElement) {
+    const rowElement = cellElement.closest('[role="row"]');
+
+    if (!rowElement) {
+      return;
+    }
+
+    const cellIndex = Array.from(rowElement.children).indexOf(cellElement);
+
+    const gridElement = rowElement.closest('[role="grid"]');
+
+    if (!(gridElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const rowElements = Array.from(
+      gridElement.querySelectorAll('[role="row"]'),
+    );
+
+    const rowIndex = rowElements.indexOf(rowElement);
+
+    const targetRowElement = rowElements[rowIndex + 1];
+
+    if (!(targetRowElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const targetRowElementCells = Array.from(targetRowElement.children);
+
+    const targetCellElement =
+      targetRowElementCells[
+        Math.min(targetRowElementCells.length - 1, cellIndex)
+      ];
+
+    if (!(targetCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    this.focusElement(targetCellElement);
+  }
+
+  handleArrowLeft(cellElement: HTMLElement) {
+    const previousCellElement = cellElement.previousElementSibling;
+
+    if (!(previousCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    this.focusElement(previousCellElement);
+  }
+
+  handleArrowRight(cellElement: HTMLElement) {
+    const nextCellElement = cellElement.nextElementSibling;
+
+    if (!(nextCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    this.focusElement(nextCellElement);
+  }
+
+  focusElement(targetCellElement: HTMLElement) {
+    targetCellElement.focus();
   }
 }
 
