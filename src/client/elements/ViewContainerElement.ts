@@ -73,45 +73,6 @@ export class ViewContainerElement extends HTMLElement {
     );
   }
 
-  getElementsFromComposedPath(event: Event) {
-    const composedPath = event.composedPath();
-
-    const autoSaveTextElement = composedPath.find((element) => {
-      if (!(element instanceof HTMLElement)) {
-        return false;
-      }
-
-      return element.matches('auto-save-text input');
-    });
-
-    if (!(autoSaveTextElement instanceof HTMLInputElement)) {
-      return;
-    }
-
-    const closestCellElement = autoSaveTextElement.closest(
-      CELL_ELEMENT_SELECTOR,
-    );
-
-    if (!(closestCellElement instanceof HTMLElement)) {
-      return;
-    }
-
-    return {
-      autoSaveTextElement,
-      closestCellElement,
-    };
-  }
-
-  initializeHighlightElement(cellElement: HTMLElement) {
-    this.highlightElement = window.document.createElement('div');
-    this.highlightElement.classList.add('highlight');
-    const { left, top } = cellElement.getBoundingClientRect();
-    this.highlightElement.style.top = `${top}px`;
-    this.highlightElement.style.left = `${left}px`;
-
-    this.appendChild(this.highlightElement);
-  }
-
   handleDragstart(event: Event) {
     const elements = this.getElementsFromComposedPath(event);
 
@@ -153,125 +114,6 @@ export class ViewContainerElement extends HTMLElement {
 
     this.draggedCellElement = closestCellElement;
   }
-
-  getElementsFromPoint(event: Event) {
-    let closestCellElement: Element | null = null;
-
-    if (event instanceof TouchEvent) {
-      const touchLocation = event.changedTouches[0];
-      const touchTarget = window.document.elementFromPoint(
-        touchLocation.clientX,
-        touchLocation.clientY,
-      );
-
-      if (touchTarget instanceof Element) {
-        closestCellElement = touchTarget.matches(CELL_ELEMENT_SELECTOR)
-          ? touchTarget
-          : touchTarget.closest(CELL_ELEMENT_SELECTOR);
-      }
-    } else {
-      for (const element of Array.from(event.composedPath())) {
-        if (!(element instanceof Element)) {
-          continue;
-        }
-
-        if (element.matches(CELL_ELEMENT_SELECTOR)) {
-          closestCellElement = element;
-          break;
-        }
-      }
-    }
-
-    if (!(closestCellElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const autoSaveTextElement = closestCellElement.querySelector(
-      'auto-save-text input',
-    );
-
-    if (!(autoSaveTextElement instanceof HTMLElement)) {
-      return;
-    }
-
-    return {
-      autoSaveTextElement,
-      closestCellElement,
-    };
-  }
-
-  updateHighlightElement(
-    cellElement: HTMLElement,
-    draggedCellElement: HTMLElement,
-  ) {
-    if (!this.highlightElement) {
-      return;
-    }
-    const closestRowElement = cellElement.closest('[role="row"]');
-
-    if (!(closestRowElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const closestRowIndex = Array.from(
-      this.gridElement.querySelectorAll('[role="row"]'),
-    ).indexOf(closestRowElement);
-
-    if (closestRowIndex === -1) {
-      return;
-    }
-
-    const closestCellIndex = Array.from(
-      closestRowElement.querySelectorAll(CELL_ELEMENT_SELECTOR),
-    ).indexOf(cellElement);
-
-    if (closestCellIndex === -1) {
-      return;
-    }
-
-    const draggedRow = draggedCellElement.closest('[role="row"]');
-
-    if (!(draggedRow instanceof HTMLElement)) {
-      return;
-    }
-
-    const draggedRowTop = draggedRow.getBoundingClientRect().top;
-    const closestRowTop = closestRowElement.getBoundingClientRect().top;
-
-    const draggedCellLeft = draggedCellElement.getBoundingClientRect().left;
-    const closestCellLeft = cellElement.getBoundingClientRect().left;
-
-    const diffX = closestCellLeft - draggedCellLeft;
-    const diffY = closestRowTop - draggedRowTop;
-
-    this.highlightElement.style.height = `${
-      Math.abs(diffY) + draggedCellElement.getBoundingClientRect().height
-    }px`;
-    this.highlightElement.style.width = `${
-      Math.abs(diffX) + draggedCellElement.getBoundingClientRect().width
-    }px`;
-
-    if (diffX < 0) {
-      this.highlightElement.style.left = `${
-        cellElement.getBoundingClientRect().left
-      }px`;
-    } else {
-      this.highlightElement.style.left = `${
-        draggedCellElement.getBoundingClientRect().left
-      }px`;
-    }
-
-    if (diffY < 0) {
-      this.highlightElement.style.top = `${
-        cellElement.getBoundingClientRect().top
-      }px`;
-    } else {
-      this.highlightElement.style.top = `${
-        draggedCellElement.getBoundingClientRect().top
-      }px`;
-    }
-  }
-
   handleDragover(event: Event) {
     if (!this.draggedCellElement) {
       return;
@@ -568,6 +410,165 @@ export class ViewContainerElement extends HTMLElement {
     for (const selectedCell of selectedCells) {
       selectedCell.removeAttribute('data-selected');
     }
+  }
+
+  getElementsFromPoint(event: Event) {
+    let closestCellElement: Element | null = null;
+
+    if (event instanceof TouchEvent) {
+      const touchLocation = event.changedTouches[0];
+      const touchTarget = window.document.elementFromPoint(
+        touchLocation.clientX,
+        touchLocation.clientY,
+      );
+
+      if (touchTarget instanceof Element) {
+        closestCellElement = touchTarget.matches(CELL_ELEMENT_SELECTOR)
+          ? touchTarget
+          : touchTarget.closest(CELL_ELEMENT_SELECTOR);
+      }
+    } else {
+      for (const element of Array.from(event.composedPath())) {
+        if (!(element instanceof Element)) {
+          continue;
+        }
+
+        if (element.matches(CELL_ELEMENT_SELECTOR)) {
+          closestCellElement = element;
+          break;
+        }
+      }
+    }
+
+    if (!(closestCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const autoSaveTextElement = closestCellElement.querySelector(
+      'auto-save-text input',
+    );
+
+    if (!(autoSaveTextElement instanceof HTMLElement)) {
+      return;
+    }
+
+    return {
+      autoSaveTextElement,
+      closestCellElement,
+    };
+  }
+
+  updateHighlightElement(
+    cellElement: HTMLElement,
+    draggedCellElement: HTMLElement,
+  ) {
+    if (!this.highlightElement) {
+      return;
+    }
+    const closestRowElement = cellElement.closest('[role="row"]');
+
+    if (!(closestRowElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const closestRowIndex = Array.from(
+      this.gridElement.querySelectorAll('[role="row"]'),
+    ).indexOf(closestRowElement);
+
+    if (closestRowIndex === -1) {
+      return;
+    }
+
+    const closestCellIndex = Array.from(
+      closestRowElement.querySelectorAll(CELL_ELEMENT_SELECTOR),
+    ).indexOf(cellElement);
+
+    if (closestCellIndex === -1) {
+      return;
+    }
+
+    const draggedRow = draggedCellElement.closest('[role="row"]');
+
+    if (!(draggedRow instanceof HTMLElement)) {
+      return;
+    }
+
+    const draggedRowTop = draggedRow.getBoundingClientRect().top;
+    const closestRowTop = closestRowElement.getBoundingClientRect().top;
+
+    const draggedCellLeft = draggedCellElement.getBoundingClientRect().left;
+    const closestCellLeft = cellElement.getBoundingClientRect().left;
+
+    const diffX = closestCellLeft - draggedCellLeft;
+    const diffY = closestRowTop - draggedRowTop;
+
+    this.highlightElement.style.height = `${
+      Math.abs(diffY) + draggedCellElement.getBoundingClientRect().height
+    }px`;
+    this.highlightElement.style.width = `${
+      Math.abs(diffX) + draggedCellElement.getBoundingClientRect().width
+    }px`;
+
+    if (diffX < 0) {
+      this.highlightElement.style.left = `${
+        cellElement.getBoundingClientRect().left
+      }px`;
+    } else {
+      this.highlightElement.style.left = `${
+        draggedCellElement.getBoundingClientRect().left
+      }px`;
+    }
+
+    if (diffY < 0) {
+      this.highlightElement.style.top = `${
+        cellElement.getBoundingClientRect().top
+      }px`;
+    } else {
+      this.highlightElement.style.top = `${
+        draggedCellElement.getBoundingClientRect().top
+      }px`;
+    }
+
+    this.highlightElement.style.border = '3px solid var(--swatch-interactive)';
+  }
+
+  getElementsFromComposedPath(event: Event) {
+    const composedPath = event.composedPath();
+
+    const autoSaveTextElement = composedPath.find((element) => {
+      if (!(element instanceof HTMLElement)) {
+        return false;
+      }
+
+      return element.matches('auto-save-text input');
+    });
+
+    if (!(autoSaveTextElement instanceof HTMLInputElement)) {
+      return;
+    }
+
+    const closestCellElement = autoSaveTextElement.closest(
+      CELL_ELEMENT_SELECTOR,
+    );
+
+    if (!(closestCellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    return {
+      autoSaveTextElement,
+      closestCellElement,
+    };
+  }
+
+  initializeHighlightElement(cellElement: HTMLElement) {
+    this.highlightElement = window.document.createElement('div');
+    this.highlightElement.classList.add('highlight');
+    const { left, top } = cellElement.getBoundingClientRect();
+    this.highlightElement.style.top = `${top}px`;
+    this.highlightElement.style.left = `${left}px`;
+
+    this.appendChild(this.highlightElement);
   }
 }
 

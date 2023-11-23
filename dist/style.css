@@ -521,7 +521,6 @@ flyout-menu [role='menu'] {
 }
 
 .highlight {
-  border: 3px solid var(--swatch-interactive);
   border-radius: 3px;
   position: fixed;
   z-index: 2;
