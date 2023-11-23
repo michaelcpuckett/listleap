@@ -45,10 +45,12 @@ export function TableView(
               <ColumnHeaderElement className="align-center">
                 <SelectAllCheckboxElement>
                   <input
+                    form="select-multiple-rows-form"
                     className="input"
                     type="checkbox"
                     aria-label="Select all rows"
-                    name="selected"
+                    name="row[]"
+                    value={rows.map((row) => row.id).join(',')}
                   />
                 </SelectAllCheckboxElement>
               </ColumnHeaderElement>
@@ -113,10 +115,11 @@ export function TableView(
                 <RowElement>
                   <CellElement className="align-center">
                     <input
+                      form="select-multiple-rows-form"
                       className="input"
                       type="checkbox"
                       aria-label="Select row"
-                      name="selected"
+                      name="row[]"
                       checked={row.selected}
                       value={row.id}
                     />

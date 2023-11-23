@@ -314,11 +314,12 @@ form {
 .input[type='checkbox'] {
   margin: 0;
   display: flex;
-  height: 2rem;
-  width: 2rem;
   border: 1px solid;
   border-radius: 0;
   box-shadow: none;
+  width: 1rem;
+  height: 1rem;
+  margin: 1rem;
 }
 
 .inline-form {
@@ -551,12 +552,6 @@ flyout-menu [role='menu'] {
   :is(auto-save-search, auto-save-text, auto-save-checkbox)
   input[type='text'] {
   background: var(--highlight-color);
-}
-
-:is(auto-save-search, auto-save-text, auto-save-checkbox)
-  input[type='checkbox'] {
-  width: 1.5rem;
-  height: 1.5rem;
 }
 
 :is(auto-save-search, auto-save-text, auto-save-checkbox)
