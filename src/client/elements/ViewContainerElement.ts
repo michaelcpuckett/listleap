@@ -16,7 +16,7 @@ export class ViewContainerElement extends HTMLElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundKeyupHandler = this.handleKeyup.bind(this);
   private boundHandleAutoSaveTextSave = this.handleAutoSaveTextSave.bind(this);
-  private boundDeleteCellHandler = this.handleDeleteCell.bind(this);
+  private boundClearCellsHandler = this.handleClearCells.bind(this);
 
   constructor() {
     super();
@@ -32,8 +32,8 @@ export class ViewContainerElement extends HTMLElement {
 
   connectedCallback() {
     this.addEventListener(
-      'view-container:delete-cell',
-      this.boundDeleteCellHandler,
+      'view-container:clear-cells',
+      this.boundClearCellsHandler,
       {
         capture: true,
       },
@@ -60,6 +60,13 @@ export class ViewContainerElement extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this.removeEventListener(
+      'view-container:clear-cells',
+      this.boundClearCellsHandler,
+      {
+        capture: true,
+      },
+    );
     this.removeEventListener('mousedown', this.boundDragstartHandler);
     this.removeEventListener('touchstart', this.boundDragstartHandler);
     this.removeEventListener('mouseover', this.boundDragoverHandler);
@@ -584,25 +591,74 @@ export class ViewContainerElement extends HTMLElement {
     this.appendChild(this.highlightElement);
   }
 
-  handleDeleteCell(event: Event) {
-    console.log('delete cell', event);
+  handleClearCells(event: Event) {
     if (!(event instanceof CustomEvent)) {
       return;
     }
 
-    const { detail: cellElement } = event;
-
-    if (!(cellElement instanceof HTMLElement)) {
+    if (!Array.isArray(event.detail)) {
       return;
     }
 
-    const inputElement = cellElement.querySelector('auto-save-text input');
+    const cellElements = event.detail.filter(isHtmlElement);
 
-    if (!(inputElement instanceof HTMLInputElement)) {
-      return;
+    for (const cellElement of cellElements) {
+      const autoSaveTextElement = cellElement.querySelector(
+        'auto-save-text input',
+      );
+
+      if (!(autoSaveTextElement instanceof HTMLInputElement)) {
+        continue;
+      }
+
+      autoSaveTextElement.value = '';
     }
 
-    inputElement.dispatchEvent(new CustomEvent('auto-save-text:clear'));
+    const clearCellsButtonElement = this.querySelector('#clear-cells-button');
+
+    if (!(clearCellsButtonElement instanceof HTMLButtonElement)) {
+      throw new Error('Could not find clear cells button element');
+    }
+
+    const clearCellsFormElement = clearCellsButtonElement.form;
+
+    if (!(clearCellsFormElement instanceof HTMLFormElement)) {
+      throw new Error('Could not find add new row form element');
+    }
+
+    const hiddenInputElement = clearCellsFormElement.querySelector(
+      'input[type="hidden"][name="cell[]"]',
+    );
+
+    if (!(hiddenInputElement instanceof HTMLInputElement)) {
+      throw new Error('Could not find hidden input element');
+    }
+
+    hiddenInputElement.setAttribute(
+      'value',
+      cellElements
+        .map((cellElement) => {
+          const rowId = cellElement.getAttribute('data-row-id');
+
+          if (!rowId) {
+            throw new Error('Could not find id attribute');
+          }
+
+          const propertyId = cellElement.getAttribute('data-property-id');
+
+          if (!propertyId) {
+            throw new Error('Could not find id attribute');
+          }
+
+          return rowId + ':' + propertyId;
+        })
+        .join(','),
+    );
+
+    fetch(clearCellsFormElement.action, {
+      method: clearCellsFormElement.method,
+      body: new FormData(clearCellsFormElement),
+    });
   }
 }
 

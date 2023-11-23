@@ -125,7 +125,11 @@ export function TableView(
                     />
                   </CellElement>
                   {properties.map((property, index) => (
-                    <CellElement role={index === 0 ? 'rowheader' : undefined}>
+                    <CellElement
+                      rowId={row.id}
+                      propertyId={property.id}
+                      role={index === 0 ? 'rowheader' : undefined}
+                    >
                       {property.type === String ? (
                         <AutoSaveTextElement
                           inline
@@ -239,6 +243,8 @@ function CellElement(
     role?: string;
     className?: string;
     label?: string;
+    rowId?: string;
+    propertyId?: string;
   }>,
 ) {
   return (
@@ -246,6 +252,8 @@ function CellElement(
       role={props.role || 'gridcell'}
       className={props.className}
       aria-label={props.label}
+      data-row-id={props.rowId}
+      data-property-id={props.propertyId}
     >
       <template
         shadowrootmode="open"
@@ -275,7 +283,11 @@ function RowElement(props: React.PropsWithChildren<{ label?: string }>) {
 /**
  * Row Group (thead, tbody) Element
  */
-function RowGroupElement(props: React.PropsWithChildren<{ label?: string }>) {
+function RowGroupElement(
+  props: React.PropsWithChildren<{
+    label?: string;
+  }>,
+) {
   return (
     <div
       role="rowgroup"

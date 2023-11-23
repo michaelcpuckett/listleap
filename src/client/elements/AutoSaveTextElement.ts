@@ -11,11 +11,6 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
     this.inputElement.addEventListener('blur', this.boundBlurHandler);
     this.inputElement.addEventListener('mouseup', this.boundClickHandler);
     this.inputElement.addEventListener('touchend', this.boundClickHandler);
-
-    this.inputElement.addEventListener('auto-save-text:clear', () => {
-      this.inputElement.value = '';
-      this.submitData();
-    });
   }
 
   disconnectedCallback() {

@@ -195,6 +195,35 @@ export function DatabasePage(
                 />
                 <PostFormElement
                   action={`/databases/${props.database.id}/rows`}
+                  id="clear-cells-form"
+                >
+                  <input
+                    type="hidden"
+                    name="_method"
+                    value="POST"
+                  />
+
+                  <input
+                    type="hidden"
+                    name="bulkAction"
+                    value="CLEAR"
+                  />
+                  <input
+                    type="hidden"
+                    name="cell[]"
+                    value=""
+                  />
+                  <button
+                    hidden
+                    id="clear-cells-button"
+                    type="submit"
+                  >
+                    Clear Selected Cells
+                  </button>
+                </PostFormElement>
+
+                <PostFormElement
+                  action={`/databases/${props.database.id}/rows`}
                   id="add-row-form"
                 >
                   <button

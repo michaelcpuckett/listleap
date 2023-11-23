@@ -1,4 +1,4 @@
-import { Referrer, NormalizedFormData } from 'shared/types';
+import { Referrer, NormalizedFormData, PartialRow, AnyRow } from 'shared/types';
 import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
 import { getUniqueId } from 'shared/getUniqueId';
 import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
@@ -8,6 +8,7 @@ import {
   addRowToIndexedDb,
   getRowByIdFromIndexedDb,
   deleteRowByIdFromIndexedDb,
+  editRowInIndexedDb,
 } from 'utilities/idb';
 import { LexoRank } from 'lexorank';
 
@@ -17,6 +18,7 @@ export async function PostDatabaseRows(
   formData: NormalizedFormData,
   referrer: Referrer,
 ) {
+  console.log('POST DB');
   const idb = await getIdb();
   const id = match?.[1] || '';
   const database = await getDatabaseFromIndexedDb(id, idb);
@@ -29,9 +31,9 @@ export async function PostDatabaseRows(
   }
 
   if (formData.bulkAction !== undefined) {
-    const rowIds = formData['row[]'] || [];
-
     if (formData.bulkAction === 'DELETE') {
+      const rowIds = formData['row[]'] || [];
+
       for (const rowId of rowIds) {
         const row = await getRowByIdFromIndexedDb(rowId, database.id, idb);
 
@@ -41,8 +43,53 @@ export async function PostDatabaseRows(
 
         await deleteRowByIdFromIndexedDb(row.id, database.id, idb);
       }
+    } else if (formData.bulkAction === 'CLEAR') {
+      const cellEntries = formData['cell[]'] || [];
+
+      for (const cellEntry of cellEntries) {
+        console.log(cellEntry);
+        const [rowId, propertyId] = cellEntry.split(':');
+        const existingRow = await getRowByIdFromIndexedDb<typeof database>(
+          rowId,
+          database.id,
+          idb,
+        );
+
+        if (!existingRow) {
+          continue;
+        }
+
+        const rowToPatch = {
+          id: existingRow.id,
+          position: existingRow.position,
+          databaseId: database.id,
+        };
+
+        for (const [key, value] of Object.entries(rowToPatch)) {
+          if (key === propertyId) {
+            rowToPatch[key] = '';
+          } else {
+            rowToPatch[key] = value;
+          }
+        }
+
+        if (
+          !guardIsChecklistRow(rowToPatch, database) &&
+          !guardIsTableRow(rowToPatch, database)
+        ) {
+          idb.close();
+          return new Response('Not found', {
+            status: 404,
+          });
+        }
+
+        await editRowInIndexedDb(rowToPatch, idb);
+      }
     } else {
-      throw new Error('Invalid bulk action.');
+      idb.close();
+      return new Response('Not found', {
+        status: 404,
+      });
     }
 
     idb.close();

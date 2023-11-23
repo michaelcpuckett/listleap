@@ -136,19 +136,17 @@ export class GridKeyboardNavigationElement extends HTMLElement {
 
     if (selectedCellElements.length) {
       if (['Delete', 'Backspace'].includes(event.key)) {
-        for (const selectedCellElement of selectedCellElements) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          event.stopPropagation();
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        event.stopPropagation();
 
-          this.dispatchEvent(
-            new CustomEvent('view-container:delete-cell', {
-              bubbles: true,
-              composed: true,
-              detail: selectedCellElement,
-            }),
-          );
-        }
+        this.dispatchEvent(
+          new CustomEvent('view-container:clear-cells', {
+            bubbles: true,
+            composed: true,
+            detail: selectedCellElements,
+          }),
+        );
       }
     }
   }
