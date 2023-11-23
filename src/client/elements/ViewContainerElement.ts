@@ -16,6 +16,8 @@ export class ViewContainerElement extends HTMLElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundKeyupHandler = this.handleKeyup.bind(this);
   private boundHandleAutoSaveTextSave = this.handleAutoSaveTextSave.bind(this);
+  private boundDeleteCellHandler = this.handleDeleteCell.bind(this);
+  private boundDeleteRowHandler = this.handleDeleteRow.bind(this);
 
   constructor() {
     super();
@@ -30,6 +32,13 @@ export class ViewContainerElement extends HTMLElement {
   }
 
   connectedCallback() {
+    this.addEventListener(
+      'view-container:delete-cell',
+      this.boundDeleteCellHandler,
+      {
+        capture: true,
+      },
+    );
     this.addEventListener('mousedown', this.boundDragstartHandler);
     this.addEventListener('touchstart', this.boundDragstartHandler);
     this.addEventListener('mouseover', this.boundDragoverHandler);
@@ -569,6 +578,39 @@ export class ViewContainerElement extends HTMLElement {
     this.highlightElement.style.left = `${left}px`;
 
     this.appendChild(this.highlightElement);
+  }
+
+  handleDeleteRow(event: Event) {
+    if (!(event instanceof CustomEvent)) {
+      return;
+    }
+
+    const { detail: rowElement } = event;
+
+    if (!(rowElement instanceof HTMLElement)) {
+      return;
+    }
+  }
+
+  handleDeleteCell(event: Event) {
+    console.log('delete cell', event);
+    if (!(event instanceof CustomEvent)) {
+      return;
+    }
+
+    const { detail: cellElement } = event;
+
+    if (!(cellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const inputElement = cellElement.querySelector('auto-save-text input');
+
+    if (!(inputElement instanceof HTMLInputElement)) {
+      return;
+    }
+
+    inputElement.dispatchEvent(new CustomEvent('auto-save-text:clear'));
   }
 }
 

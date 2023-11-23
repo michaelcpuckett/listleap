@@ -59,11 +59,15 @@ export class GridKeyboardNavigationElement extends HTMLElement {
   }
 
   connectedCallback() {
-    this.addEventListener('keydown', this.boundKeydownHandler);
+    this.addEventListener('keydown', this.boundKeydownHandler, {
+      capture: true,
+    });
   }
 
   disconnected() {
-    this.removeEventListener('keydown', this.boundKeydownHandler);
+    this.removeEventListener('keydown', this.boundKeydownHandler, {
+      capture: true,
+    });
   }
 
   handleKeydown(event: Event) {
@@ -122,6 +126,30 @@ export class GridKeyboardNavigationElement extends HTMLElement {
         break;
       default:
         break;
+    }
+
+    const selectedCellElements = Array.from(
+      this.querySelectorAll(
+        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+      ),
+    );
+
+    if (selectedCellElements.length) {
+      if (['Delete', 'Backspace'].includes(event.key)) {
+        for (const selectedCellElement of selectedCellElements) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          event.stopPropagation();
+
+          this.dispatchEvent(
+            new CustomEvent('view-container:delete-cell', {
+              bubbles: true,
+              composed: true,
+              detail: selectedCellElement,
+            }),
+          );
+        }
+      }
     }
   }
 
