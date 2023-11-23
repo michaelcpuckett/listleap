@@ -24,6 +24,7 @@ export class ViewContainerElement extends HTMLElement {
   private highlightElement: HTMLElement | null = null;
   private isShiftKeyPressed = false;
   private isInvertingSelection = false;
+  private isDragging = false;
   private boundDragstartHandler = this.handleDragstart.bind(this);
   private boundDragendHandler = this.handleDragend.bind(this);
   private boundDragoverHandler = this.handleDragover.bind(this);
@@ -151,6 +152,8 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    this.isDragging = true;
+
     const selectedCells = Array.from(
       this.gridElement.querySelectorAll(
         `[aria-selected]:is(${CELL_ELEMENT_SELECTOR})`,
@@ -190,6 +193,10 @@ export class ViewContainerElement extends HTMLElement {
   }
 
   handleDragover(event: Event) {
+    if (!this.isDragging) {
+      return;
+    }
+
     if (!this.draggedCellElement) {
       return;
     }
@@ -292,6 +299,7 @@ export class ViewContainerElement extends HTMLElement {
     this.highlightElement.remove();
     this.highlightElement = null;
     this.draggedCellElement = null;
+    this.isDragging = false;
 
     let closestCellElement: Element | null = null;
 
@@ -727,6 +735,11 @@ export class ViewContainerElement extends HTMLElement {
         selectedCell.removeAttribute('aria-selected');
         selectedCell.removeAttribute('data-selected');
       }
+
+      if (this.highlightElement) {
+        this.highlightElement.remove();
+        this.highlightElement = null;
+      }
     }
 
     const cellElement = event.composedPath().find((element) => {
@@ -902,6 +915,10 @@ export class ViewContainerElement extends HTMLElement {
 
     this.focusElement(targetCellElement);
 
+    if (this.isDragging) {
+      return;
+    }
+
     if (this.isShiftKeyPressed) {
       this.initializeHighlightElement(cellElement);
       this.updateHighlightElement(
@@ -952,6 +969,10 @@ export class ViewContainerElement extends HTMLElement {
 
     this.focusElement(targetCellElement);
 
+    if (this.isDragging) {
+      return;
+    }
+
     if (this.isShiftKeyPressed) {
       this.initializeHighlightElement(cellElement);
       this.updateHighlightElement(
@@ -971,6 +992,10 @@ export class ViewContainerElement extends HTMLElement {
 
     this.focusElement(previousCellElement);
 
+    if (this.isDragging) {
+      return;
+    }
+
     if (this.isShiftKeyPressed) {
       this.initializeHighlightElement(cellElement);
       this.updateHighlightElement(
@@ -989,6 +1014,10 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.focusElement(nextCellElement);
+
+    if (this.isDragging) {
+      return;
+    }
 
     if (this.isShiftKeyPressed) {
       this.initializeHighlightElement(cellElement);
