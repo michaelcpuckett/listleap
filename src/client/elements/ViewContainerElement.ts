@@ -187,8 +187,6 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.initializeHighlightElement(closestCellElement);
-
-    this.draggedCellElement = closestCellElement;
   }
 
   handleDragover(event: Event) {
@@ -209,6 +207,13 @@ export class ViewContainerElement extends HTMLElement {
     const { closestCellElement } = elements;
 
     this.updateHighlightElement(closestCellElement, this.draggedCellElement);
+    this.updateSelectedCells();
+  }
+
+  updateSelectedCells() {
+    if (!this.highlightElement) {
+      return;
+    }
 
     const { top, left, bottom, right } =
       this.highlightElement.getBoundingClientRect();
@@ -606,6 +611,12 @@ export class ViewContainerElement extends HTMLElement {
   }
 
   initializeHighlightElement(cellElement: HTMLElement) {
+    if (this.highlightElement) {
+      return;
+    }
+
+    this.draggedCellElement = cellElement;
+
     this.highlightElement = window.document.createElement('div');
     this.highlightElement.classList.add('highlight');
     const { left, top } = cellElement.getBoundingClientRect();
@@ -890,6 +901,15 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.focusElement(targetCellElement);
+
+    if (this.isShiftKeyPressed) {
+      this.initializeHighlightElement(cellElement);
+      this.updateHighlightElement(
+        targetCellElement,
+        this.draggedCellElement || cellElement,
+      );
+      this.updateSelectedCells();
+    }
   }
 
   handleArrowDown(cellElement: HTMLElement) {
@@ -931,6 +951,15 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.focusElement(targetCellElement);
+
+    if (this.isShiftKeyPressed) {
+      this.initializeHighlightElement(cellElement);
+      this.updateHighlightElement(
+        targetCellElement,
+        this.draggedCellElement || cellElement,
+      );
+      this.updateSelectedCells();
+    }
   }
 
   handleArrowLeft(cellElement: HTMLElement) {
@@ -941,6 +970,15 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.focusElement(previousCellElement);
+
+    if (this.isShiftKeyPressed) {
+      this.initializeHighlightElement(cellElement);
+      this.updateHighlightElement(
+        previousCellElement,
+        this.draggedCellElement || cellElement,
+      );
+      this.updateSelectedCells();
+    }
   }
 
   handleArrowRight(cellElement: HTMLElement) {
@@ -951,6 +989,15 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     this.focusElement(nextCellElement);
+
+    if (this.isShiftKeyPressed) {
+      this.initializeHighlightElement(cellElement);
+      this.updateHighlightElement(
+        nextCellElement,
+        this.draggedCellElement || cellElement,
+      );
+      this.updateSelectedCells();
+    }
   }
 
   focusElement(targetCellElement: HTMLElement) {
