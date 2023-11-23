@@ -1,5 +1,9 @@
 const CELL_ELEMENT_SELECTOR = '[role="gridcell"], [role="rowheader"]';
 
+function isHtmlElement(element: unknown): element is HTMLElement {
+  return element instanceof HTMLElement;
+}
+
 export class ViewContainerElement extends HTMLElement {
   private gridElement: HTMLElement;
   private draggedCellElement: HTMLElement | null = null;
@@ -27,13 +31,10 @@ export class ViewContainerElement extends HTMLElement {
   }
 
   connectedCallback() {
-    // this.addEventListener('dragstart', this.boundDragstartHandler);
     this.addEventListener('mousedown', this.boundDragstartHandler);
     this.addEventListener('touchstart', this.boundDragstartHandler);
-    // this.addEventListener('dragover', this.boundDragoverHandler);
     this.addEventListener('mouseover', this.boundDragoverHandler);
     this.addEventListener('touchmove', this.boundDragoverHandler);
-    // this.addEventListener('dragend', this.boundDragendHandler);
     this.addEventListener('mouseup', this.boundDragendHandler, {
       capture: true,
     });
@@ -45,8 +46,6 @@ export class ViewContainerElement extends HTMLElement {
     });
     this.addEventListener('keydown', this.boundKeydownHandler);
     this.addEventListener('keyup', this.boundKeyupHandler);
-    // this.addEventListener('pointerdown', this.boundPointerdownHandler);
-    // this.addEventListener('click', this.boundClickHandler);
     this.addEventListener(
       'auto-save-text:save',
       this.boundHandleAutoSaveTextSave,
@@ -54,22 +53,31 @@ export class ViewContainerElement extends HTMLElement {
   }
 
   disconnectedCallback() {
-    // this.removeEventListener('dragstart', this.boundDragstartHandler);
-    this.removeEventListener('pointerdown', this.boundDragstartHandler);
-    // this.removeEventListener('dragover', this.boundDragoverHandler);
-    this.removeEventListener('pointerover', this.boundDragoverHandler);
-    // this.removeEventListener('dragend', this.boundDragendHandler);
-    this.removeEventListener('pointerup', this.boundDragendHandler);
-    // this.removeEventListener('drop', this.boundDropHandler);
-    // this.removeEventListener('pointerdown', this.boundPointerdownHandler);
-    // this.removeEventListener(
-    //   'auto-save-text:save',
-    //   this.boundHandleAutoSaveTextSave,
-    // );
+    this.removeEventListener('mousedown', this.boundDragstartHandler);
+    this.removeEventListener('touchstart', this.boundDragstartHandler);
+    this.removeEventListener('mouseover', this.boundDragoverHandler);
+    this.removeEventListener('touchmove', this.boundDragoverHandler);
+    this.removeEventListener('mouseup', this.boundDragendHandler, {
+      capture: true,
+    });
+    this.removeEventListener('touchend', this.boundDragendHandler, {
+      capture: true,
+    });
+    this.removeEventListener('touchcancel', this.boundDragendHandler, {
+      capture: true,
+    });
+    this.removeEventListener('keydown', this.boundKeydownHandler);
+    this.removeEventListener('keyup', this.boundKeyupHandler);
+    this.removeEventListener(
+      'auto-save-text:save',
+      this.boundHandleAutoSaveTextSave,
+    );
   }
 
-  handleDragstart(event: Event) {
-    const autoSaveTextElement = event.composedPath().find((element) => {
+  getElementsFromComposedPath(event: Event) {
+    const composedPath = event.composedPath();
+
+    const autoSaveTextElement = composedPath.find((element) => {
       if (!(element instanceof HTMLElement)) {
         return false;
       }
@@ -89,41 +97,52 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    this.draggedCellElement = closestCellElement;
+    return {
+      autoSaveTextElement,
+      closestCellElement,
+    };
+  }
 
-    this.isInvertingSelection =
-      this.draggedCellElement.hasAttribute('aria-selected');
-
-    if (event instanceof TouchEvent) {
-      window.document.body.classList.add('prevent-scroll');
-    }
-
-    if (this.isShiftKeyPressed) {
-      if (this.isInvertingSelection) {
-        this.draggedCellElement.removeAttribute('aria-selected');
-      } else {
-        this.draggedCellElement.setAttribute('aria-selected', 'true');
-      }
-    }
-
+  initializeHighlightElement(cellElement: HTMLElement) {
     this.highlightElement = window.document.createElement('div');
     this.highlightElement.classList.add('highlight');
-    const { left, top } = closestCellElement.getBoundingClientRect();
+    const { left, top } = cellElement.getBoundingClientRect();
     this.highlightElement.style.top = `${top}px`;
     this.highlightElement.style.left = `${left}px`;
 
     this.appendChild(this.highlightElement);
   }
 
-  handleDragover(event: Event) {
-    if (!this.draggedCellElement) {
+  handleDragstart(event: Event) {
+    const elements = this.getElementsFromComposedPath(event);
+
+    if (!elements) {
       return;
     }
 
-    if (!this.highlightElement) {
-      return;
+    const { closestCellElement } = elements;
+
+    this.isInvertingSelection =
+      closestCellElement.hasAttribute('aria-selected');
+
+    if (this.isShiftKeyPressed) {
+      if (this.isInvertingSelection) {
+        closestCellElement.removeAttribute('aria-selected');
+      } else {
+        closestCellElement.setAttribute('aria-selected', 'true');
+      }
     }
 
+    if (event instanceof TouchEvent) {
+      window.document.body.classList.add('prevent-scroll');
+    }
+
+    this.initializeHighlightElement(closestCellElement);
+
+    this.draggedCellElement = closestCellElement;
+  }
+
+  getElementsFromPoint(event: Event) {
     let closestCellElement: Element | null = null;
 
     if (event instanceof TouchEvent) {
@@ -151,7 +170,7 @@ export class ViewContainerElement extends HTMLElement {
       }
     }
 
-    if (!closestCellElement) {
+    if (!(closestCellElement instanceof HTMLElement)) {
       return;
     }
 
@@ -163,7 +182,20 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    const closestRowElement = closestCellElement.closest('[role="row"]');
+    return {
+      autoSaveTextElement,
+      closestCellElement,
+    };
+  }
+
+  updateHighlightElement(
+    cellElement: HTMLElement,
+    draggedCellElement: HTMLElement,
+  ) {
+    if (!this.highlightElement) {
+      return;
+    }
+    const closestRowElement = cellElement.closest('[role="row"]');
 
     if (!(closestRowElement instanceof HTMLElement)) {
       return;
@@ -179,13 +211,13 @@ export class ViewContainerElement extends HTMLElement {
 
     const closestCellIndex = Array.from(
       closestRowElement.querySelectorAll(CELL_ELEMENT_SELECTOR),
-    ).indexOf(closestCellElement);
+    ).indexOf(cellElement);
 
     if (closestCellIndex === -1) {
       return;
     }
 
-    const draggedRow = this.draggedCellElement.closest('[role="row"]');
+    const draggedRow = draggedCellElement.closest('[role="row"]');
 
     if (!(draggedRow instanceof HTMLElement)) {
       return;
@@ -194,46 +226,92 @@ export class ViewContainerElement extends HTMLElement {
     const draggedRowTop = draggedRow.getBoundingClientRect().top;
     const closestRowTop = closestRowElement.getBoundingClientRect().top;
 
-    const draggedCellLeft =
-      this.draggedCellElement.getBoundingClientRect().left;
-    const closestCellLeft = closestCellElement.getBoundingClientRect().left;
+    const draggedCellLeft = draggedCellElement.getBoundingClientRect().left;
+    const closestCellLeft = cellElement.getBoundingClientRect().left;
 
     const diffX = closestCellLeft - draggedCellLeft;
     const diffY = closestRowTop - draggedRowTop;
 
     this.highlightElement.style.height = `${
-      Math.abs(diffY) + this.draggedCellElement.getBoundingClientRect().height
+      Math.abs(diffY) + draggedCellElement.getBoundingClientRect().height
     }px`;
     this.highlightElement.style.width = `${
-      Math.abs(diffX) + this.draggedCellElement.getBoundingClientRect().width
+      Math.abs(diffX) + draggedCellElement.getBoundingClientRect().width
     }px`;
 
     if (diffX < 0) {
       this.highlightElement.style.left = `${
-        closestCellElement.getBoundingClientRect().left
+        cellElement.getBoundingClientRect().left
       }px`;
     } else {
       this.highlightElement.style.left = `${
-        this.draggedCellElement.getBoundingClientRect().left
+        draggedCellElement.getBoundingClientRect().left
       }px`;
     }
 
     if (diffY < 0) {
       this.highlightElement.style.top = `${
-        closestCellElement.getBoundingClientRect().top
+        cellElement.getBoundingClientRect().top
       }px`;
     } else {
       this.highlightElement.style.top = `${
-        this.draggedCellElement.getBoundingClientRect().top
+        draggedCellElement.getBoundingClientRect().top
       }px`;
     }
+  }
 
-    const { top, left, bottom, right, height, width } =
+  handleDragover(event: Event) {
+    if (!this.draggedCellElement) {
+      return;
+    }
+
+    if (!this.highlightElement) {
+      return;
+    }
+
+    const elements = this.getElementsFromPoint(event);
+
+    if (!elements) {
+      return;
+    }
+
+    const { closestCellElement } = elements;
+
+    this.updateHighlightElement(closestCellElement, this.draggedCellElement);
+
+    const { top, left, bottom, right } =
       this.highlightElement.getBoundingClientRect();
 
-    for (const cellElement of Array.from(
+    const allCellElements = Array.from(
       this.gridElement.querySelectorAll(CELL_ELEMENT_SELECTOR),
-    )) {
+    ).filter(isHtmlElement);
+
+    const markCellSelected = (cellElement: HTMLElement) => {
+      cellElement.setAttribute('aria-selected', 'true');
+
+      const inputElement = cellElement.querySelector('auto-save-text input');
+
+      if (!(inputElement instanceof HTMLInputElement)) {
+        return;
+      }
+
+      inputElement.classList.add('selected');
+    };
+
+    const markCellUnselected = (cellElement: HTMLElement) => {
+      cellElement.removeAttribute('aria-selected');
+      cellElement.removeAttribute('data-selected');
+
+      const inputElement = cellElement.querySelector('auto-save-text input');
+
+      if (!(inputElement instanceof HTMLInputElement)) {
+        return;
+      }
+
+      inputElement.classList.remove('selected');
+    };
+
+    for (const cellElement of allCellElements) {
       const cellBounds = cellElement.getBoundingClientRect();
       const isWithinBounds =
         Math.ceil(cellBounds.top) >= Math.ceil(top) &&
@@ -241,45 +319,10 @@ export class ViewContainerElement extends HTMLElement {
         Math.ceil(cellBounds.left) >= Math.ceil(left) &&
         Math.ceil(cellBounds.right) <= Math.ceil(right);
 
-      function markCellSelected() {
-        cellElement.setAttribute('aria-selected', 'true');
-
-        const inputElement = cellElement.querySelector('auto-save-text input');
-
-        if (!(inputElement instanceof HTMLInputElement)) {
-          return;
-        }
-
-        inputElement.classList.add('selected');
-      }
-
-      function markCellUnselected() {
-        cellElement.removeAttribute('aria-selected');
-        cellElement.removeAttribute('data-selected');
-
-        const inputElement = cellElement.querySelector('auto-save-text input');
-
-        if (!(inputElement instanceof HTMLInputElement)) {
-          return;
-        }
-
-        inputElement.classList.remove('selected');
-      }
-
       if (isWithinBounds) {
-        if (this.isShiftKeyPressed) {
-          if (this.isInvertingSelection) {
-            markCellUnselected();
-          } else {
-            markCellSelected();
-          }
-        } else {
-          markCellSelected();
-        }
+        markCellSelected(cellElement);
       } else {
-        if (!this.isShiftKeyPressed) {
-          markCellUnselected();
-        }
+        markCellUnselected(cellElement);
       }
     }
   }
@@ -296,8 +339,6 @@ export class ViewContainerElement extends HTMLElement {
 
       window.document.body.classList.remove('prevent-scroll');
     }
-
-    const prevDraggedCellElement = this.draggedCellElement;
 
     this.highlightElement.remove();
     this.highlightElement = null;
@@ -338,7 +379,7 @@ export class ViewContainerElement extends HTMLElement {
     event.stopPropagation();
     event.preventDefault();
 
-    function markCellSelected(cellElement: Element) {
+    const markCellSelected = (cellElement: Element) => {
       if (!(cellElement instanceof HTMLElement)) {
         return;
       }
@@ -353,9 +394,9 @@ export class ViewContainerElement extends HTMLElement {
       }
 
       inputElement.classList.add('selected');
-    }
+    };
 
-    function markCellUnselected(cellElement: Element) {
+    const markCellUnselected = (cellElement: Element) => {
       if (!(cellElement instanceof HTMLElement)) {
         return;
       }
@@ -371,7 +412,7 @@ export class ViewContainerElement extends HTMLElement {
       }
 
       inputElement.classList.remove('selected');
-    }
+    };
 
     if (closestCellElement.getAttribute('aria-selected') === 'true') {
       if (this.isShiftKeyPressed) {
@@ -385,7 +426,7 @@ export class ViewContainerElement extends HTMLElement {
       if (!this.isShiftKeyPressed) {
         const selectedCells = Array.from(
           this.gridElement.querySelectorAll(
-            `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+            `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
           ),
         );
 
@@ -450,7 +491,7 @@ export class ViewContainerElement extends HTMLElement {
     if (this.isShiftKeyPressed) {
       const selectedCells = Array.from(
         this.gridElement.querySelectorAll(
-          `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
         ),
       );
 
@@ -462,7 +503,7 @@ export class ViewContainerElement extends HTMLElement {
     if (event.key === 'Escape') {
       const selectedCells = Array.from(
         this.gridElement.querySelectorAll(
-          `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
         ),
       );
 
@@ -482,7 +523,7 @@ export class ViewContainerElement extends HTMLElement {
 
     const selectedCells = Array.from(
       this.gridElement.querySelectorAll(
-        `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+        `[data-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
       ),
     );
 
@@ -498,7 +539,7 @@ export class ViewContainerElement extends HTMLElement {
 
     const selectedCells = Array.from(
       this.gridElement.querySelectorAll(
-        `${CELL_ELEMENT_SELECTOR}[aria-selected="true"]`,
+        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
       ),
     );
 
