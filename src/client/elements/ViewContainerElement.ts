@@ -120,6 +120,18 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    if (this.isShiftKeyPressed) {
+      const selectedCells = Array.from(
+        this.gridElement.querySelectorAll(
+          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+        ),
+      );
+
+      for (const selectedCell of selectedCells) {
+        selectedCell.setAttribute('data-selected', '');
+      }
+    }
+
     const { closestCellElement } = elements;
 
     this.isInvertingSelection =
@@ -288,9 +300,6 @@ export class ViewContainerElement extends HTMLElement {
 
     const markCellSelected = (cellElement: HTMLElement) => {
       cellElement.setAttribute('aria-selected', 'true');
-      if (this.isShiftKeyPressed && !this.isInvertingSelection) {
-        cellElement.setAttribute('data-selected', 'true');
-      }
 
       const inputElement = cellElement.querySelector('auto-save-text input');
 
@@ -322,14 +331,22 @@ export class ViewContainerElement extends HTMLElement {
         Math.ceil(cellBounds.left) >= Math.ceil(left) &&
         Math.ceil(cellBounds.right) <= Math.ceil(right);
 
-      if (isWithinBounds) {
-        if (this.isInvertingSelection) {
+      if (this.isInvertingSelection) {
+        if (isWithinBounds) {
           markCellUnselected(cellElement);
-        } else {
+        } else if (cellElement.hasAttribute('data-selected')) {
           markCellSelected(cellElement);
         }
+      } else if (this.isShiftKeyPressed) {
+        if (isWithinBounds || cellElement.hasAttribute('data-selected')) {
+          markCellSelected(cellElement);
+        } else {
+          markCellUnselected(cellElement);
+        }
       } else {
-        if (!cellElement.hasAttribute('data-selected')) {
+        if (isWithinBounds) {
+          markCellSelected(cellElement);
+        } else {
           markCellUnselected(cellElement);
         }
       }
