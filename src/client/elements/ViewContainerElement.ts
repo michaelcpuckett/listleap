@@ -955,13 +955,16 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    this.focusElement(targetCellElement);
-
-    if (this.isDragging) {
+    if (
+      this.isShiftKeyPressed &&
+      !targetCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)
+    ) {
       return;
     }
 
-    if (!targetCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+    this.focusElement(targetCellElement);
+
+    if (this.isDragging) {
       return;
     }
 
@@ -1016,13 +1019,16 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    this.focusElement(targetCellElement);
-
-    if (this.isDragging) {
+    if (
+      this.isShiftKeyPressed &&
+      !targetCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)
+    ) {
       return;
     }
 
-    if (!targetCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+    this.focusElement(targetCellElement);
+
+    if (this.isDragging) {
       return;
     }
 
@@ -1046,13 +1052,16 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    this.focusElement(previousCellElement);
-
-    if (this.isDragging) {
+    if (
+      this.isShiftKeyPressed &&
+      !previousCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)
+    ) {
       return;
     }
 
-    if (!previousCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+    this.focusElement(previousCellElement);
+
+    if (this.isDragging) {
       return;
     }
 
@@ -1076,13 +1085,16 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    this.focusElement(nextCellElement);
-
-    if (this.isDragging) {
+    if (
+      this.isShiftKeyPressed &&
+      !nextCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)
+    ) {
       return;
     }
 
-    if (!nextCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+    this.focusElement(nextCellElement);
+
+    if (this.isDragging) {
       return;
     }
 
