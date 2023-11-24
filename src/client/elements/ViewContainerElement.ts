@@ -802,6 +802,25 @@ export class ViewContainerElement extends HTMLElement {
       ),
     );
 
+    if (
+      event.key === ' ' &&
+      (selectedCellElements.length || this.isShiftKeyPressed)
+    ) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      event.stopPropagation();
+
+      cellElement.setAttribute('aria-selected', 'true');
+
+      const inputElement = cellElement.querySelector('auto-save-text input');
+
+      if (!(inputElement instanceof HTMLInputElement)) {
+        return;
+      }
+
+      inputElement.classList.add('selected');
+    }
+
     if (selectedCellElements.length) {
       if (['Delete', 'Backspace'].includes(event.key)) {
         event.preventDefault();
