@@ -728,17 +728,19 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    this.isShiftKeyPressed = event.shiftKey || event.key === 'Shift';
+    if (!this.isShiftKeyPressed) {
+      this.isShiftKeyPressed = event.key === 'Shift' || event.shiftKey;
 
-    if (this.isShiftKeyPressed) {
-      const selectedCells = Array.from(
-        this.gridElement.querySelectorAll(
-          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
-        ),
-      );
+      if (this.isShiftKeyPressed) {
+        const selectedCells = Array.from(
+          this.gridElement.querySelectorAll(
+            `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+          ),
+        );
 
-      for (const selectedCell of selectedCells) {
-        selectedCell.setAttribute('data-selected', '');
+        for (const selectedCell of selectedCells) {
+          selectedCell.setAttribute('data-selected', '');
+        }
       }
     }
 
