@@ -458,23 +458,32 @@ export class ViewContainerElement extends HTMLElement {
 
     this.isShiftKeyPressed = event.shiftKey;
 
-    if (!this.isShiftKeyPressed) {
+    if (this.isShiftKeyPressed) {
+      // const selectedCells = Array.from(
+      //   this.gridElement.querySelectorAll(
+      //     `[aria-selected]:is(${CELL_ELEMENT_SELECTOR})`,
+      //   ),
+      // );
+      // for (const selectedCell of selectedCells) {
+      //   selectedCell.setAttribute('data-selected', '');
+      // }
+    } else {
       if (this.highlightElement) {
         this.highlightElement.remove();
       }
       this.highlightElement = null;
       this.draggedCellElement = null;
       this.isDragging = false;
-    }
 
-    const selectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `[data-selected]:is(${CELL_ELEMENT_SELECTOR})`,
-      ),
-    );
+      const selectedCells = Array.from(
+        this.gridElement.querySelectorAll(
+          `[data-selected]:is(${CELL_ELEMENT_SELECTOR})`,
+        ),
+      );
 
-    for (const selectedCell of selectedCells) {
-      selectedCell.removeAttribute('data-selected');
+      for (const selectedCell of selectedCells) {
+        selectedCell.removeAttribute('data-selected');
+      }
     }
   }
 
@@ -721,7 +730,7 @@ export class ViewContainerElement extends HTMLElement {
 
     this.isShiftKeyPressed = event.shiftKey || event.key === 'Shift';
 
-    if (this.isDragging && this.isShiftKeyPressed) {
+    if (this.isShiftKeyPressed) {
       const selectedCells = Array.from(
         this.gridElement.querySelectorAll(
           `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
