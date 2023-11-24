@@ -456,7 +456,16 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    this.isShiftKeyPressed = false;
+    this.isShiftKeyPressed = event.shiftKey;
+
+    if (!this.isShiftKeyPressed) {
+      if (this.highlightElement) {
+        this.highlightElement.remove();
+      }
+      this.highlightElement = null;
+      this.draggedCellElement = null;
+      this.isDragging = false;
+    }
 
     const selectedCells = Array.from(
       this.gridElement.querySelectorAll(
