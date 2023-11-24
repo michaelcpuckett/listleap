@@ -979,7 +979,10 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     if (this.isShiftKeyPressed) {
-      this.initializeHighlightElement(cellElement);
+      if (!this.highlightElement) {
+        this.isInvertingSelection = cellElement.hasAttribute('aria-selected');
+        this.initializeHighlightElement(cellElement);
+      }
       this.updateHighlightElement(
         targetCellElement,
         this.draggedCellElement || cellElement,
@@ -1054,7 +1057,10 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     if (this.isShiftKeyPressed) {
-      this.initializeHighlightElement(cellElement);
+      if (!this.highlightElement) {
+        this.isInvertingSelection = cellElement.hasAttribute('aria-selected');
+        this.initializeHighlightElement(cellElement);
+      }
       this.updateHighlightElement(
         targetCellElement,
         this.draggedCellElement || cellElement,
@@ -1098,7 +1104,10 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     if (this.isShiftKeyPressed) {
-      this.initializeHighlightElement(cellElement);
+      if (!this.highlightElement) {
+        this.isInvertingSelection = cellElement.hasAttribute('aria-selected');
+        this.initializeHighlightElement(cellElement);
+      }
       this.updateHighlightElement(
         previousCellElement,
         this.draggedCellElement || cellElement,
@@ -1142,7 +1151,10 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     if (this.isShiftKeyPressed) {
-      this.initializeHighlightElement(cellElement);
+      if (!this.highlightElement) {
+        this.isInvertingSelection = cellElement.hasAttribute('aria-selected');
+        this.initializeHighlightElement(cellElement);
+      }
       this.updateHighlightElement(
         nextCellElement,
         this.draggedCellElement || cellElement,
