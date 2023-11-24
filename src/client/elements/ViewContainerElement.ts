@@ -525,11 +525,11 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    const closestCellIndex = Array.from(
+    const closestCellColumnIndex = Array.from(
       closestRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
     ).indexOf(cellElement);
 
-    if (closestCellIndex === -1) {
+    if (closestCellColumnIndex === -1) {
       return;
     }
 
@@ -539,38 +539,58 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    const draggedRowIndex = Array.from(
+      this.gridElement.querySelectorAll('[role="row"]'),
+    ).indexOf(draggedRow);
+
+    const draggedCellColumnIndex = Array.from(
+      draggedRow.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
+    ).indexOf(draggedCellElement);
+
     const draggedRowTop = draggedRow.getBoundingClientRect().top;
-    const closestRowTop = closestRowElement.getBoundingClientRect().top;
+    const draggedRowBottom = draggedRow.getBoundingClientRect().bottom;
 
     const draggedCellLeft = draggedCellElement.getBoundingClientRect().left;
+    const draggedCellRight = draggedCellElement.getBoundingClientRect().right;
+
+    const closestRowTop = closestRowElement.getBoundingClientRect().top;
+    const closestRowBottom = closestRowElement.getBoundingClientRect().bottom;
     const closestCellLeft = cellElement.getBoundingClientRect().left;
+    const closestCellRight = cellElement.getBoundingClientRect().right;
 
-    const diffX = closestCellLeft - draggedCellLeft;
-    const diffY = closestRowTop - draggedRowTop;
+    const isDraggedRowBeforeClosestRow = draggedRowIndex > closestRowIndex;
+    const isDraggedCellBeforeClosestCell =
+      draggedCellColumnIndex > closestCellColumnIndex;
 
-    if (diffX < 0) {
+    const diffY = isDraggedRowBeforeClosestRow
+      ? draggedRowBottom - closestRowTop
+      : closestRowBottom - draggedRowTop;
+    const diffX = isDraggedCellBeforeClosestCell
+      ? draggedCellRight - closestCellLeft
+      : closestCellRight - draggedCellLeft;
+
+    // const diffX =
+    //   Math.max(closestCellLeft, closestCellRight) -
+    //   Math.min(draggedCellLeft, draggedCellRight);
+
+    // const diffY =
+    //   Math.max(closestRowBottom, closestRowTop) -
+    //   Math.min(draggedRowBottom, draggedRowTop);
+
+    this.highlightElement.style.width = `${Math.abs(diffX)}px`;
+    this.highlightElement.style.height = `${Math.abs(diffY)}px`;
+
+    if (isDraggedCellBeforeClosestCell) {
       this.highlightElement.style.left = `${
         cellElement.getBoundingClientRect().left
-      }px`;
-      this.highlightElement.style.height = `${
-        Math.abs(diffY) + cellElement.getBoundingClientRect().height
-      }px`;
-      this.highlightElement.style.width = `${
-        Math.abs(diffX) + cellElement.getBoundingClientRect().width
       }px`;
     } else {
       this.highlightElement.style.left = `${
         draggedCellElement.getBoundingClientRect().left
       }px`;
-      this.highlightElement.style.height = `${
-        Math.abs(diffY) + cellElement.getBoundingClientRect().height
-      }px`;
-      this.highlightElement.style.width = `${
-        Math.abs(diffX) + cellElement.getBoundingClientRect().width
-      }px`;
     }
 
-    if (diffY < 0) {
+    if (isDraggedRowBeforeClosestRow) {
       this.highlightElement.style.top = `${
         cellElement.getBoundingClientRect().top
       }px`;
@@ -941,6 +961,10 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    if (!targetCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+      return;
+    }
+
     if (this.isShiftKeyPressed) {
       if (!this.highlightElement) {
         this.isInvertingSelection = cellElement.hasAttribute('aria-selected');
@@ -998,6 +1022,10 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    if (!targetCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+      return;
+    }
+
     if (this.isShiftKeyPressed) {
       if (!this.highlightElement) {
         this.isInvertingSelection = cellElement.hasAttribute('aria-selected');
@@ -1024,6 +1052,10 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    if (!previousCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+      return;
+    }
+
     if (this.isShiftKeyPressed) {
       if (!this.highlightElement) {
         this.isInvertingSelection = cellElement.hasAttribute('aria-selected');
@@ -1047,6 +1079,10 @@ export class ViewContainerElement extends HTMLElement {
     this.focusElement(nextCellElement);
 
     if (this.isDragging) {
+      return;
+    }
+
+    if (!nextCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
       return;
     }
 
