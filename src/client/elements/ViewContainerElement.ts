@@ -242,11 +242,24 @@ export class ViewContainerElement extends HTMLElement {
 
     for (const cellElement of allCellElements) {
       const cellBounds = cellElement.getBoundingClientRect();
-      const isWithinBounds =
-        Math.ceil(cellBounds.top) >= Math.ceil(top) &&
-        Math.ceil(cellBounds.bottom) <= Math.ceil(bottom) &&
-        Math.ceil(cellBounds.left) >= Math.ceil(left) &&
+      const isTopWithinBounds = Math.ceil(cellBounds.top) >= Math.ceil(top);
+      const isBottomWithinBounds =
+        Math.ceil(cellBounds.bottom) <= Math.ceil(bottom);
+      const isLeftWithinBounds = Math.ceil(cellBounds.left) >= Math.ceil(left);
+      const isRightWithinBounds =
         Math.ceil(cellBounds.right) <= Math.ceil(right);
+      const isWithinBounds =
+        isTopWithinBounds &&
+        isBottomWithinBounds &&
+        isLeftWithinBounds &&
+        isRightWithinBounds;
+
+      console.log(cellElement, {
+        isRightWithinBounds,
+        'cellBounds.right': cellBounds.right,
+        'highlightBounds.right': right,
+        isWithinBounds,
+      });
 
       if (this.isInvertingSelection) {
         if (isWithinBounds) {
@@ -540,10 +553,10 @@ export class ViewContainerElement extends HTMLElement {
         cellElement.getBoundingClientRect().left
       }px`;
       this.highlightElement.style.height = `${
-        Math.abs(diffY) + draggedCellElement.getBoundingClientRect().height
+        Math.abs(diffY) + cellElement.getBoundingClientRect().height
       }px`;
       this.highlightElement.style.width = `${
-        Math.abs(diffX) + draggedCellElement.getBoundingClientRect().width
+        Math.abs(diffX) + cellElement.getBoundingClientRect().width
       }px`;
     } else {
       this.highlightElement.style.left = `${

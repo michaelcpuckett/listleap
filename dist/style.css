@@ -180,6 +180,10 @@ flyout-menu .button {
   overflow-x: auto;
 }
 
+.prevent-scroll .view-scroll-container {
+  overflow: hidden;
+}
+
 .view {
   width: max-content;
   min-width: calc(100% - var(--scrollbar-width, 0px));
