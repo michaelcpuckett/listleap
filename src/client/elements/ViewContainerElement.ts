@@ -820,23 +820,56 @@ export class ViewContainerElement extends HTMLElement {
       ),
     );
 
-    if (
-      event.key === ' ' &&
-      (selectedCellElements.length || this.isShiftKeyPressed)
-    ) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      event.stopPropagation();
-
-      cellElement.setAttribute('aria-selected', 'true');
-
+    if (event.key === ' ' && this.isShiftKeyPressed) {
       const inputElement = cellElement.querySelector('auto-save-text input');
 
       if (!(inputElement instanceof HTMLInputElement)) {
         return;
       }
 
-      inputElement.classList.add('selected');
+      if (!inputElement.hasAttribute('data-read-only')) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      event.stopPropagation();
+
+      const selectedCells = Array.from(
+        this.gridElement.querySelectorAll(
+          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+        ),
+      );
+
+      for (const selectedCell of selectedCells) {
+        selectedCell.setAttribute('data-selected', '');
+      }
+
+      this.isInvertingSelection = cellElement.hasAttribute('aria-selected');
+
+      if (this.highlightElement) {
+        this.highlightElement.remove();
+      }
+      this.highlightElement = null;
+      this.draggedCellElement = null;
+
+      // cellElement.setAttribute('aria-selected', 'true');
+
+      // (selectedCellElements.length || this.isShiftKeyPressed);
+
+      this.initializeHighlightElement(cellElement);
+      this.updateHighlightElement(cellElement, cellElement);
+      this.updateSelectedCells();
+
+      // if (isSelected) {
+      //   cellElement.removeAttribute('aria-selected');
+      //   cellElement.removeAttribute('data-selected');
+      //   inputElement.classList.remove('selected');
+      // } else {
+      //   cellElement.setAttribute('aria-selected', 'true');
+      //   cellElement.setAttribute('data-selected', '');
+      //   inputElement.classList.add('selected');
+      // }
     }
 
     if (selectedCellElements.length) {
