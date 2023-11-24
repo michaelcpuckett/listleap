@@ -254,12 +254,12 @@ export class ViewContainerElement extends HTMLElement {
         isLeftWithinBounds &&
         isRightWithinBounds;
 
-      console.log(cellElement, {
-        isRightWithinBounds,
-        'cellBounds.right': cellBounds.right,
-        'highlightBounds.right': right,
-        isWithinBounds,
-      });
+      // console.log(cellElement, {
+      //   isRightWithinBounds,
+      //   'cellBounds.right': cellBounds.right,
+      //   'highlightBounds.right': right,
+      //   isWithinBounds,
+      // });
 
       if (this.isInvertingSelection) {
         if (isWithinBounds) {
@@ -296,39 +296,7 @@ export class ViewContainerElement extends HTMLElement {
       window.document.body.classList.remove('prevent-scroll');
     }
 
-    this.highlightElement.remove();
-    this.highlightElement = null;
-    this.draggedCellElement = null;
-    this.isDragging = false;
-
-    let closestCellElement: Element | null = null;
-
-    if (event instanceof TouchEvent) {
-      const touchLocation = event.changedTouches[0];
-      const touchTarget = window.document.elementFromPoint(
-        touchLocation.clientX,
-        touchLocation.clientY,
-      );
-
-      if (touchTarget instanceof Element) {
-        closestCellElement = touchTarget.matches(
-          SELECTABLE_CELL_ELEMENT_SELECTOR,
-        )
-          ? touchTarget
-          : touchTarget.closest(SELECTABLE_CELL_ELEMENT_SELECTOR);
-      }
-    } else {
-      for (const element of Array.from(event.composedPath())) {
-        if (!(element instanceof Element)) {
-          continue;
-        }
-
-        if (element.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
-          closestCellElement = element;
-          break;
-        }
-      }
-    }
+    const closestCellElement = this.getClosestCellElementFromPoint(event);
 
     if (!(closestCellElement instanceof HTMLElement)) {
       return;
@@ -338,57 +306,17 @@ export class ViewContainerElement extends HTMLElement {
     event.stopPropagation();
     // event.preventDefault();
 
-    const dataSelectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `[data-selected]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
-      ),
-    );
-
-    for (const dataSelectedCell of dataSelectedCells) {
-      dataSelectedCell.removeAttribute('data-selected');
+    if (!this.draggedCellElement) {
+      return;
     }
 
-    const markCellSelected = (cellElement: Element) => {
-      if (!(cellElement instanceof HTMLElement)) {
-        return;
-      }
+    this.updateHighlightElement(closestCellElement, this.draggedCellElement);
+    this.updateSelectedCells();
 
-      cellElement.setAttribute('aria-selected', 'true');
-      if (this.isShiftKeyPressed && !this.isInvertingSelection) {
-        cellElement.setAttribute('data-selected', '');
-      }
-    };
-
-    const markCellUnselected = (cellElement: Element) => {
-      if (!(cellElement instanceof HTMLElement)) {
-        return;
-      }
-
-      cellElement.removeAttribute('aria-selected');
-      cellElement.removeAttribute('data-selected');
-    };
-
-    if (closestCellElement.getAttribute('aria-selected') === 'true') {
-      if (this.isShiftKeyPressed) {
-        if (this.isInvertingSelection) {
-          markCellUnselected(closestCellElement);
-        } else {
-          markCellSelected(closestCellElement);
-        }
-      }
-    } else {
-      if (!this.isShiftKeyPressed) {
-        const selectedCells = Array.from(
-          this.gridElement.querySelectorAll(
-            `[aria-selected="true"]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
-          ),
-        );
-
-        for (const selectedCell of selectedCells) {
-          markCellUnselected(selectedCell);
-        }
-      }
-    }
+    this.highlightElement.remove();
+    this.highlightElement = null;
+    this.draggedCellElement = null;
+    this.isDragging = false;
 
     closestCellElement.focus();
   }
@@ -472,9 +400,9 @@ export class ViewContainerElement extends HTMLElement {
   }
 
   getClosestCellElementFromPoint(event: Event) {
-    let closestCellElement: HTMLElement | null = null;
-
     if (event instanceof TouchEvent) {
+      let closestCellElement: HTMLElement | null = null;
+
       const touchLocation = event.changedTouches[0];
       const touchTarget = window.document.elementFromPoint(
         touchLocation.clientX,
@@ -482,26 +410,15 @@ export class ViewContainerElement extends HTMLElement {
       );
 
       if (touchTarget instanceof HTMLElement) {
-        closestCellElement = touchTarget.matches(
+        closestCellElement = touchTarget.closest(
           SELECTABLE_CELL_ELEMENT_SELECTOR,
-        )
-          ? touchTarget
-          : touchTarget.closest(SELECTABLE_CELL_ELEMENT_SELECTOR);
+        );
       }
+
+      return closestCellElement;
     } else {
-      for (const element of Array.from(event.composedPath())) {
-        if (!(element instanceof HTMLElement)) {
-          continue;
-        }
-
-        if (element.matches(ANY_CELL_ELEMENT_SELECTOR)) {
-          closestCellElement = element;
-          break;
-        }
-      }
+      return this.getClosestCellElementFromComposedPath(event);
     }
-
-    return closestCellElement;
   }
 
   updateHighlightElement(
@@ -543,58 +460,51 @@ export class ViewContainerElement extends HTMLElement {
     const draggedCellTop = draggedCellElement.getBoundingClientRect().top;
     const draggedCellBottom = draggedCellElement.getBoundingClientRect().bottom;
 
-    const closestCellCenterX =
-      closestCellLeft + (closestCellRight - closestCellLeft) / 2;
-    const closestCellCenterY =
-      closestCellTop + (closestCellBottom - closestCellTop) / 2;
-
-    const draggedCellCenterX =
-      draggedCellLeft + (draggedCellRight - draggedCellLeft) / 2;
-    const draggedCellCenterY =
-      draggedCellTop + (draggedCellBottom - draggedCellTop) / 2;
-
+    const isSameCell = cellElement === draggedCellElement;
     const isDraggedCellBeforeClosestCell =
-      draggedCellColumnIndex < closestCellColumnIndex;
+      draggedCellColumnIndex < closestCellColumnIndex && !isSameCell;
     const isDraggedCellAfterClosestCell =
-      draggedCellColumnIndex > closestCellColumnIndex;
-
+      draggedCellColumnIndex > closestCellColumnIndex && !isSameCell;
     const isDraggedCellAboveClosestCell =
-      draggedCellCenterY < closestCellCenterY;
+      draggedCellTop < closestCellTop && !isSameCell;
     const isDraggedCellBelowClosestCell =
-      draggedCellCenterY > closestCellCenterY;
+      draggedCellBottom > closestCellBottom && !isSameCell;
 
-    const isDraggedCellBeforeClosestCellCenterX =
-      draggedCellCenterX < closestCellCenterX;
-    const isDraggedCellAfterClosestCellCenterX =
-      draggedCellCenterX > closestCellCenterX;
-
-    const isDraggedCellBeforeClosestCellCenterY =
-      draggedCellCenterY < closestCellCenterY;
-    const isDraggedCellAfterClosestCellCenterY =
-      draggedCellCenterY > closestCellCenterY;
-
-    const isDraggedCellBeforeClosestCellCenter =
-      isDraggedCellBeforeClosestCellCenterX &&
-      isDraggedCellBeforeClosestCellCenterY;
-
-    const left = isDraggedCellBeforeClosestCell
+    const left = isSameCell
       ? draggedCellLeft
-      : closestCellLeft;
+      : isDraggedCellBeforeClosestCell
+        ? draggedCellLeft
+        : closestCellLeft;
 
-    const right = isDraggedCellAfterClosestCell
+    const right = isSameCell
       ? draggedCellRight
-      : closestCellRight;
+      : isDraggedCellAfterClosestCell
+        ? draggedCellRight
+        : closestCellRight;
 
-    const top = isDraggedCellAboveClosestCell ? draggedCellTop : closestCellTop;
+    const top = isSameCell
+      ? draggedCellTop
+      : isDraggedCellAboveClosestCell
+        ? draggedCellTop
+        : closestCellTop;
 
-    const bottom = isDraggedCellBelowClosestCell
+    const bottom = isSameCell
       ? draggedCellBottom
-      : closestCellBottom;
+      : isDraggedCellBelowClosestCell
+        ? draggedCellBottom
+        : closestCellBottom;
 
     this.highlightElement.style.left = `${left}px`;
     this.highlightElement.style.top = `${top}px`;
     this.highlightElement.style.width = `${right - left}px`;
     this.highlightElement.style.height = `${bottom - top}px`;
+
+    if (right - left === 0 || bottom - top === 0) {
+      console.log('zero width or height', {
+        draggedCellElement,
+        cellElement,
+      });
+    }
 
     this.highlightElement.style.border = '3px solid var(--swatch-interactive)';
   }
@@ -607,7 +517,7 @@ export class ViewContainerElement extends HTMLElement {
         return false;
       }
 
-      return element.matches(INPUT_SELECTOR);
+      return element.matches(SELECTABLE_CELL_ELEMENT_SELECTOR);
     });
 
     if (!(closestCellElement instanceof HTMLElement)) {
@@ -691,8 +601,6 @@ export class ViewContainerElement extends HTMLElement {
         return rowId + ':' + propertyId;
       })
       .join(',');
-
-    console.log(cellElements, cellsValue);
 
     hiddenInputElement.setAttribute('value', cellsValue);
 
