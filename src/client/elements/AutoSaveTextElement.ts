@@ -56,15 +56,7 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
 
     if (event.key === 'Escape') {
       if (this.inputElement.dataset.readOnly !== '') {
-        const currentValue = this.inputElement.value;
-        const savedValue = this.inputElement.getAttribute('value') || '';
-
-        if (currentValue === savedValue) {
-          this.toggleEditMode();
-        } else {
-          this.inputElement.value =
-            this.inputElement.getAttribute('value') || '';
-        }
+        this.exitEditMode();
       }
     }
 
