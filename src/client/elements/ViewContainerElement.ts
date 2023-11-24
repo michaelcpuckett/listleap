@@ -226,7 +226,7 @@ export class ViewContainerElement extends HTMLElement {
       this.highlightElement.getBoundingClientRect();
 
     const allCellElements = Array.from(
-      this.gridElement.querySelectorAll(CELL_ELEMENT_SELECTOR),
+      this.gridElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
     ).filter(isHtmlElement);
 
     const markCellSelected = (cellElement: HTMLElement) => {
@@ -477,7 +477,7 @@ export class ViewContainerElement extends HTMLElement {
 
       const selectedCells = Array.from(
         this.gridElement.querySelectorAll(
-          `[data-selected]:is(${CELL_ELEMENT_SELECTOR})`,
+          `[data-selected]:is(${ANY_CELL_ELEMENT_SELECTOR})`,
         ),
       );
 
@@ -508,7 +508,7 @@ export class ViewContainerElement extends HTMLElement {
           continue;
         }
 
-        if (element.matches(CELL_ELEMENT_SELECTOR)) {
+        if (element.matches(ANY_CELL_ELEMENT_SELECTOR)) {
           closestCellElement = element;
           break;
         }
@@ -555,7 +555,7 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     const closestCellIndex = Array.from(
-      closestRowElement.querySelectorAll(CELL_ELEMENT_SELECTOR),
+      closestRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
     ).indexOf(cellElement);
 
     if (closestCellIndex === -1) {
@@ -577,20 +577,25 @@ export class ViewContainerElement extends HTMLElement {
     const diffX = closestCellLeft - draggedCellLeft;
     const diffY = closestRowTop - draggedRowTop;
 
-    this.highlightElement.style.height = `${
-      Math.abs(diffY) + draggedCellElement.getBoundingClientRect().height
-    }px`;
-    this.highlightElement.style.width = `${
-      Math.abs(diffX) + draggedCellElement.getBoundingClientRect().width
-    }px`;
-
     if (diffX < 0) {
       this.highlightElement.style.left = `${
         cellElement.getBoundingClientRect().left
       }px`;
+      this.highlightElement.style.height = `${
+        Math.abs(diffY) + draggedCellElement.getBoundingClientRect().height
+      }px`;
+      this.highlightElement.style.width = `${
+        Math.abs(diffX) + draggedCellElement.getBoundingClientRect().width
+      }px`;
     } else {
       this.highlightElement.style.left = `${
         draggedCellElement.getBoundingClientRect().left
+      }px`;
+      this.highlightElement.style.height = `${
+        Math.abs(diffY) + cellElement.getBoundingClientRect().height
+      }px`;
+      this.highlightElement.style.width = `${
+        Math.abs(diffX) + cellElement.getBoundingClientRect().width
       }px`;
     }
 
@@ -623,7 +628,7 @@ export class ViewContainerElement extends HTMLElement {
     }
 
     const closestCellElement = autoSaveTextElement.closest(
-      CELL_ELEMENT_SELECTOR,
+      ANY_CELL_ELEMENT_SELECTOR,
     );
 
     if (!(closestCellElement instanceof HTMLElement)) {
@@ -986,30 +991,9 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    const selectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
-      ),
-    );
-
-    if (
-      selectedCells.length > 0 &&
-      (!targetCellElement.matches(CELL_ELEMENT_SELECTOR) ||
-        !targetCellElement.querySelector('auto-save-text input'))
-    ) {
-      return;
-    }
-
     this.focusElement(targetCellElement);
 
     if (this.isDragging) {
-      return;
-    }
-
-    if (
-      !targetCellElement.matches(CELL_ELEMENT_SELECTOR) ||
-      !targetCellElement.querySelector('auto-save-text input[type="text"]')
-    ) {
       return;
     }
 
@@ -1066,28 +1050,7 @@ export class ViewContainerElement extends HTMLElement {
 
     this.focusElement(targetCellElement);
 
-    const selectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
-      ),
-    );
-
-    if (
-      selectedCells.length > 0 &&
-      (!targetCellElement.matches(CELL_ELEMENT_SELECTOR) ||
-        !targetCellElement.querySelector('auto-save-text input'))
-    ) {
-      return;
-    }
-
     if (this.isDragging) {
-      return;
-    }
-
-    if (
-      !targetCellElement.matches(CELL_ELEMENT_SELECTOR) ||
-      !targetCellElement.querySelector('auto-save-text input[type="text"]')
-    ) {
       return;
     }
 
@@ -1111,30 +1074,9 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    const selectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
-      ),
-    );
-
-    if (
-      selectedCells.length > 0 &&
-      (!previousCellElement.matches(CELL_ELEMENT_SELECTOR) ||
-        !previousCellElement.querySelector('auto-save-text input'))
-    ) {
-      return;
-    }
-
     this.focusElement(previousCellElement);
 
     if (this.isDragging) {
-      return;
-    }
-
-    if (
-      !previousCellElement.matches(CELL_ELEMENT_SELECTOR) ||
-      !previousCellElement.querySelector('auto-save-text input[type="text"]')
-    ) {
       return;
     }
 
@@ -1158,30 +1100,9 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    const selectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
-      ),
-    );
-
-    if (
-      selectedCells.length > 0 &&
-      (!nextCellElement.matches(CELL_ELEMENT_SELECTOR) ||
-        !nextCellElement.querySelector('auto-save-text input'))
-    ) {
-      return;
-    }
-
     this.focusElement(nextCellElement);
 
     if (this.isDragging) {
-      return;
-    }
-
-    if (
-      !nextCellElement.matches(CELL_ELEMENT_SELECTOR) ||
-      !nextCellElement.querySelector('auto-save-text input[type="text"]')
-    ) {
       return;
     }
 
