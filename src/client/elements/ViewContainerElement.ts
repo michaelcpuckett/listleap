@@ -511,25 +511,10 @@ export class ViewContainerElement extends HTMLElement {
     if (!this.highlightElement) {
       return;
     }
+
     const closestRowElement = cellElement.closest('[role="row"]');
 
     if (!(closestRowElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const closestRowIndex = Array.from(
-      this.gridElement.querySelectorAll('[role="row"]'),
-    ).indexOf(closestRowElement);
-
-    if (closestRowIndex === -1) {
-      return;
-    }
-
-    const closestCellColumnIndex = Array.from(
-      closestRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
-    ).indexOf(cellElement);
-
-    if (closestCellColumnIndex === -1) {
       return;
     }
 
@@ -539,66 +524,77 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    const draggedRowIndex = Array.from(
-      this.gridElement.querySelectorAll('[role="row"]'),
-    ).indexOf(draggedRow);
-
+    const closestCellColumnIndex = Array.from(
+      closestRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
+    ).indexOf(cellElement);
     const draggedCellColumnIndex = Array.from(
       draggedRow.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
     ).indexOf(draggedCellElement);
 
-    const draggedRowTop = draggedRow.getBoundingClientRect().top;
-    const draggedRowBottom = draggedRow.getBoundingClientRect().bottom;
+    const closestCellLeft = cellElement.getBoundingClientRect().left;
+    const closestCellRight = cellElement.getBoundingClientRect().right;
 
     const draggedCellLeft = draggedCellElement.getBoundingClientRect().left;
     const draggedCellRight = draggedCellElement.getBoundingClientRect().right;
 
-    const closestRowTop = closestRowElement.getBoundingClientRect().top;
-    const closestRowBottom = closestRowElement.getBoundingClientRect().bottom;
-    const closestCellLeft = cellElement.getBoundingClientRect().left;
-    const closestCellRight = cellElement.getBoundingClientRect().right;
+    const closestCellTop = cellElement.getBoundingClientRect().top;
+    const closestCellBottom = cellElement.getBoundingClientRect().bottom;
 
-    const isDraggedRowBeforeClosestRow = draggedRowIndex > closestRowIndex;
+    const draggedCellTop = draggedCellElement.getBoundingClientRect().top;
+    const draggedCellBottom = draggedCellElement.getBoundingClientRect().bottom;
+
+    const closestCellCenterX =
+      closestCellLeft + (closestCellRight - closestCellLeft) / 2;
+    const closestCellCenterY =
+      closestCellTop + (closestCellBottom - closestCellTop) / 2;
+
+    const draggedCellCenterX =
+      draggedCellLeft + (draggedCellRight - draggedCellLeft) / 2;
+    const draggedCellCenterY =
+      draggedCellTop + (draggedCellBottom - draggedCellTop) / 2;
+
     const isDraggedCellBeforeClosestCell =
+      draggedCellColumnIndex < closestCellColumnIndex;
+    const isDraggedCellAfterClosestCell =
       draggedCellColumnIndex > closestCellColumnIndex;
 
-    const diffY = isDraggedRowBeforeClosestRow
-      ? draggedRowBottom - closestRowTop
-      : closestRowBottom - draggedRowTop;
-    const diffX = isDraggedCellBeforeClosestCell
-      ? draggedCellRight - closestCellLeft
-      : closestCellRight - draggedCellLeft;
+    const isDraggedCellAboveClosestCell =
+      draggedCellCenterY < closestCellCenterY;
+    const isDraggedCellBelowClosestCell =
+      draggedCellCenterY > closestCellCenterY;
 
-    // const diffX =
-    //   Math.max(closestCellLeft, closestCellRight) -
-    //   Math.min(draggedCellLeft, draggedCellRight);
+    const isDraggedCellBeforeClosestCellCenterX =
+      draggedCellCenterX < closestCellCenterX;
+    const isDraggedCellAfterClosestCellCenterX =
+      draggedCellCenterX > closestCellCenterX;
 
-    // const diffY =
-    //   Math.max(closestRowBottom, closestRowTop) -
-    //   Math.min(draggedRowBottom, draggedRowTop);
+    const isDraggedCellBeforeClosestCellCenterY =
+      draggedCellCenterY < closestCellCenterY;
+    const isDraggedCellAfterClosestCellCenterY =
+      draggedCellCenterY > closestCellCenterY;
 
-    this.highlightElement.style.width = `${Math.abs(diffX)}px`;
-    this.highlightElement.style.height = `${Math.abs(diffY)}px`;
+    const isDraggedCellBeforeClosestCellCenter =
+      isDraggedCellBeforeClosestCellCenterX &&
+      isDraggedCellBeforeClosestCellCenterY;
 
-    if (isDraggedCellBeforeClosestCell) {
-      this.highlightElement.style.left = `${
-        cellElement.getBoundingClientRect().left
-      }px`;
-    } else {
-      this.highlightElement.style.left = `${
-        draggedCellElement.getBoundingClientRect().left
-      }px`;
-    }
+    const left = isDraggedCellBeforeClosestCell
+      ? draggedCellLeft
+      : closestCellLeft;
 
-    if (isDraggedRowBeforeClosestRow) {
-      this.highlightElement.style.top = `${
-        cellElement.getBoundingClientRect().top
-      }px`;
-    } else {
-      this.highlightElement.style.top = `${
-        draggedCellElement.getBoundingClientRect().top
-      }px`;
-    }
+    const right = isDraggedCellAfterClosestCell
+      ? draggedCellRight
+      : closestCellRight;
+
+    const top = isDraggedCellAboveClosestCell ? draggedCellTop : closestCellTop;
+
+    const bottom = isDraggedCellBelowClosestCell
+      ? draggedCellBottom
+      : closestCellBottom;
+
+    this.highlightElement.style.left = `${left}px`;
+    this.highlightElement.style.top = `${top}px`;
+    this.highlightElement.style.width = `${right - left}px`;
+    this.highlightElement.style.height = `${bottom - top}px`;
 
     this.highlightElement.style.border = '3px solid var(--swatch-interactive)';
   }
