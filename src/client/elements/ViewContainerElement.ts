@@ -159,49 +159,25 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    this.isDragging = true;
-
-    const selectedCells = Array.from(
-      this.gridElement.querySelectorAll(
-        `[aria-selected]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
-      ),
-    );
-
-    if (this.isShiftKeyPressed) {
-      for (const selectedCell of selectedCells) {
-        selectedCell.setAttribute('data-selected', '');
-      }
-    } else {
-      for (const selectedCell of selectedCells) {
-        selectedCell.removeAttribute('aria-selected');
-        selectedCell.removeAttribute('data-selected');
-      }
-    }
-
     this.isInvertingSelection =
       this.isShiftKeyPressed &&
       closestCellElement.hasAttribute('aria-selected');
-
-    if (this.isShiftKeyPressed) {
-      if (this.isInvertingSelection) {
-        closestCellElement.removeAttribute('aria-selected');
-      } else {
-        closestCellElement.setAttribute('aria-selected', 'true');
-      }
-    }
 
     if (event instanceof TouchEvent) {
       window.document.body.classList.add('prevent-scroll');
     }
 
     this.initializeHighlightElement(closestCellElement);
-  }
 
-  handleDragover(event: Event) {
-    if (!this.isDragging) {
+    if (!this.isShiftKeyPressed) {
       return;
     }
 
+    this.updateHighlightElement(closestCellElement, closestCellElement);
+    this.updateSelectedCells();
+  }
+
+  handleDragover(event: Event) {
     if (!this.draggedCellElement) {
       return;
     }
@@ -216,6 +192,14 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    if (
+      !this.isShiftKeyPressed &&
+      closestCellElement === this.draggedCellElement
+    ) {
+      return;
+    }
+
+    this.isDragging = true;
     this.updateHighlightElement(closestCellElement, this.draggedCellElement);
     this.updateSelectedCells();
   }
@@ -302,9 +286,17 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-    // event.preventDefault();
+    if (
+      this.isShiftKeyPressed ||
+      (this.isDragging && this.draggedCellElement !== closestCellElement)
+    ) {
+      this.isDragging = false;
+      event.stopImmediatePropagation();
+      event.stopPropagation();
+    } else {
+      this.isDragging = false;
+      return;
+    }
 
     if (!this.draggedCellElement) {
       return;
@@ -316,7 +308,6 @@ export class ViewContainerElement extends HTMLElement {
     this.highlightElement.remove();
     this.highlightElement = null;
     this.draggedCellElement = null;
-    this.isDragging = false;
 
     closestCellElement.focus();
   }
