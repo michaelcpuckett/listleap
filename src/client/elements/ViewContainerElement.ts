@@ -1,6 +1,10 @@
-const CELL_ELEMENT_SELECTOR = '[role="gridcell"], [role="rowheader"]';
 const ANY_CELL_ELEMENT_SELECTOR =
   '[role="gridcell"], [role="columnheader"], [role="rowheader"]';
+
+const SELECTABLE_CELL_ELEMENT_SELECTOR = `[data-selectable]:is(${ANY_CELL_ELEMENT_SELECTOR})`;
+
+const INPUT_SELECTOR =
+  ':is(:is(auto-save-search, auto-save-text) input, input[type="checkbox"])';
 
 const FLYOUT_MENU_SELECTOR = 'flyout-menu [role="menu"]';
 
@@ -84,7 +88,9 @@ export class ViewContainerElement extends HTMLElement {
         return;
       }
 
-      const cellElement = event.target.closest(CELL_ELEMENT_SELECTOR);
+      const cellElement = event.target.closest(
+        SELECTABLE_CELL_ELEMENT_SELECTOR,
+      );
 
       if (!(cellElement instanceof HTMLElement)) {
         return;
@@ -146,9 +152,10 @@ export class ViewContainerElement extends HTMLElement {
   }
 
   handleDragstart(event: Event) {
-    const elements = this.getElementsFromComposedPath(event);
+    const closestCellElement =
+      this.getClosestCellElementFromComposedPath(event);
 
-    if (!elements) {
+    if (!closestCellElement) {
       return;
     }
 
@@ -156,7 +163,7 @@ export class ViewContainerElement extends HTMLElement {
 
     const selectedCells = Array.from(
       this.gridElement.querySelectorAll(
-        `[aria-selected]:is(${CELL_ELEMENT_SELECTOR})`,
+        `[aria-selected]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
       ),
     );
 
@@ -170,8 +177,6 @@ export class ViewContainerElement extends HTMLElement {
         selectedCell.removeAttribute('data-selected');
       }
     }
-
-    const { closestCellElement } = elements;
 
     this.isInvertingSelection =
       this.isShiftKeyPressed &&
@@ -205,13 +210,11 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    const elements = this.getElementsFromPoint(event);
+    const closestCellElement = this.getClosestCellElementFromPoint(event);
 
-    if (!elements) {
+    if (!closestCellElement) {
       return;
     }
-
-    const { closestCellElement } = elements;
 
     this.updateHighlightElement(closestCellElement, this.draggedCellElement);
     this.updateSelectedCells();
@@ -231,26 +234,10 @@ export class ViewContainerElement extends HTMLElement {
 
     const markCellSelected = (cellElement: HTMLElement) => {
       cellElement.setAttribute('aria-selected', 'true');
-
-      const inputElement = cellElement.querySelector('auto-save-text input');
-
-      if (!(inputElement instanceof HTMLInputElement)) {
-        return;
-      }
-
-      inputElement.classList.add('selected');
     };
 
     const markCellUnselected = (cellElement: HTMLElement) => {
       cellElement.removeAttribute('aria-selected');
-
-      const inputElement = cellElement.querySelector('auto-save-text input');
-
-      if (!(inputElement instanceof HTMLInputElement)) {
-        return;
-      }
-
-      inputElement.classList.remove('selected');
     };
 
     for (const cellElement of allCellElements) {
@@ -311,9 +298,11 @@ export class ViewContainerElement extends HTMLElement {
       );
 
       if (touchTarget instanceof Element) {
-        closestCellElement = touchTarget.matches(CELL_ELEMENT_SELECTOR)
+        closestCellElement = touchTarget.matches(
+          SELECTABLE_CELL_ELEMENT_SELECTOR,
+        )
           ? touchTarget
-          : touchTarget.closest(CELL_ELEMENT_SELECTOR);
+          : touchTarget.closest(SELECTABLE_CELL_ELEMENT_SELECTOR);
       }
     } else {
       for (const element of Array.from(event.composedPath())) {
@@ -321,7 +310,7 @@ export class ViewContainerElement extends HTMLElement {
           continue;
         }
 
-        if (element.matches(CELL_ELEMENT_SELECTOR)) {
+        if (element.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
           closestCellElement = element;
           break;
         }
@@ -334,11 +323,11 @@ export class ViewContainerElement extends HTMLElement {
 
     event.stopImmediatePropagation();
     event.stopPropagation();
-    event.preventDefault();
+    // event.preventDefault();
 
     const dataSelectedCells = Array.from(
       this.gridElement.querySelectorAll(
-        `[data-selected]:is(${CELL_ELEMENT_SELECTOR})`,
+        `[data-selected]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
       ),
     );
 
@@ -355,15 +344,6 @@ export class ViewContainerElement extends HTMLElement {
       if (this.isShiftKeyPressed && !this.isInvertingSelection) {
         cellElement.setAttribute('data-selected', '');
       }
-      cellElement.setAttribute('data-read-only', '');
-
-      const inputElement = cellElement.querySelector('auto-save-text input');
-
-      if (!(inputElement instanceof HTMLInputElement)) {
-        return;
-      }
-
-      inputElement.classList.add('selected');
     };
 
     const markCellUnselected = (cellElement: Element) => {
@@ -373,15 +353,6 @@ export class ViewContainerElement extends HTMLElement {
 
       cellElement.removeAttribute('aria-selected');
       cellElement.removeAttribute('data-selected');
-      cellElement.setAttribute('data-read-only', '');
-
-      const inputElement = cellElement.querySelector('auto-save-text input');
-
-      if (!(inputElement instanceof HTMLInputElement)) {
-        return;
-      }
-
-      inputElement.classList.remove('selected');
     };
 
     if (closestCellElement.getAttribute('aria-selected') === 'true') {
@@ -396,7 +367,7 @@ export class ViewContainerElement extends HTMLElement {
       if (!this.isShiftKeyPressed) {
         const selectedCells = Array.from(
           this.gridElement.querySelectorAll(
-            `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+            `[aria-selected="true"]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
           ),
         );
 
@@ -461,7 +432,7 @@ export class ViewContainerElement extends HTMLElement {
     if (this.isShiftKeyPressed) {
       // const selectedCells = Array.from(
       //   this.gridElement.querySelectorAll(
-      //     `[aria-selected]:is(${CELL_ELEMENT_SELECTOR})`,
+      //     `[aria-selected]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
       //   ),
       // );
       // for (const selectedCell of selectedCells) {
@@ -487,8 +458,8 @@ export class ViewContainerElement extends HTMLElement {
     }
   }
 
-  getElementsFromPoint(event: Event) {
-    let closestCellElement: Element | null = null;
+  getClosestCellElementFromPoint(event: Event) {
+    let closestCellElement: HTMLElement | null = null;
 
     if (event instanceof TouchEvent) {
       const touchLocation = event.changedTouches[0];
@@ -497,14 +468,16 @@ export class ViewContainerElement extends HTMLElement {
         touchLocation.clientY,
       );
 
-      if (touchTarget instanceof Element) {
-        closestCellElement = touchTarget.matches(CELL_ELEMENT_SELECTOR)
+      if (touchTarget instanceof HTMLElement) {
+        closestCellElement = touchTarget.matches(
+          SELECTABLE_CELL_ELEMENT_SELECTOR,
+        )
           ? touchTarget
-          : touchTarget.closest(CELL_ELEMENT_SELECTOR);
+          : touchTarget.closest(SELECTABLE_CELL_ELEMENT_SELECTOR);
       }
     } else {
       for (const element of Array.from(event.composedPath())) {
-        if (!(element instanceof Element)) {
+        if (!(element instanceof HTMLElement)) {
           continue;
         }
 
@@ -515,22 +488,7 @@ export class ViewContainerElement extends HTMLElement {
       }
     }
 
-    if (!(closestCellElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const autoSaveTextElement = closestCellElement.querySelector(
-      'auto-save-text input',
-    );
-
-    if (!(autoSaveTextElement instanceof HTMLElement)) {
-      return;
-    }
-
-    return {
-      autoSaveTextElement,
-      closestCellElement,
-    };
+    return closestCellElement;
   }
 
   updateHighlightElement(
@@ -612,33 +570,22 @@ export class ViewContainerElement extends HTMLElement {
     this.highlightElement.style.border = '3px solid var(--swatch-interactive)';
   }
 
-  getElementsFromComposedPath(event: Event) {
+  getClosestCellElementFromComposedPath(event: Event) {
     const composedPath = event.composedPath();
 
-    const autoSaveTextElement = composedPath.find((element) => {
+    const closestCellElement = composedPath.find((element) => {
       if (!(element instanceof HTMLElement)) {
         return false;
       }
 
-      return element.matches('auto-save-text input');
+      return element.matches(INPUT_SELECTOR);
     });
 
-    if (!(autoSaveTextElement instanceof HTMLInputElement)) {
-      return;
-    }
-
-    const closestCellElement = autoSaveTextElement.closest(
-      ANY_CELL_ELEMENT_SELECTOR,
-    );
-
     if (!(closestCellElement instanceof HTMLElement)) {
-      return;
+      return null;
     }
 
-    return {
-      autoSaveTextElement,
-      closestCellElement,
-    };
+    return closestCellElement;
   }
 
   initializeHighlightElement(cellElement: HTMLElement) {
@@ -669,9 +616,7 @@ export class ViewContainerElement extends HTMLElement {
     const cellElements = event.detail.filter(isHtmlElement);
 
     for (const cellElement of cellElements) {
-      const autoSaveTextElement = cellElement.querySelector(
-        'auto-save-text input',
-      );
+      const autoSaveTextElement = cellElement.querySelector(INPUT_SELECTOR);
 
       if (!(autoSaveTextElement instanceof HTMLInputElement)) {
         continue;
@@ -739,7 +684,7 @@ export class ViewContainerElement extends HTMLElement {
       if (this.isShiftKeyPressed) {
         const selectedCells = Array.from(
           this.gridElement.querySelectorAll(
-            `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+            `[aria-selected="true"]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
           ),
         );
 
@@ -752,7 +697,7 @@ export class ViewContainerElement extends HTMLElement {
     if (event.key === 'Escape') {
       const selectedCells = Array.from(
         this.gridElement.querySelectorAll(
-          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+          `[aria-selected="true"]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
         ),
       );
 
@@ -823,12 +768,12 @@ export class ViewContainerElement extends HTMLElement {
 
     const selectedCellElements = Array.from(
       this.querySelectorAll(
-        `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+        `[aria-selected="true"]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
       ),
     );
 
     if (event.key === ' ' && this.isShiftKeyPressed) {
-      const inputElement = cellElement.querySelector('auto-save-text input');
+      const inputElement = cellElement.querySelector(INPUT_SELECTOR);
 
       if (!(inputElement instanceof HTMLInputElement)) {
         return;
@@ -844,7 +789,7 @@ export class ViewContainerElement extends HTMLElement {
 
       const selectedCells = Array.from(
         this.gridElement.querySelectorAll(
-          `[aria-selected="true"]:is(${CELL_ELEMENT_SELECTOR})`,
+          `[aria-selected="true"]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
         ),
       );
 
@@ -860,23 +805,9 @@ export class ViewContainerElement extends HTMLElement {
       this.highlightElement = null;
       this.draggedCellElement = null;
 
-      // cellElement.setAttribute('aria-selected', 'true');
-
-      // (selectedCellElements.length || this.isShiftKeyPressed);
-
       this.initializeHighlightElement(cellElement);
       this.updateHighlightElement(cellElement, cellElement);
       this.updateSelectedCells();
-
-      // if (isSelected) {
-      //   cellElement.removeAttribute('aria-selected');
-      //   cellElement.removeAttribute('data-selected');
-      //   inputElement.classList.remove('selected');
-      // } else {
-      //   cellElement.setAttribute('aria-selected', 'true');
-      //   cellElement.setAttribute('data-selected', '');
-      //   inputElement.classList.add('selected');
-      // }
     }
 
     if (selectedCellElements.length) {

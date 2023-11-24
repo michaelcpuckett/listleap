@@ -40,7 +40,10 @@ export function TableView(
       >
         <RowGroupElement>
           <RowElement label="Properties">
-            <ColumnHeaderElement className="align-center">
+            <ColumnHeaderElement
+              className="align-center"
+              selectable
+            >
               <SelectAllCheckboxElement>
                 <input
                   form="select-multiple-rows-form"
@@ -53,7 +56,10 @@ export function TableView(
               </SelectAllCheckboxElement>
             </ColumnHeaderElement>
             {properties.map((property, index) => (
-              <ColumnHeaderElement label={property.name}>
+              <ColumnHeaderElement
+                label={property.name}
+                selectable
+              >
                 <form
                   id={`edit-property-form--${property.id}`}
                   autoComplete="off"
@@ -111,7 +117,10 @@ export function TableView(
 
             return (
               <RowElement>
-                <CellElement className="align-center">
+                <CellElement
+                  className="align-center"
+                  selectable
+                >
                   <input
                     form="select-multiple-rows-form"
                     className="input"
@@ -127,6 +136,7 @@ export function TableView(
                     rowId={row.id}
                     propertyId={property.id}
                     role={index === 0 ? 'rowheader' : undefined}
+                    selectable
                   >
                     {property.type === String ? (
                       <AutoSaveTextElement
@@ -210,13 +220,18 @@ export function TableView(
  * #focus() is called.
  **/
 function ColumnHeaderElement(
-  props: React.PropsWithChildren<{ className?: string; label?: string }>,
+  props: React.PropsWithChildren<{
+    selectable?: boolean;
+    className?: string;
+    label?: string;
+  }>,
 ) {
   return (
     <div
       role="columnheader"
       className={props.className}
       aria-label={props.label}
+      data-selectable={props.selectable}
     >
       <template
         shadowrootmode="open"
@@ -242,6 +257,7 @@ function CellElement(
     label?: string;
     rowId?: string;
     propertyId?: string;
+    selectable?: boolean;
   }>,
 ) {
   return (
@@ -251,6 +267,7 @@ function CellElement(
       aria-label={props.label}
       data-row-id={props.rowId}
       data-property-id={props.propertyId}
+      data-selectable={props.selectable}
     >
       <template
         shadowrootmode="open"

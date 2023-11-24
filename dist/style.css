@@ -528,7 +528,7 @@ flyout-menu [role='menu'] {
   pointer-events: none;
 }
 
-:is(auto-save-search, auto-save-text, auto-save-checkbox) input {
+:is(auto-save-search, auto-save-text) input {
   padding: 0.5rem 0;
   margin: 0;
   border: 1px solid;
@@ -542,26 +542,28 @@ flyout-menu [role='menu'] {
   will-change: transform;
 }
 
-[data-inline]:is(auto-save-search, auto-save-text, auto-save-checkbox) input {
+[data-inline]:is(auto-save-search, auto-save-text) input[type='text'] {
   background: transparent;
   border: 1px solid transparent;
   color: CanvasText;
 }
 
 [aria-selected='true']
-  :is(auto-save-search, auto-save-text, auto-save-checkbox)
+  :is(auto-save-search, auto-save-text)
   input[type='text'] {
   background: var(--highlight-color);
 }
 
-:is(auto-save-search, auto-save-text, auto-save-checkbox)
-  input[data-dirty]:not(:focus) {
+[aria-selected='true'] {
+  background: var(--highlight-color);
+}
+
+:is(auto-save-search, auto-save-text) input[data-dirty]:not(:focus) {
   outline: 1px solid var(--unsaved-color);
   outline-offset: 2px;
 }
 
-:is(auto-save-search, auto-save-text, auto-save-checkbox)
-  input[type='text']:not([data-read-only]) {
+:is(auto-save-search, auto-save-text) input[type='text']:not([data-read-only]) {
   background: CanvasText;
   color: Canvas;
 }
