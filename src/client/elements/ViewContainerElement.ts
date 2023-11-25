@@ -204,13 +204,6 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
-    if (
-      !this.isShiftKeyPressed &&
-      closestCellElement === this.draggedCellElement
-    ) {
-      return;
-    }
-
     this.isDragging = true;
     this.updateHighlightElement(closestCellElement, this.draggedCellElement);
     this.updateSelectedCells();
