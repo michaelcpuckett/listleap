@@ -389,16 +389,17 @@ export class ViewContainerElement extends HTMLElement {
       this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
     );
 
-    for (const cell of allCells) {
-      if (cell.hasAttribute('aria-selected')) {
-        cell.setAttribute('data-selected', '');
-      } else {
-        cell.removeAttribute('data-selected');
+    if (this.isDragging) {
+      for (const cell of allCells) {
+        if (cell.hasAttribute('aria-selected')) {
+          cell.setAttribute('data-selected', '');
+        } else {
+          cell.removeAttribute('data-selected');
+        }
       }
     }
 
-    if (this.isShiftKeyPressed) {
-    } else {
+    if (!this.isShiftKeyPressed) {
       if (this.highlightElement) {
         this.highlightElement.remove();
       }
