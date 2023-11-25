@@ -159,6 +159,18 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    const allCells = Array.from(
+      this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
+    );
+
+    for (const cell of allCells) {
+      if (cell.hasAttribute('aria-selected')) {
+        cell.setAttribute('data-selected', '');
+      } else {
+        cell.removeAttribute('data-selected');
+      }
+    }
+
     this.isInvertingSelection =
       this.isShiftKeyPressed &&
       closestCellElement.hasAttribute('aria-selected');
@@ -286,6 +298,18 @@ export class ViewContainerElement extends HTMLElement {
       return;
     }
 
+    const allCells = Array.from(
+      this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
+    );
+
+    for (const cell of allCells) {
+      if (cell.hasAttribute('aria-selected')) {
+        cell.setAttribute('data-selected', '');
+      } else {
+        cell.removeAttribute('data-selected');
+      }
+    }
+
     if (
       this.isShiftKeyPressed ||
       (this.isDragging && this.draggedCellElement !== closestCellElement)
@@ -361,15 +385,19 @@ export class ViewContainerElement extends HTMLElement {
 
     this.isShiftKeyPressed = event.shiftKey;
 
+    const allCells = Array.from(
+      this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
+    );
+
+    for (const cell of allCells) {
+      if (cell.hasAttribute('aria-selected')) {
+        cell.setAttribute('data-selected', '');
+      } else {
+        cell.removeAttribute('data-selected');
+      }
+    }
+
     if (this.isShiftKeyPressed) {
-      // const selectedCells = Array.from(
-      //   this.gridElement.querySelectorAll(
-      //     `[aria-selected]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
-      //   ),
-      // );
-      // for (const selectedCell of selectedCells) {
-      //   selectedCell.setAttribute('data-selected', '');
-      // }
     } else {
       if (this.highlightElement) {
         this.highlightElement.remove();
@@ -610,14 +638,16 @@ export class ViewContainerElement extends HTMLElement {
       this.isShiftKeyPressed = event.key === 'Shift' || event.shiftKey;
 
       if (this.isShiftKeyPressed) {
-        const selectedCells = Array.from(
-          this.gridElement.querySelectorAll(
-            `[aria-selected="true"]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
-          ),
+        const allCells = Array.from(
+          this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
         );
 
-        for (const selectedCell of selectedCells) {
-          selectedCell.setAttribute('data-selected', '');
+        for (const cell of allCells) {
+          if (cell.hasAttribute('aria-selected')) {
+            cell.setAttribute('data-selected', '');
+          } else {
+            cell.removeAttribute('data-selected');
+          }
         }
       }
     }
@@ -715,14 +745,16 @@ export class ViewContainerElement extends HTMLElement {
       event.stopImmediatePropagation();
       event.stopPropagation();
 
-      const selectedCells = Array.from(
-        this.gridElement.querySelectorAll(
-          `[aria-selected="true"]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
-        ),
+      const allCells = Array.from(
+        this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
       );
 
-      for (const selectedCell of selectedCells) {
-        selectedCell.setAttribute('data-selected', '');
+      for (const cell of allCells) {
+        if (cell.hasAttribute('aria-selected')) {
+          cell.setAttribute('data-selected', '');
+        } else {
+          cell.removeAttribute('data-selected');
+        }
       }
 
       this.isInvertingSelection = cellElement.hasAttribute('aria-selected');
