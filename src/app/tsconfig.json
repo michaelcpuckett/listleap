@@ -11,6 +11,7 @@
     "removeComments": true,
     "jsx": "react-jsx",
     "noLib": false,
+    "isolatedModules": true,
     "lib": ["ESNext", "webworker", "DOM.Iterable"],
     "target": "ESNext",
     "outDir": "./",

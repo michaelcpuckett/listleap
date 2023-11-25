@@ -9,16 +9,14 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
     this.inputElement.addEventListener('change', this.boundChangeHandler);
     this.inputElement.addEventListener('keydown', this.boundKeydownHandler);
     this.inputElement.addEventListener('blur', this.boundBlurHandler);
-    this.inputElement.addEventListener('mouseup', this.boundClickHandler);
-    this.inputElement.addEventListener('touchend', this.boundClickHandler);
+    this.inputElement.addEventListener('pointerup', this.boundClickHandler);
   }
 
   disconnectedCallback() {
     this.inputElement.removeEventListener('change', this.boundChangeHandler);
     this.inputElement.removeEventListener('keydown', this.boundKeydownHandler);
     this.inputElement.removeEventListener('blur', this.boundBlurHandler);
-    this.inputElement.removeEventListener('mouseup', this.boundClickHandler);
-    this.inputElement.removeEventListener('touchend', this.boundClickHandler);
+    this.inputElement.removeEventListener('pointerup', this.boundClickHandler);
   }
 
   enterEditMode() {

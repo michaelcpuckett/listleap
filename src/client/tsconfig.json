@@ -13,15 +13,15 @@
     "lib": ["ESNext", "DOM"],
     "target": "ESNext",
     "outDir": "./",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useDefineForClassFields": false,
+    "isolatedModules": true,
     "paths": {
       "elements/*": ["./elements/*"],
-      "shared/*": ["../shared/*"],
+      "shared/*": ["../shared/*"]
     }
   },
-  "exclude": [
-    "../../node_modules"
-  ],
-  "include": [
-    "./index.ts"
-  ]
+  "exclude": ["../../node_modules"],
+  "include": ["index.ts", "elements/**/*"]
 }

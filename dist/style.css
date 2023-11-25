@@ -544,6 +544,7 @@ flyout-menu [role='menu'] {
   width: 100%;
   display: flex;
   will-change: transform;
+  touch-action: none;
 }
 
 [data-inline]:is(auto-save-search, auto-save-text) input[type='text'] {

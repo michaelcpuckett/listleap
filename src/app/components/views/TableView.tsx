@@ -40,10 +40,7 @@ export function TableView(
       >
         <RowGroupElement>
           <RowElement label="Properties">
-            <ColumnHeaderElement
-              className="align-center"
-              selectable
-            >
+            <ColumnHeaderElement className="align-center">
               <SelectAllCheckboxElement>
                 <input
                   form="select-multiple-rows-form"
@@ -56,10 +53,7 @@ export function TableView(
               </SelectAllCheckboxElement>
             </ColumnHeaderElement>
             {properties.map((property, index) => (
-              <ColumnHeaderElement
-                label={property.name}
-                selectable
-              >
+              <ColumnHeaderElement label={property.name}>
                 <form
                   id={`edit-property-form--${property.id}`}
                   autoComplete="off"
@@ -117,10 +111,7 @@ export function TableView(
 
             return (
               <RowElement>
-                <CellElement
-                  className="align-center"
-                  selectable
-                >
+                <CellElement className="align-center">
                   <input
                     form="select-multiple-rows-form"
                     className="input"
@@ -221,7 +212,6 @@ export function TableView(
  **/
 function ColumnHeaderElement(
   props: React.PropsWithChildren<{
-    selectable?: boolean;
     className?: string;
     label?: string;
   }>,
@@ -231,7 +221,6 @@ function ColumnHeaderElement(
       role="columnheader"
       className={props.className}
       aria-label={props.label}
-      data-selectable={props.selectable}
     >
       <template
         shadowrootmode="open"
