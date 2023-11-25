@@ -314,13 +314,11 @@ export class ViewContainerElement extends HTMLElement {
       this.isShiftKeyPressed ||
       (this.isDragging && this.draggedCellElement !== closestCellElement)
     ) {
-      this.isDragging = false;
       event.stopImmediatePropagation();
       event.stopPropagation();
-    } else {
-      this.isDragging = false;
-      return;
     }
+
+    this.isDragging = false;
 
     if (!this.draggedCellElement) {
       return;
