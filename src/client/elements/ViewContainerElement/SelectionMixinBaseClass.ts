@@ -29,9 +29,7 @@ export class SelectionMixinBaseClass extends HTMLElement {
       );
 
       if (touchTarget instanceof HTMLElement) {
-        closestCellElement = touchTarget.closest(
-          SELECTABLE_CELL_ELEMENT_SELECTOR,
-        );
+        closestCellElement = touchTarget.closest(ANY_CELL_ELEMENT_SELECTOR);
       }
 
       return closestCellElement;
@@ -48,7 +46,7 @@ export class SelectionMixinBaseClass extends HTMLElement {
         return false;
       }
 
-      return element.matches(SELECTABLE_CELL_ELEMENT_SELECTOR);
+      return element.matches(ANY_CELL_ELEMENT_SELECTOR);
     });
 
     if (!(closestCellElement instanceof HTMLElement)) {
