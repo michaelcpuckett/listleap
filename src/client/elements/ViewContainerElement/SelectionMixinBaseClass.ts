@@ -223,6 +223,60 @@ export class SelectionMixinBaseClass extends HTMLElement {
       }
     }
   }
+
+  selectCellElement(options: {
+    relativeCellElement: HTMLElement;
+    targetCellElement: HTMLElement;
+    originCellElement: HTMLElement | null;
+    isShiftKeyPressed: boolean;
+    isInvertingSelection: boolean;
+    highlightElement: HTMLElement | null;
+  }) {
+    const {
+      relativeCellElement,
+      targetCellElement,
+      originCellElement,
+      isShiftKeyPressed,
+      isInvertingSelection,
+      highlightElement,
+    } = options;
+
+    if (!isShiftKeyPressed) {
+      return;
+    }
+
+    let newIsInvertingSelection = isInvertingSelection;
+    let newHighlightElement = highlightElement;
+    let newOriginCellElement = originCellElement;
+
+    if (!highlightElement) {
+      newIsInvertingSelection =
+        relativeCellElement.hasAttribute('aria-selected');
+      newHighlightElement = this.initializeHighlightElement(
+        highlightElement,
+        relativeCellElement,
+      );
+      newOriginCellElement = relativeCellElement;
+    }
+
+    this.updateHighlightElement(
+      newHighlightElement,
+      targetCellElement,
+      newOriginCellElement || relativeCellElement,
+    );
+
+    this.updateSelectedCells(
+      newHighlightElement,
+      newIsInvertingSelection,
+      isShiftKeyPressed,
+    );
+
+    return {
+      highlightElement: newHighlightElement,
+      originCellElement: newOriginCellElement,
+      isInvertingSelection: newIsInvertingSelection,
+    };
+  }
 }
 
 export type Constructor = { new (...args: any[]): SelectionMixinBaseClass };
