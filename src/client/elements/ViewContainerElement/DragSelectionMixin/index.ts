@@ -10,7 +10,6 @@ import { handlePointerup } from './handlePointerup';
 
 export interface IDragSelectionMixin extends SelectionMixinBaseClass {
   isDragShiftKeyPressed: boolean;
-  isInvertingDragSelection: boolean;
   isPointerDown: boolean;
   isDragging: boolean;
   lastSelectedCellElement: HTMLElement | null;
@@ -32,7 +31,6 @@ export function DragSelectionMixinFactory<T extends Constructor>(
     implements SelectionMixinBaseClass, IDragSelectionMixin
   {
     isDragShiftKeyPressed = false;
-    isInvertingDragSelection = false;
     isPointerDown = false;
     isDragging = false;
     lastSelectedCellElement: HTMLElement | null = null;

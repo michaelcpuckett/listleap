@@ -34,13 +34,11 @@ export function handleSpacebar(
     originCellElement: this.keyboardOriginCellElement,
     highlightElement: this.keyboardHighlightElement,
     isShiftKeyPressed: this.isKeyboardShiftKeyPressed,
-    isInvertingSelection: cellElement.hasAttribute('aria-selected'),
   });
 
   if (selectionResult) {
     this.keyboardHighlightElement = selectionResult.highlightElement;
     this.keyboardOriginCellElement = selectionResult.originCellElement;
-    this.isInvertingKeyboardSelection = selectionResult.isInvertingSelection;
   }
 
   this.clearKeyboardHighlight();

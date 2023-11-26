@@ -17,7 +17,6 @@ import { SELECTABLE_CELL_ELEMENT_SELECTOR } from '../constants';
 
 export interface IKeyboardSelectionMixin {
   isKeyboardShiftKeyPressed: boolean;
-  isInvertingKeyboardSelection: boolean;
   keyboardOriginCellElement: HTMLElement | null;
   keyboardHighlightElement: HTMLElement | null;
   handleKeydown: (event: Event) => void;
@@ -41,7 +40,6 @@ function KeyboardSelectionMixinFactory<T extends Constructor>(constructor: T) {
     implements SelectionMixinBaseClass, IKeyboardSelectionMixin
   {
     isKeyboardShiftKeyPressed = false;
-    isInvertingKeyboardSelection = false;
     keyboardOriginCellElement: HTMLElement | null = null;
     keyboardHighlightElement: HTMLElement | null = null;
     handleKeydown = handleKeydown.bind(this);

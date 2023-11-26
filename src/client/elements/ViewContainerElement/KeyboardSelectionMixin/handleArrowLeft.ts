@@ -37,12 +37,10 @@ export function handleArrowLeft(
     originCellElement: this.keyboardOriginCellElement,
     highlightElement: this.keyboardHighlightElement,
     isShiftKeyPressed: this.isKeyboardShiftKeyPressed,
-    isInvertingSelection: this.isInvertingKeyboardSelection,
   });
 
   if (selectionResult) {
     this.keyboardHighlightElement = selectionResult.highlightElement;
     this.keyboardOriginCellElement = selectionResult.originCellElement;
-    this.isInvertingKeyboardSelection = selectionResult.isInvertingSelection;
   }
 }

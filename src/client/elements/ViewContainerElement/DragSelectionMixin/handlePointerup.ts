@@ -68,10 +68,7 @@ export function handlePointerup(
 
   this.lastSelectedCellElement = closestCellElement;
 
-  this.updateSelectedCells(
-    this.dragHighlightElement,
-    this.isInvertingDragSelection,
-  );
+  this.updateSelectedCells(this.dragHighlightElement);
 
   this.dragHighlightElement.remove();
   this.dragHighlightElement = null;

@@ -164,10 +164,7 @@ export class SelectionMixinBaseClass extends HTMLElement {
     return highlightElement;
   }
 
-  updateSelectedCells(
-    highlightElement: HTMLElement | null,
-    isInvertingSelection: boolean,
-  ) {
+  updateSelectedCells(highlightElement: HTMLElement | null) {
     if (!highlightElement) {
       return;
     }
@@ -201,18 +198,10 @@ export class SelectionMixinBaseClass extends HTMLElement {
         isLeftWithinBounds &&
         isRightWithinBounds;
 
-      if (isInvertingSelection) {
-        if (isWithinBounds) {
-          markCellUnselected(cellElement);
-        } else if (cellElement.hasAttribute('data-selected')) {
-          markCellSelected(cellElement);
-        }
+      if (isWithinBounds) {
+        markCellSelected(cellElement);
       } else {
-        if (isWithinBounds) {
-          markCellSelected(cellElement);
-        } else {
-          markCellUnselected(cellElement);
-        }
+        markCellUnselected(cellElement);
       }
     }
   }
@@ -222,7 +211,6 @@ export class SelectionMixinBaseClass extends HTMLElement {
     targetCellElement: HTMLElement;
     originCellElement: HTMLElement | null;
     isShiftKeyPressed: boolean;
-    isInvertingSelection: boolean;
     highlightElement: HTMLElement | null;
   }) {
     const {
@@ -230,7 +218,6 @@ export class SelectionMixinBaseClass extends HTMLElement {
       targetCellElement,
       originCellElement,
       isShiftKeyPressed,
-      isInvertingSelection,
       highlightElement,
     } = options;
 
@@ -238,13 +225,10 @@ export class SelectionMixinBaseClass extends HTMLElement {
       return;
     }
 
-    let newIsInvertingSelection = isInvertingSelection;
     let newHighlightElement = highlightElement;
     let newOriginCellElement = originCellElement;
 
     if (!highlightElement) {
-      newIsInvertingSelection =
-        relativeCellElement.hasAttribute('aria-selected');
       newHighlightElement = this.initializeHighlightElement(
         highlightElement,
         relativeCellElement,
@@ -258,12 +242,11 @@ export class SelectionMixinBaseClass extends HTMLElement {
       newOriginCellElement || relativeCellElement,
     );
 
-    this.updateSelectedCells(newHighlightElement, newIsInvertingSelection);
+    this.updateSelectedCells(newHighlightElement);
 
     return {
       highlightElement: newHighlightElement,
       originCellElement: newOriginCellElement,
-      isInvertingSelection: newIsInvertingSelection,
     };
   }
 }

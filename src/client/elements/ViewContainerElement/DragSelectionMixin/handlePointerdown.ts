@@ -57,8 +57,5 @@ export function handlePointerdown(
 
   this.lastSelectedCellElement = closestCellElement;
 
-  this.updateSelectedCells(
-    this.dragHighlightElement,
-    this.isInvertingDragSelection,
-  );
+  this.updateSelectedCells(this.dragHighlightElement);
 }

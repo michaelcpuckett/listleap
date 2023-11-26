@@ -134,10 +134,7 @@ export function handlePointermove(
       this.dragOriginCellElement || this.lastSelectedCellElement,
     );
 
-    this.updateSelectedCells(
-      this.dragHighlightElement,
-      this.isInvertingDragSelection,
-    );
+    this.updateSelectedCells(this.dragHighlightElement);
 
     return;
   }
@@ -152,8 +149,5 @@ export function handlePointermove(
 
   this.lastSelectedCellElement = closestCellElement;
 
-  this.updateSelectedCells(
-    this.dragHighlightElement,
-    this.isInvertingDragSelection,
-  );
+  this.updateSelectedCells(this.dragHighlightElement);
 }
