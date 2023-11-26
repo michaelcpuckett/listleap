@@ -167,7 +167,6 @@ export class SelectionMixinBaseClass extends HTMLElement {
   updateSelectedCells(
     highlightElement: HTMLElement | null,
     isInvertingSelection: boolean,
-    isShiftKeyPressed: boolean,
   ) {
     if (!highlightElement) {
       return;
@@ -207,12 +206,6 @@ export class SelectionMixinBaseClass extends HTMLElement {
           markCellUnselected(cellElement);
         } else if (cellElement.hasAttribute('data-selected')) {
           markCellSelected(cellElement);
-        }
-      } else if (isShiftKeyPressed) {
-        if (isWithinBounds || cellElement.hasAttribute('data-selected')) {
-          markCellSelected(cellElement);
-        } else {
-          markCellUnselected(cellElement);
         }
       } else {
         if (isWithinBounds) {
@@ -265,11 +258,7 @@ export class SelectionMixinBaseClass extends HTMLElement {
       newOriginCellElement || relativeCellElement,
     );
 
-    this.updateSelectedCells(
-      newHighlightElement,
-      newIsInvertingSelection,
-      isShiftKeyPressed,
-    );
+    this.updateSelectedCells(newHighlightElement, newIsInvertingSelection);
 
     return {
       highlightElement: newHighlightElement,

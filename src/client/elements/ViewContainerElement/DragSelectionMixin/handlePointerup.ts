@@ -68,7 +68,6 @@ export function handlePointerup(
   this.updateSelectedCells(
     this.dragHighlightElement,
     this.isInvertingDragSelection,
-    this.isDragShiftKeyPressed,
   );
 
   this.dragHighlightElement.remove();

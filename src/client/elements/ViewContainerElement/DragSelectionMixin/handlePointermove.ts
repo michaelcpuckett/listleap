@@ -137,7 +137,6 @@ export function handlePointermove(
     this.updateSelectedCells(
       this.dragHighlightElement,
       this.isInvertingDragSelection,
-      this.isDragShiftKeyPressed,
     );
 
     return;
@@ -156,6 +155,5 @@ export function handlePointermove(
   this.updateSelectedCells(
     this.dragHighlightElement,
     this.isInvertingDragSelection,
-    this.isDragShiftKeyPressed,
   );
 }

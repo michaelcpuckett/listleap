@@ -60,6 +60,5 @@ export function handlePointerdown(
   this.updateSelectedCells(
     this.dragHighlightElement,
     this.isInvertingDragSelection,
-    this.isDragShiftKeyPressed,
   );
 }
