@@ -33,7 +33,6 @@ export function handleSpacebar(
     relativeCellElement: cellElement,
     originCellElement: this.keyboardOriginCellElement,
     highlightElement: this.keyboardHighlightElement,
-    isShiftKeyPressed: this.isKeyboardShiftKeyPressed,
   });
 
   if (selectionResult) {

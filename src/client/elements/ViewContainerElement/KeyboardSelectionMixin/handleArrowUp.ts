@@ -56,6 +56,10 @@ export function handleArrowUp(
 
   targetCellElement.focus();
 
+  if (!this.isKeyboardShiftKeyPressed) {
+    return;
+  }
+
   if (!cellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
     return;
   }
@@ -65,7 +69,6 @@ export function handleArrowUp(
     relativeCellElement: cellElement,
     originCellElement: this.keyboardOriginCellElement,
     highlightElement: this.keyboardHighlightElement,
-    isShiftKeyPressed: this.isKeyboardShiftKeyPressed,
   });
 
   if (selectionResult) {

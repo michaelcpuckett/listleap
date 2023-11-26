@@ -59,7 +59,7 @@ export class SelectionMixinBaseClass extends HTMLElement {
   updateHighlightElement(
     highlightElement: HTMLElement | null,
     cellElement: HTMLElement,
-    draggedCellElement: HTMLElement,
+    originCellElement: HTMLElement,
   ) {
     if (!highlightElement) {
       return;
@@ -71,7 +71,7 @@ export class SelectionMixinBaseClass extends HTMLElement {
       return;
     }
 
-    const draggedRow = draggedCellElement.closest('[role="row"]');
+    const draggedRow = originCellElement.closest('[role="row"]');
 
     if (!(draggedRow instanceof HTMLElement)) {
       return;
@@ -80,68 +80,60 @@ export class SelectionMixinBaseClass extends HTMLElement {
     const closestCellColumnIndex = Array.from(
       closestRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
     ).indexOf(cellElement);
-    const draggedCellColumnIndex = Array.from(
+    const originCellColumnIndex = Array.from(
       draggedRow.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
-    ).indexOf(draggedCellElement);
+    ).indexOf(originCellElement);
 
     const closestCellLeft = cellElement.getBoundingClientRect().left;
     const closestCellRight = cellElement.getBoundingClientRect().right;
 
-    const draggedCellLeft = draggedCellElement.getBoundingClientRect().left;
-    const draggedCellRight = draggedCellElement.getBoundingClientRect().right;
+    const originCellLeft = originCellElement.getBoundingClientRect().left;
+    const originCellRight = originCellElement.getBoundingClientRect().right;
 
     const closestCellTop = cellElement.getBoundingClientRect().top;
     const closestCellBottom = cellElement.getBoundingClientRect().bottom;
 
-    const draggedCellTop = draggedCellElement.getBoundingClientRect().top;
-    const draggedCellBottom = draggedCellElement.getBoundingClientRect().bottom;
+    const originCellTop = originCellElement.getBoundingClientRect().top;
+    const originCellBottom = originCellElement.getBoundingClientRect().bottom;
 
-    const isSameCell = cellElement === draggedCellElement;
-    const isDraggedCellBeforeClosestCell =
-      draggedCellColumnIndex < closestCellColumnIndex && !isSameCell;
-    const isDraggedCellAfterClosestCell =
-      draggedCellColumnIndex > closestCellColumnIndex && !isSameCell;
-    const isDraggedCellAboveClosestCell =
-      draggedCellTop < closestCellTop && !isSameCell;
-    const isDraggedCellBelowClosestCell =
-      draggedCellBottom > closestCellBottom && !isSameCell;
+    const isSameCell = cellElement === originCellElement;
+    const isoriginCellBeforeClosestCell =
+      originCellColumnIndex < closestCellColumnIndex && !isSameCell;
+    const isoriginCellAfterClosestCell =
+      originCellColumnIndex > closestCellColumnIndex && !isSameCell;
+    const isoriginCellAboveClosestCell =
+      originCellTop < closestCellTop && !isSameCell;
+    const isoriginCellBelowClosestCell =
+      originCellBottom > closestCellBottom && !isSameCell;
 
     const left = isSameCell
-      ? draggedCellLeft
-      : isDraggedCellBeforeClosestCell
-        ? draggedCellLeft
+      ? originCellLeft
+      : isoriginCellBeforeClosestCell
+        ? originCellLeft
         : closestCellLeft;
 
     const right = isSameCell
-      ? draggedCellRight
-      : isDraggedCellAfterClosestCell
-        ? draggedCellRight
+      ? originCellRight
+      : isoriginCellAfterClosestCell
+        ? originCellRight
         : closestCellRight;
 
     const top = isSameCell
-      ? draggedCellTop
-      : isDraggedCellAboveClosestCell
-        ? draggedCellTop
+      ? originCellTop
+      : isoriginCellAboveClosestCell
+        ? originCellTop
         : closestCellTop;
 
     const bottom = isSameCell
-      ? draggedCellBottom
-      : isDraggedCellBelowClosestCell
-        ? draggedCellBottom
+      ? originCellBottom
+      : isoriginCellBelowClosestCell
+        ? originCellBottom
         : closestCellBottom;
 
     highlightElement.style.left = `${left}px`;
     highlightElement.style.top = `${top}px`;
     highlightElement.style.width = `${right - left}px`;
     highlightElement.style.height = `${bottom - top}px`;
-
-    if (right - left === 0 || bottom - top === 0) {
-      console.log('zero width or height', {
-        draggedCellElement,
-        cellElement,
-      });
-    }
-
     highlightElement.style.border = '3px solid var(--swatch-interactive)';
   }
 
@@ -210,20 +202,14 @@ export class SelectionMixinBaseClass extends HTMLElement {
     relativeCellElement: HTMLElement;
     targetCellElement: HTMLElement;
     originCellElement: HTMLElement | null;
-    isShiftKeyPressed: boolean;
     highlightElement: HTMLElement | null;
   }) {
     const {
       relativeCellElement,
       targetCellElement,
       originCellElement,
-      isShiftKeyPressed,
       highlightElement,
     } = options;
-
-    if (!isShiftKeyPressed) {
-      return;
-    }
 
     let newHighlightElement = highlightElement;
     let newOriginCellElement = originCellElement;

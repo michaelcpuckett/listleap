@@ -21,13 +21,7 @@ export function handleKeydown(
     return;
   }
 
-  if (!this.isKeyboardShiftKeyPressed) {
-    this.isKeyboardShiftKeyPressed = event.key === 'Shift' || event.shiftKey;
-
-    if (this.isKeyboardShiftKeyPressed) {
-      this.sealKeyboardSelectedCells();
-    }
-  }
+  this.isKeyboardShiftKeyPressed = event.key === 'Shift' || event.shiftKey;
 
   const cellElement = event.composedPath().find((element) => {
     return (
