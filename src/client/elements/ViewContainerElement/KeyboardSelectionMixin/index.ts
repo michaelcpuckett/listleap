@@ -3,8 +3,8 @@ import {
   ANY_CELL_ELEMENT_SELECTOR,
   INPUT_SELECTOR,
   isInFlyoutMenu,
-} from './constants';
-import { Constructor } from './SelectionMixinBaseClass';
+} from '../constants';
+import { Constructor } from '../SelectionMixinBaseClass';
 
 export function KeyboardSelectionMixin() {
   return function <T extends Constructor>(constructor: T) {

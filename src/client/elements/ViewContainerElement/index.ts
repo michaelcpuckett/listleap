@@ -43,6 +43,7 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
         capture: true,
       },
     );
+
     this.removeEventListener(
       'auto-save-text:save',
       this.boundHandleAutoSaveTextSave,
