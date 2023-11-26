@@ -22,10 +22,6 @@ export function handleDelete(
     return;
   }
 
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  event.stopPropagation();
-
   this.dispatchEvent(
     new CustomEvent('view-container:clear-cells', {
       bubbles: true,
