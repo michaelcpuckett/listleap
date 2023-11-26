@@ -21,6 +21,10 @@ export function handlePointerdown(
 
   this.isPointerDown = true;
 
+  if (!closestCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+    return;
+  }
+
   const allCells = Array.from(
     this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
   );
@@ -32,10 +36,6 @@ export function handlePointerdown(
       cell.removeAttribute('data-selected');
     }
   }
-
-  this.isInvertingDragSelection =
-    this.isDragShiftKeyPressed &&
-    closestCellElement.hasAttribute('aria-selected');
 
   window.document.body.classList.add('prevent-scroll');
 

@@ -19,7 +19,10 @@ export function handlePointerup(
 
   const closestCellElement = this.getClosestCellElementFromPoint(event);
 
-  if (!(closestCellElement instanceof HTMLElement)) {
+  if (
+    !(closestCellElement instanceof HTMLElement) ||
+    !closestCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)
+  ) {
     event.stopImmediatePropagation();
     event.stopPropagation();
 
