@@ -19,6 +19,8 @@ export function handlePointerdown(
     return;
   }
 
+  this.isPointerDown = true;
+
   this.focusCellElement(closestCellElement);
 
   if (!closestCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
@@ -26,8 +28,6 @@ export function handlePointerdown(
   }
 
   this.clearRowSelection();
-
-  this.isPointerDown = true;
 
   window.document.body.classList.add('prevent-scroll');
 

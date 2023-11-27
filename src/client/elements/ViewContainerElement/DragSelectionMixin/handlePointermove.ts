@@ -17,13 +17,9 @@ export function handlePointermove(
     return;
   }
 
-  if (!this.dragOriginCellElement) {
-    return;
-  }
-
-  if (!this.dragHighlightElement) {
-    return;
-  }
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  event.stopPropagation();
 
   const closestCellElement = this.getClosestCellElementFromPoint(event);
 
@@ -133,6 +129,10 @@ export function handlePointermove(
     return;
   }
 
+  if (!(this.dragOriginCellElement instanceof HTMLElement)) {
+    return;
+  }
+
   this.isDragging = true;
 
   this.updateHighlightElement(
@@ -144,8 +144,4 @@ export function handlePointermove(
   this.lastDragSelectedCellElement = closestCellElement;
 
   this.updateSelectedCells(this.dragHighlightElement);
-
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  event.stopPropagation();
 }

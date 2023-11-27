@@ -5,7 +5,6 @@ export function handleInput(
   this: SelectionMixinBaseClass & IRowSelectionMixin,
   event: Event,
 ) {
-  console.log('input', event.target);
   const cellElement = this.getClosestCellElementFromComposedPath(event);
 
   if (!(cellElement instanceof HTMLElement)) {

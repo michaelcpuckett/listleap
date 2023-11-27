@@ -18,15 +18,13 @@ export function handleDelete(
     ),
   );
 
-  if (!selectedCellElements.length) {
-    return;
+  if (selectedCellElements.length) {
+    this.dispatchEvent(
+      new CustomEvent('view-container:clear-cells', {
+        bubbles: true,
+        composed: true,
+        detail: selectedCellElements,
+      }),
+    );
   }
-
-  this.dispatchEvent(
-    new CustomEvent('view-container:clear-cells', {
-      bubbles: true,
-      composed: true,
-      detail: selectedCellElements,
-    }),
-  );
 }
