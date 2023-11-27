@@ -199,7 +199,7 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
       return;
     }
 
-    nextCellElement.focus();
+    this.focusCellElement(nextCellElement);
   }
 }
 

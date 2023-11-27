@@ -23,4 +23,4 @@ export function isHtmlElement(element: unknown): element is HTMLElement {
 }
 
 export const FOCUSABLE_ELEMENT_SELECTOR =
-  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  ':is(button, summary, [href], input, select, textarea, [tabindex]):not([tabindex="-1"]):not([type="hidden"]):not([disabled]):not([readonly])';

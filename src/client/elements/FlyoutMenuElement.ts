@@ -1,3 +1,5 @@
+import { FOCUSABLE_ELEMENT_SELECTOR } from 'shared/constants';
+
 export class FlyoutMenuElement extends HTMLElement {
   private detailsElement: HTMLDetailsElement;
   private summaryElement: HTMLElement;
@@ -135,7 +137,7 @@ export class FlyoutMenuElement extends HTMLElement {
       return;
     }
 
-    previousMenuItemElement.focus();
+    this.focusElement(previousMenuItemElement);
   }
 
   handleArrowDown(menuItemElement: HTMLElement) {
@@ -148,7 +150,7 @@ export class FlyoutMenuElement extends HTMLElement {
       return;
     }
 
-    nextMenuItemElement.focus();
+    this.focusElement(nextMenuItemElement);
   }
 
   handleToggle() {
@@ -159,7 +161,21 @@ export class FlyoutMenuElement extends HTMLElement {
         return;
       }
 
-      firstMenuItem.focus();
+      this.focusElement(firstMenuItem);
+    }
+  }
+
+  focusElement(element: HTMLElement) {
+    element.focus();
+
+    if (!element.contains(window.document.activeElement)) {
+      const focusableElement = element.querySelector(
+        FOCUSABLE_ELEMENT_SELECTOR,
+      );
+
+      if (focusableElement instanceof HTMLElement) {
+        focusableElement.focus();
+      }
     }
   }
 }

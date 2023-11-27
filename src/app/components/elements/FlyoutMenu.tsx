@@ -24,14 +24,10 @@ export function FlyoutMenu(
   props: React.PropsWithChildren<{
     id: string;
     label: string;
-    tabindex?: number;
   }>,
 ) {
   return (
-    <flyout-menu
-      id={getUniqueId()}
-      tabIndex={props.tabindex ?? 0}
-    >
+    <flyout-menu id={getUniqueId()}>
       <template
         shadowrootmode="open"
         shadowrootdelegatesfocus=""
