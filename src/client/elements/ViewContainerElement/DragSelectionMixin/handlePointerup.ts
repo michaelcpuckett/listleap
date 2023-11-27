@@ -18,7 +18,7 @@ export function handlePointerup(
   event.stopPropagation();
 
   const isSelecting =
-    this.isDragShiftKeyPressed || this.lastDragSelectedCellElement;
+    this.lastDragSelectedCellElement !== this.dragOriginCellElement;
 
   if (isSelecting) {
     this.dragHighlightElement?.remove();

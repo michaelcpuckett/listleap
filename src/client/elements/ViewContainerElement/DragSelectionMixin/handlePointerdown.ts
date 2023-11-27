@@ -29,13 +29,11 @@ export function handlePointerdown(
 
   window.document.body.classList.add('prevent-scroll');
 
-  if (this.dragHighlightElement) {
-    const result = this.removeHighlightElement(
-      this.dragHighlightElement,
-      this.dragOriginCellElement,
-    );
-    Object.assign(this, result);
-  }
+  const result = this.removeHighlightElement(
+    this.dragHighlightElement,
+    this.dragOriginCellElement,
+  );
+  Object.assign(this, result);
 
   this.dragHighlightElement = this.initializeHighlightElement(
     this.dragHighlightElement,
