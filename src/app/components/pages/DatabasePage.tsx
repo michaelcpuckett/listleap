@@ -147,45 +147,45 @@ export function DatabasePage(
           <header>
             <EditDatabaseForm database={props.database} />
           </header>
-          <aside aria-label="Actions">
-            <details>
-              <summary className="summary button--full-width">
-                <Icon
-                  name="arrow-down"
-                  height={16}
-                  width={16}
-                />
-                Actions
-              </summary>
-              <form
-                role="none"
-                method="POST"
-                action={`/databases/${props.database.id}/rows`}
-                id="select-multiple-rows-form"
-              >
-                <input
-                  type="hidden"
-                  name="_method"
-                  value="POST"
-                />
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <select
-                    name="bulkAction"
-                    className="button--full-width"
-                  >
-                    <option value="DELETE">Delete Selected Rows</option>
-                  </select>
-                  <button
-                    type="submit"
-                    className="button"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form>
-            </details>
-          </aside>
           <ViewContainerElement>
+            <aside aria-label="Actions">
+              <details>
+                <summary className="summary button--full-width">
+                  <Icon
+                    name="arrow-down"
+                    height={16}
+                    width={16}
+                  />
+                  Actions
+                </summary>
+                <form
+                  role="none"
+                  method="POST"
+                  action={`/databases/${props.database.id}/rows`}
+                  id="select-multiple-rows-form"
+                >
+                  <input
+                    type="hidden"
+                    name="_method"
+                    value="POST"
+                  />
+                  <div style={{ display: 'flex', gap: '1rem' }}>
+                    <select
+                      name="bulkAction"
+                      className="button--full-width"
+                    >
+                      <option value="DELETE">Delete Selected Rows</option>
+                    </select>
+                    <button
+                      type="submit"
+                      className="button"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </form>
+              </details>
+            </aside>
             {guardIsTable(props.database) ? (
               <>
                 <TableView

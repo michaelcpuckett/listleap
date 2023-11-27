@@ -16,6 +16,7 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
   private boundClearCellsHandler = this.handleClearCells.bind(this);
   private boundHandleAutoSaveTextToggleEditMode =
     this.handleAutoSaveTextToggleEditMode.bind(this);
+  private boundHandleDeleteRows = this.handleDeleteRows.bind(this);
 
   connectedCallback() {
     this.addEventListener(
@@ -34,6 +35,11 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
     this.addEventListener(
       'auto-save-text:toggle-edit-mode',
       this.boundHandleAutoSaveTextToggleEditMode,
+    );
+
+    this.addEventListener(
+      'view-container:delete-rows',
+      this.boundHandleDeleteRows,
     );
   }
 
@@ -54,6 +60,11 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
     this.removeEventListener(
       'auto-save-text:toggle-edit-mode',
       this.boundHandleAutoSaveTextToggleEditMode,
+    );
+
+    this.removeEventListener(
+      'view-container:delete-rows',
+      this.boundHandleDeleteRows,
     );
   }
 
@@ -202,6 +213,51 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
     }
 
     this.focusCellElement(nextCellElement);
+  }
+
+  handleDeleteRows() {
+    const selectMultipleRowsCheckbox = this.querySelector(
+      'select-all-checkbox input[type="checkbox"]',
+    );
+
+    if (!(selectMultipleRowsCheckbox instanceof HTMLInputElement)) {
+      return;
+    }
+
+    const selectMultipleRowsForm = selectMultipleRowsCheckbox.form;
+
+    if (!(selectMultipleRowsForm instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const rawRowSelectionFormData = new FormData(selectMultipleRowsForm);
+    const rowSelectionFormData = Object.fromEntries(
+      rawRowSelectionFormData.entries(),
+    );
+
+    if (rowSelectionFormData['row[]'] === undefined) {
+      return;
+    }
+
+    const bulkActionsFormElement = this.querySelector(
+      '#select-multiple-rows-form',
+    );
+
+    if (!(bulkActionsFormElement instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const bulkActionSelectElement = bulkActionsFormElement.querySelector(
+      '[name="bulkAction"]',
+    );
+
+    if (!(bulkActionSelectElement instanceof HTMLSelectElement)) {
+      return;
+    }
+
+    bulkActionSelectElement.value = 'DELETE';
+
+    bulkActionsFormElement.submit();
   }
 }
 

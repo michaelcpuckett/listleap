@@ -21,7 +21,7 @@ export function AutoSaveSearchElement(
       <template shadowrootmode="open">
         <link
           rel="stylesheet"
-          href="/auto-save.css"
+          href="/host.css"
         />
         <slot></slot>
       </template>

@@ -27,4 +27,17 @@ export function handleDelete(
       }),
     );
   }
+
+  const hasCheckedSelectMultipleRowsCheckbox = this.matches(
+    ':has(input[type="checkbox"][name="row[]"]:checked)',
+  );
+
+  if (hasCheckedSelectMultipleRowsCheckbox) {
+    this.dispatchEvent(
+      new CustomEvent('view-container:delete-rows', {
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
 }

@@ -182,6 +182,7 @@ flyout-menu .button {
 
 .prevent-scroll .view-scroll-container {
   overflow: hidden;
+  padding-right: var(--scrollbar-width, 0px);
 }
 
 .view {
@@ -190,10 +191,6 @@ flyout-menu .button {
   margin-bottom: var(--scrollbar-width, 0px);
   display: grid;
   grid-template-columns: var(--grid-columns);
-
-  &.dragging {
-    cursor: grabbing;
-  }
 
   & :is([role='gridcell'], [role='columnheader'], [role='rowheader']) {
     min-height: 48px;

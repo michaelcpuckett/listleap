@@ -64,6 +64,10 @@ export function handleArrowDown(
     return;
   }
 
+  if (!targetCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+    return;
+  }
+
   this.clearRowSelection();
 
   const selectionResult = this.selectCellElement({

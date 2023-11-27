@@ -17,13 +17,6 @@ export function TableView(
 ) {
   const rows = props.database.rows;
   const properties = props.database.properties;
-  const rowIds = rows
-    .filter((row) => {
-      const filteredIndex = props.queriedRows.findIndex((t) => t.id === row.id);
-      return filteredIndex > -1;
-    })
-    .map((row) => row.id);
-
   const gridColumnsCss = `auto ${
     properties.length ? `repeat(${properties.length}, minmax(235px, 1fr))` : ''
   } auto`;

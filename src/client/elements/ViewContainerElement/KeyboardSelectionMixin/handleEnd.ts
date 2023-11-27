@@ -45,6 +45,12 @@ export function handleEnd(
     return;
   }
 
+  if (!targetCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+    return;
+  }
+
+  this.clearRowSelection();
+
   const selectionResult = this.selectCellElement({
     targetCellElement,
     relativeCellElement: cellElement,
