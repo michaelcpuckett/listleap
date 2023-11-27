@@ -7,6 +7,7 @@ export class FlyoutMenuElement extends HTMLElement {
   private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundToggleHandler = this.handleToggle.bind(this);
   private boundClickHandler = this.handleClick.bind(this);
+  private boundFocusoutHandler = this.handleFocusout.bind(this);
 
   constructor() {
     super();
@@ -48,12 +49,14 @@ export class FlyoutMenuElement extends HTMLElement {
 
   connectedCallback() {
     this.addEventListener('keydown', this.boundKeydownHandler);
+    this.addEventListener('focusout', this.boundFocusoutHandler);
     this.summaryElement.addEventListener('click', this.boundClickHandler);
     this.detailsElement.addEventListener('toggle', this.boundToggleHandler);
   }
 
   disconnectedCallback() {
     this.removeEventListener('keydown', this.boundKeydownHandler);
+    this.removeEventListener('focusout', this.boundFocusoutHandler);
     this.summaryElement.removeEventListener('click', this.boundClickHandler);
     this.detailsElement.removeEventListener('toggle', this.boundToggleHandler);
   }
@@ -177,6 +180,28 @@ export class FlyoutMenuElement extends HTMLElement {
         focusableElement.focus();
       }
     }
+  }
+
+  handleFocusout(event: Event) {
+    if (!(event instanceof FocusEvent)) {
+      return;
+    }
+
+    if (!this.detailsElement.open) {
+      return;
+    }
+
+    const { relatedTarget } = event;
+
+    if (!(relatedTarget instanceof HTMLElement)) {
+      return;
+    }
+
+    if (this === relatedTarget || this.contains(relatedTarget)) {
+      return;
+    }
+
+    this.detailsElement.open = false;
   }
 }
 
