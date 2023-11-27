@@ -24,6 +24,9 @@ export function handlePointerup(
     this.dragHighlightElement?.remove();
     this.dragHighlightElement = null;
     this.dragOriginCellElement = null;
+    if (this.lastDragSelectedCellElement) {
+      this.focusCellElement(this.lastDragSelectedCellElement);
+    }
     this.lastDragSelectedCellElement = null;
   } else {
     const result = this.removeHighlightElement(
