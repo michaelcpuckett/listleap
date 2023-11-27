@@ -34,7 +34,8 @@ export function handleEnd(
   if (!(targetCellElement instanceof HTMLElement)) {
     return;
   }
-  targetCellElement.focus();
+
+  this.focusCellElement(targetCellElement);
 
   if (!this.isKeyboardShiftKeyPressed) {
     return;

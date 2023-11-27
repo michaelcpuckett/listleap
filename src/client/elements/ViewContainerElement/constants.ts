@@ -21,3 +21,6 @@ export function isInFlyoutMenu(element: Element | HTMLElement | EventTarget) {
 export function isHtmlElement(element: unknown): element is HTMLElement {
   return element instanceof HTMLElement;
 }
+
+export const FOCUSABLE_ELEMENT_SELECTOR =
+  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';

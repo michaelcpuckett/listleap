@@ -54,7 +54,7 @@ export function handleArrowUp(
     return;
   }
 
-  targetCellElement.focus();
+  this.focusCellElement(targetCellElement);
 
   if (!this.isKeyboardShiftKeyPressed) {
     return;

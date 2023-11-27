@@ -1,5 +1,6 @@
 import {
   ANY_CELL_ELEMENT_SELECTOR,
+  FOCUSABLE_ELEMENT_SELECTOR,
   SELECTABLE_CELL_ELEMENT_SELECTOR,
   isHtmlElement,
 } from './constants';
@@ -234,6 +235,20 @@ export class SelectionMixinBaseClass extends HTMLElement {
       highlightElement: newHighlightElement,
       originCellElement: newOriginCellElement,
     };
+  }
+
+  focusCellElement(cellElement: HTMLElement) {
+    cellElement.focus();
+
+    if (!cellElement.contains(window.document.activeElement)) {
+      const focusableElement = cellElement.querySelector(
+        FOCUSABLE_ELEMENT_SELECTOR,
+      );
+
+      if (focusableElement instanceof HTMLElement) {
+        focusableElement.focus();
+      }
+    }
   }
 }
 
