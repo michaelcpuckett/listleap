@@ -14,10 +14,18 @@ export function handlePointerup(
   this.isPointerDown = false;
   this.isDragging = false;
 
+  event.stopImmediatePropagation();
+  event.stopPropagation();
+
   const isSelecting =
     this.isDragShiftKeyPressed || this.lastDragSelectedCellElement;
 
-  if (!isSelecting) {
+  if (isSelecting) {
+    this.dragHighlightElement?.remove();
+    this.dragHighlightElement = null;
+    this.dragOriginCellElement = null;
+    this.lastDragSelectedCellElement = null;
+  } else {
     const result = this.removeHighlightElement(
       this.dragHighlightElement,
       this.dragOriginCellElement,
