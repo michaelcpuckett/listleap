@@ -547,7 +547,9 @@ flyout-menu [role='menu'] {
   touch-action: none;
 }
 
-:is([role="gridcell"], [role="rowheader"]) :is(auto-save-search, auto-save-text) input {
+:is([role='gridcell'], [role='rowheader'])
+  :is(auto-save-search, auto-save-text)
+  input {
   cursor: cell;
 }
 
@@ -565,6 +567,17 @@ flyout-menu [role='menu'] {
 
 [aria-selected='true'] {
   background: var(--highlight-color);
+}
+
+[role='row']:has([name='row[]']:checked)
+  :is([role='gridcell'], [role='rowheader']):has(
+    :is(auto-save-search, auto-save-text) input[type='text']
+  ) {
+  background: var(--highlight-color);
+
+  & :is(auto-save-search, auto-save-text) input[type='text'] {
+    background: var(--highlight-color);
+  }
 }
 
 :is(auto-save-search, auto-save-text) input[data-dirty]:not(:focus) {
