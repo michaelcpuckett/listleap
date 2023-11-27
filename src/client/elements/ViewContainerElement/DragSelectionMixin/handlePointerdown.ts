@@ -57,6 +57,7 @@ export function handlePointerdown(
 
   this.updateSelectedCells(this.dragHighlightElement);
 
+  event.preventDefault();
   event.stopImmediatePropagation();
   event.stopPropagation();
 }

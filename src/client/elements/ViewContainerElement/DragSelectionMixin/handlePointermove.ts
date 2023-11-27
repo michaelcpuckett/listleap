@@ -144,4 +144,8 @@ export function handlePointermove(
   this.lastDragSelectedCellElement = closestCellElement;
 
   this.updateSelectedCells(this.dragHighlightElement);
+
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  event.stopPropagation();
 }
