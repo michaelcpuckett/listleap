@@ -35,7 +35,7 @@ export function handleArrowRight(
     return;
   }
 
-  this.clearSelectedRows();
+  this.clearRowSelection();
 
   const selectionResult = this.selectCellElement({
     targetCellElement,

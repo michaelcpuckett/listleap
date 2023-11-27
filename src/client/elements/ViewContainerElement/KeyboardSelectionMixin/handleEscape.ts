@@ -13,19 +13,6 @@ export function handleEscape(
   event.stopImmediatePropagation();
   event.stopPropagation();
 
-  const selectedCells = Array.from(
-    this.gridElement.querySelectorAll(
-      `[aria-selected="true"]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
-    ),
-  );
-
-  for (const selectedCell of selectedCells) {
-    selectedCell.removeAttribute('aria-selected');
-    selectedCell.removeAttribute('data-selected');
-  }
-
-  if (this.keyboardHighlightElement) {
-    this.keyboardHighlightElement.remove();
-    this.keyboardHighlightElement = null;
-  }
+  this.clearCellSelection();
+  this.clearRowSelection();
 }

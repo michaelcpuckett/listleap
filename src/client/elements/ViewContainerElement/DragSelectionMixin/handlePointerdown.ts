@@ -25,7 +25,7 @@ export function handlePointerdown(
     return;
   }
 
-  this.clearSelectedRows();
+  this.clearRowSelection();
 
   this.isPointerDown = true;
 

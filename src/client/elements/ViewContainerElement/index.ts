@@ -6,9 +6,11 @@ import {
 import { SelectionMixinBaseClass } from './SelectionMixinBaseClass';
 import { DragSelectionMixin } from './DragSelectionMixin';
 import { KeyboardSelectionMixin } from './KeyboardSelectionMixin';
+import { RowSelectionMixin } from './RowSelectionMixin';
 
 @DragSelectionMixin()
 @KeyboardSelectionMixin()
+@RowSelectionMixin()
 export class ViewContainerElement extends SelectionMixinBaseClass {
   private boundHandleAutoSaveTextSave = this.handleAutoSaveTextSave.bind(this);
   private boundClearCellsHandler = this.handleClearCells.bind(this);

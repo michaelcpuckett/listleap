@@ -255,13 +255,13 @@ export class SelectionMixinBaseClass extends HTMLElement {
     highlightElement: HTMLElement | null,
     originCellElement: HTMLElement | null,
   ) {
-    const allCells = Array.from(
+    const allCellElements = Array.from(
       this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
     );
 
-    for (const cell of allCells) {
-      cell.removeAttribute('aria-selected');
-      cell.removeAttribute('data-selected');
+    for (const cellElement of allCellElements) {
+      cellElement.removeAttribute('aria-selected');
+      cellElement.removeAttribute('data-selected');
     }
 
     if (!highlightElement || !originCellElement) {
@@ -285,7 +285,42 @@ export class SelectionMixinBaseClass extends HTMLElement {
     };
   }
 
-  clearSelectedRows() {
+  clearCellSelection() {
+    if ('dragHighlightElement' in this && 'dragOriginCellElement' in this) {
+      if (
+        (isHtmlElement(this.dragHighlightElement) ||
+          this.dragHighlightElement === null) &&
+        (isHtmlElement(this.dragOriginCellElement) ||
+          this.dragOriginCellElement === null)
+      ) {
+        const result = this.removeHighlightElement(
+          this.dragHighlightElement,
+          this.dragOriginCellElement,
+        );
+        Object.assign(this, result);
+      }
+    }
+
+    if (
+      'keyboardHighlightElement' in this &&
+      'keyboardOriginCellElement' in this
+    ) {
+      if (
+        (isHtmlElement(this.keyboardHighlightElement) ||
+          this.keyboardHighlightElement === null) &&
+        (isHtmlElement(this.keyboardOriginCellElement) ||
+          this.keyboardOriginCellElement === null)
+      ) {
+        const result = this.removeHighlightElement(
+          this.keyboardHighlightElement,
+          this.keyboardOriginCellElement,
+        );
+        Object.assign(this, result);
+      }
+    }
+  }
+
+  clearRowSelection() {
     const selectMultipleRowsCheckbox = this.querySelector(
       'select-all-checkbox input[type="checkbox"]',
     );
