@@ -13,12 +13,6 @@ export function handlePointermove(
     return;
   }
 
-  if (!(event.target instanceof Element)) {
-    return;
-  }
-
-  event.target.releasePointerCapture(event.pointerId);
-
   if (!this.isPointerDown) {
     return;
   }
@@ -37,7 +31,7 @@ export function handlePointermove(
     !closestCellElement ||
     !closestCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)
   ) {
-    if (!(this.lastSelectedCellElement instanceof HTMLElement)) {
+    if (!(this.lastDragSelectedCellElement instanceof HTMLElement)) {
       return;
     }
 
@@ -54,7 +48,7 @@ export function handlePointermove(
     // }
 
     const lastSelectedRowElement =
-      this.lastSelectedCellElement?.closest('[role="row"]');
+      this.lastDragSelectedCellElement?.closest('[role="row"]');
 
     if (!(lastSelectedRowElement instanceof HTMLElement)) {
       return;
@@ -71,7 +65,7 @@ export function handlePointermove(
     const isOutOfGridXBounds = isLeftOfGrid || isRightOfGrid;
 
     const lastSelectedCellRect =
-      this.lastSelectedCellElement.getBoundingClientRect();
+      this.lastDragSelectedCellElement.getBoundingClientRect();
     const isAboveCell = event.clientY < lastSelectedCellRect.top;
     const isBelowCell = event.clientY > lastSelectedCellRect.bottom;
     const isOutOfCellYBounds = isAboveCell || isBelowCell;
@@ -82,7 +76,7 @@ export function handlePointermove(
 
     const lastSelectedColumnIndex = Array.from(
       lastSelectedRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
-    ).indexOf(this.lastSelectedCellElement);
+    ).indexOf(this.lastDragSelectedCellElement);
 
     const rowElements = Array.from(
       this.gridElement.querySelectorAll(
@@ -91,7 +85,7 @@ export function handlePointermove(
     );
 
     const selectedCellRowElement =
-      this.lastSelectedCellElement.closest('[role="row"]');
+      this.lastDragSelectedCellElement.closest('[role="row"]');
 
     if (!(selectedCellRowElement instanceof HTMLElement)) {
       return;
@@ -131,7 +125,7 @@ export function handlePointermove(
     this.updateHighlightElement(
       this.dragHighlightElement,
       targetCellElement,
-      this.dragOriginCellElement || this.lastSelectedCellElement,
+      this.dragOriginCellElement || this.lastDragSelectedCellElement,
     );
 
     this.updateSelectedCells(this.dragHighlightElement);
@@ -147,7 +141,7 @@ export function handlePointermove(
     this.dragOriginCellElement,
   );
 
-  this.lastSelectedCellElement = closestCellElement;
+  this.lastDragSelectedCellElement = closestCellElement;
 
   this.updateSelectedCells(this.dragHighlightElement);
 }

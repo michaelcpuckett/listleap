@@ -12,7 +12,7 @@ export interface IDragSelectionMixin extends SelectionMixinBaseClass {
   isDragShiftKeyPressed: boolean;
   isPointerDown: boolean;
   isDragging: boolean;
-  lastSelectedCellElement: HTMLElement | null;
+  lastDragSelectedCellElement: HTMLElement | null;
   dragOriginCellElement: HTMLElement | null;
   dragHighlightElement: HTMLElement | null;
   pointerId: number;
@@ -33,7 +33,7 @@ export function DragSelectionMixinFactory<T extends Constructor>(
     isDragShiftKeyPressed = false;
     isPointerDown = false;
     isDragging = false;
-    lastSelectedCellElement: HTMLElement | null = null;
+    lastDragSelectedCellElement: HTMLElement | null = null;
     dragOriginCellElement: HTMLElement | null = null;
     dragHighlightElement: HTMLElement | null = null;
     pointerId = 0;

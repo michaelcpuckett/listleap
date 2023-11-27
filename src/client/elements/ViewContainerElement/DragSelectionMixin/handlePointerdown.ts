@@ -21,23 +21,21 @@ export function handlePointerdown(
 
   this.isPointerDown = true;
 
+  this.focusCellElement(closestCellElement);
+
   if (!closestCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
     return;
   }
 
-  const allCells = Array.from(
-    this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
-  );
-
-  for (const cell of allCells) {
-    if (cell.hasAttribute('aria-selected')) {
-      cell.setAttribute('data-selected', '');
-    } else {
-      cell.removeAttribute('data-selected');
-    }
-  }
-
   window.document.body.classList.add('prevent-scroll');
+
+  if (this.dragHighlightElement) {
+    const result = this.removeHighlightElement(
+      this.dragHighlightElement,
+      this.dragOriginCellElement,
+    );
+    Object.assign(this, result);
+  }
 
   this.dragHighlightElement = this.initializeHighlightElement(
     this.dragHighlightElement,
@@ -55,7 +53,10 @@ export function handlePointerdown(
     closestCellElement,
   );
 
-  this.lastSelectedCellElement = closestCellElement;
+  this.lastDragSelectedCellElement = closestCellElement;
 
   this.updateSelectedCells(this.dragHighlightElement);
+
+  event.stopImmediatePropagation();
+  event.stopPropagation();
 }

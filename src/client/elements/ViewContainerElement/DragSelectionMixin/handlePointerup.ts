@@ -10,69 +10,18 @@ export function handlePointerup(
     return;
   }
 
-  if (!this.dragHighlightElement) {
-    return;
-  }
-
   window.document.body.classList.remove('prevent-scroll');
   this.isPointerDown = false;
-
-  const closestCellElement = this.getClosestCellElementFromPoint(event);
-
-  if (
-    !(closestCellElement instanceof HTMLElement) ||
-    !closestCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)
-  ) {
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-
-    this.dragHighlightElement.remove();
-    this.dragHighlightElement = null;
-    this.dragOriginCellElement = null;
-    this.lastSelectedCellElement?.focus();
-    this.lastSelectedCellElement = null;
-    return;
-  }
-
-  const allCells = Array.from(
-    this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
-  );
-
-  for (const cell of allCells) {
-    if (cell.hasAttribute('aria-selected')) {
-      cell.setAttribute('data-selected', '');
-    } else {
-      cell.removeAttribute('data-selected');
-    }
-  }
-
-  if (
-    this.isDragShiftKeyPressed ||
-    (this.isDragging && this.dragOriginCellElement !== closestCellElement)
-  ) {
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-  }
-
   this.isDragging = false;
 
-  if (!this.dragOriginCellElement) {
-    return;
+  const isSelecting =
+    this.isDragShiftKeyPressed || this.lastDragSelectedCellElement;
+
+  if (!isSelecting) {
+    const result = this.removeHighlightElement(
+      this.dragHighlightElement,
+      this.dragOriginCellElement,
+    );
+    Object.assign(this, result);
   }
-
-  this.updateHighlightElement(
-    this.dragHighlightElement,
-    closestCellElement,
-    this.dragOriginCellElement,
-  );
-
-  this.lastSelectedCellElement = closestCellElement;
-
-  this.updateSelectedCells(this.dragHighlightElement);
-
-  this.dragHighlightElement.remove();
-  this.dragHighlightElement = null;
-  this.dragOriginCellElement = null;
-  this.lastSelectedCellElement = null;
-  closestCellElement.focus();
 }

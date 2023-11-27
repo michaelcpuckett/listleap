@@ -250,6 +250,40 @@ export class SelectionMixinBaseClass extends HTMLElement {
       }
     }
   }
+
+  removeHighlightElement(
+    highlightElement: HTMLElement | null,
+    originCellElement: HTMLElement | null,
+  ) {
+    const allCells = Array.from(
+      this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
+    );
+
+    for (const cell of allCells) {
+      cell.removeAttribute('aria-selected');
+      cell.removeAttribute('data-selected');
+    }
+
+    if (!highlightElement || !originCellElement) {
+      return;
+    }
+
+    this.updateHighlightElement(
+      highlightElement,
+      originCellElement,
+      originCellElement,
+    );
+
+    this.updateSelectedCells(highlightElement);
+
+    highlightElement.remove();
+
+    return {
+      highlightElement: null,
+      originCellElement: null,
+      lastSelectedCellElement: null,
+    };
+  }
 }
 
 export type Constructor = { new (...args: any[]): SelectionMixinBaseClass };
