@@ -17,6 +17,15 @@ export function handlePointerup(
   event.stopImmediatePropagation();
   event.stopPropagation();
 
+  const closestCellElement = this.getClosestCellElementFromPoint(event);
+
+  if (
+    !closestCellElement ||
+    !closestCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)
+  ) {
+    return;
+  }
+
   const isSelecting =
     this.lastDragSelectedCellElement !== this.dragOriginCellElement;
 
