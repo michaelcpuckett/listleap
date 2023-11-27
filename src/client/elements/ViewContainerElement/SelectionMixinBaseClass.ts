@@ -284,6 +284,47 @@ export class SelectionMixinBaseClass extends HTMLElement {
       lastSelectedCellElement: null,
     };
   }
+
+  clearSelectedRows() {
+    const selectMultipleRowsCheckbox = this.querySelector(
+      'select-all-checkbox input[type="checkbox"]',
+    );
+
+    if (!(selectMultipleRowsCheckbox instanceof HTMLInputElement)) {
+      return;
+    }
+
+    const selectMultipleRowsForm = selectMultipleRowsCheckbox.form;
+
+    if (!(selectMultipleRowsForm instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const rawRowSelectionFormData = new FormData(selectMultipleRowsForm);
+    const rowSelectionFormData = Object.fromEntries(
+      rawRowSelectionFormData.entries(),
+    );
+
+    if (rowSelectionFormData['row[]'] !== undefined) {
+      const formElements = Array.from(selectMultipleRowsForm.elements);
+
+      function isRowSelectionCheckbox(
+        formElement: Element,
+      ): formElement is HTMLInputElement {
+        return (
+          formElement instanceof HTMLInputElement &&
+          formElement.type === 'checkbox' &&
+          formElement.name === 'row[]'
+        );
+      }
+
+      const rowCheckboxElements = formElements.filter(isRowSelectionCheckbox);
+
+      for (const rowCheckboxElement of rowCheckboxElements) {
+        rowCheckboxElement.checked = false;
+      }
+    }
+  }
 }
 
 export type Constructor = { new (...args: any[]): SelectionMixinBaseClass };
