@@ -2,6 +2,7 @@ import {
   Constructor,
   SelectionMixinBaseClass,
 } from '../SelectionMixinBaseClass';
+import { handleDragstart } from './handleDragstart';
 import { handleKeydown } from './handleKeydown';
 import { handleKeyup } from './handleKeyup';
 import { handlePointerdown } from './handlePointerdown';
@@ -21,6 +22,7 @@ export interface IDragSelectionMixin extends SelectionMixinBaseClass {
   boundPointerupHandler: (event: Event) => void;
   boundDragKeydownHandler: (event: Event) => void;
   boundDragKeyupHandler: (event: Event) => void;
+  boundDragstartHandler: (event: Event) => void;
 }
 
 export function DragSelectionMixinFactory<T extends Constructor>(
@@ -42,6 +44,7 @@ export function DragSelectionMixinFactory<T extends Constructor>(
     boundPointerupHandler = handlePointerup.bind(this);
     boundDragKeydownHandler = handleKeydown.bind(this);
     boundDragKeyupHandler = handleKeyup.bind(this);
+    boundDragstartHandler = handleDragstart.bind(this);
 
     connectedCallback() {
       if (constructor.prototype.connectedCallback) {
@@ -58,6 +61,7 @@ export function DragSelectionMixinFactory<T extends Constructor>(
       });
       this.addEventListener('keydown', this.boundDragKeydownHandler);
       this.addEventListener('keyup', this.boundDragKeyupHandler);
+      this.addEventListener('dragstart', this.boundDragstartHandler);
     }
 
     disconnectedCallback() {
@@ -76,6 +80,7 @@ export function DragSelectionMixinFactory<T extends Constructor>(
 
       this.removeEventListener('keydown', this.boundDragKeydownHandler);
       this.removeEventListener('keyup', this.boundDragKeyupHandler);
+      this.removeEventListener('dragstart', this.boundDragstartHandler);
     }
   };
 }

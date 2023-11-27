@@ -547,6 +547,10 @@ flyout-menu [role='menu'] {
   touch-action: none;
 }
 
+:is([role="gridcell"], [role="rowheader"]) :is(auto-save-search, auto-save-text) input {
+  cursor: cell;
+}
+
 [data-inline]:is(auto-save-search, auto-save-text) input[type='text'] {
   background: transparent;
   border: 1px solid transparent;
