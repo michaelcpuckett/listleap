@@ -26,9 +26,11 @@ export class AutoSaveTextElement extends BaseAutoSaveElement {
   exitEditMode() {
     this.inputElement.setAttribute('data-read-only', '');
 
-    this.submitData().then(() => {
-      this.markClean();
-    });
+    if (this.inputElement.value !== this.inputElement.getAttribute('value')) {
+      this.submitData().then(() => {
+        this.markClean();
+      });
+    }
   }
 
   toggleEditMode() {

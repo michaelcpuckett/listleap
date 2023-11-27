@@ -81,6 +81,7 @@ export class BaseAutoSaveElement extends HTMLElement {
       dirtyElementsString,
     );
     this.inputElement.removeAttribute('data-dirty');
+    this.inputElement.setAttribute('value', this.inputElement.value);
   }
 
   protected async patch(url: string, value: string) {
