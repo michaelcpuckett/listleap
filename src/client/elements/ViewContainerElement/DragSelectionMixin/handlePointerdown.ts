@@ -19,13 +19,13 @@ export function handlePointerdown(
     return;
   }
 
-  this.isPointerDown = true;
-
   this.focusCellElement(closestCellElement);
 
   if (!closestCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
     return;
   }
+
+  this.isPointerDown = true;
 
   window.document.body.classList.add('prevent-scroll');
 
