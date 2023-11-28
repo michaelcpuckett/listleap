@@ -26,7 +26,6 @@ export class SelectAllCheckboxElement extends HTMLElement {
     }
 
     const inputName = inputElement.getAttribute('name');
-    inputElement.removeAttribute('name');
 
     function isControllableCheckboxElement(
       element: unknown,
