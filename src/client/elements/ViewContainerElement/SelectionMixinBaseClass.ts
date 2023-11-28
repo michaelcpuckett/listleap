@@ -360,6 +360,51 @@ export class SelectionMixinBaseClass extends HTMLElement {
       }
     }
   }
+
+  selectAll() {
+    const selectMultipleRowsCheckbox = this.querySelector(
+      'select-all-checkbox input[type="checkbox"]',
+    );
+
+    if (!(selectMultipleRowsCheckbox instanceof HTMLInputElement)) {
+      return;
+    }
+
+    const selectMultipleRowsForm = selectMultipleRowsCheckbox.form;
+
+    if (!(selectMultipleRowsForm instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const rawRowSelectionFormData = new FormData(selectMultipleRowsForm);
+    const rowSelectionFormData = Object.fromEntries(
+      rawRowSelectionFormData.entries(),
+    );
+
+    if (rowSelectionFormData['row[]'] !== undefined) {
+      const rowCheckboxElements = Array.from(
+        selectMultipleRowsForm.elements,
+      ).filter(
+        (formElement): formElement is HTMLInputElement =>
+          formElement instanceof HTMLInputElement &&
+          formElement.type === 'checkbox' &&
+          formElement.name === 'row[]',
+      );
+
+      for (const rowCheckboxElement of rowCheckboxElements) {
+        rowCheckboxElement.checked = true;
+      }
+    } else {
+      const allCellElements = Array.from(
+        this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
+      );
+
+      for (const cellElement of allCellElements) {
+        cellElement.setAttribute('aria-selected', 'true');
+        cellElement.setAttribute('data-selected', '');
+      }
+    }
+  }
 }
 
 export type Constructor = { new (...args: any[]): SelectionMixinBaseClass };

@@ -65,6 +65,14 @@ export function handleKeydown(
     case 'End':
       this.handleEnd(event, cellElement);
       break;
+    case 'a':
+      if (event.ctrlKey) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        this.selectAll();
+      }
+      break;
     case ' ':
       this.handleSpacebar(event, cellElement);
       break;
