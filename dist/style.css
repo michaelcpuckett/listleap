@@ -177,12 +177,13 @@ flyout-menu .button {
 }
 
 .view-scroll-container {
-  overflow-x: auto;
+  overflow: scroll;
 }
 
 .prevent-scroll .view-scroll-container {
   overflow: hidden;
   padding-right: var(--scrollbar-width, 0px);
+  padding-bottom: var(--scrollbar-width, 0px);
 }
 
 .view {
