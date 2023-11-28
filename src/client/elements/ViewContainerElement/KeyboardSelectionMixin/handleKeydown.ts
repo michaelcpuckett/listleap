@@ -39,6 +39,8 @@ export function handleKeydown(
   );
 
   if (isEditingCellElement) {
+    this.clearCellSelection();
+    this.clearRowSelection();
     return;
   }
 
