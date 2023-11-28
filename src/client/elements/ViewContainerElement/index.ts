@@ -6,17 +6,16 @@ import {
 import { SelectionMixinBaseClass } from './SelectionMixinBaseClass';
 import { DragSelectionMixin } from './DragSelectionMixin';
 import { KeyboardSelectionMixin } from './KeyboardSelectionMixin';
-import { RowSelectionMixin } from './RowSelectionMixin';
 
 @DragSelectionMixin()
 @KeyboardSelectionMixin()
-@RowSelectionMixin()
 export class ViewContainerElement extends SelectionMixinBaseClass {
   private boundHandleAutoSaveTextSave = this.handleAutoSaveTextSave.bind(this);
   private boundClearCellsHandler = this.handleClearCells.bind(this);
   private boundHandleAutoSaveTextToggleEditMode =
     this.handleAutoSaveTextToggleEditMode.bind(this);
   private boundHandleDeleteRows = this.handleDeleteRows.bind(this);
+  private boundChangeHandler = this.handleChange.bind(this);
 
   connectedCallback() {
     this.addEventListener(
@@ -41,6 +40,8 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
       'view-container:delete-rows',
       this.boundHandleDeleteRows,
     );
+
+    this.addEventListener('change', this.boundChangeHandler);
   }
 
   disconnectedCallback() {
@@ -66,6 +67,8 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
       'view-container:delete-rows',
       this.boundHandleDeleteRows,
     );
+
+    this.removeEventListener('change', this.boundChangeHandler);
   }
 
   handleAutoSaveTextSave(event: Event) {
@@ -258,6 +261,32 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
     bulkActionSelectElement.value = 'DELETE';
 
     bulkActionsFormElement.submit();
+  }
+
+  handleChange(event: Event) {
+    const cellElement = this.getClosestCellElementFromComposedPath(event);
+
+    if (!(cellElement instanceof HTMLElement)) {
+      return;
+    }
+
+    const hasRowSelctionCheckbox = cellElement.matches(
+      ':has(input[name="row[]"])',
+    );
+
+    if (!hasRowSelctionCheckbox) {
+      return;
+    }
+
+    const rowSelectionCheckbox = cellElement.querySelector(
+      'input[name="row[]"]',
+    );
+
+    if (!(rowSelectionCheckbox instanceof HTMLInputElement)) {
+      return;
+    }
+
+    this.clearCellSelection();
   }
 }
 
