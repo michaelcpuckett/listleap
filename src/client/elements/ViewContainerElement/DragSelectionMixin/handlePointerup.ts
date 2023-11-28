@@ -23,22 +23,14 @@ export function handlePointerup(
     return;
   }
 
-  const isSelecting =
-    this.lastDragSelectedCellElement !== this.dragOriginCellElement;
-
-  if (isSelecting) {
-    this.dragHighlightElement?.remove();
-    this.dragHighlightElement = null;
-    this.dragOriginCellElement = null;
-    if (this.lastDragSelectedCellElement) {
-      this.focusCellElement(this.lastDragSelectedCellElement);
-    }
-    this.lastDragSelectedCellElement = null;
-  } else {
-    const result = this.removeHighlightElement(
-      this.dragHighlightElement,
-      this.dragOriginCellElement,
-    );
-    Object.assign(this, result);
+  this.dragHighlightElement?.remove();
+  this.dragHighlightElement = null;
+  this.dragOriginCellElement = null;
+  if (
+    this.lastDragSelectedCellElement &&
+    this.lastDragSelectedCellElement !== this.dragOriginCellElement
+  ) {
+    this.focusCellElement(this.lastDragSelectedCellElement);
   }
+  this.lastDragSelectedCellElement = null;
 }

@@ -40,22 +40,4 @@ export function handlePointerdown(
     closestCellElement,
   );
   this.dragOriginCellElement = closestCellElement;
-
-  if (!this.isDragShiftKeyPressed) {
-    return;
-  }
-
-  this.updateHighlightElement(
-    this.dragHighlightElement,
-    closestCellElement,
-    closestCellElement,
-  );
-
-  this.lastDragSelectedCellElement = closestCellElement;
-
-  this.updateSelectedCells(this.dragHighlightElement);
-
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  event.stopPropagation();
 }

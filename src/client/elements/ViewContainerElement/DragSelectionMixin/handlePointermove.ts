@@ -28,60 +28,6 @@ export function handlePointermove(
     !closestCellElement ||
     !closestCellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)
   ) {
-    if (!(this.lastDragSelectedCellElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const lastSelectedRowElement =
-      this.lastDragSelectedCellElement?.closest('[role="row"]');
-
-    if (!(lastSelectedRowElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const rowElements = Array.from(
-      this.gridElement.querySelectorAll(
-        `[role="row"]:has(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
-      ),
-    );
-
-    const selectedCellRowElement =
-      this.lastDragSelectedCellElement.closest('[role="row"]');
-
-    if (!(selectedCellRowElement instanceof HTMLElement)) {
-      return;
-    }
-
-    const targetRowIndex = rowElements.indexOf(selectedCellRowElement);
-
-    const targetRowElement = rowElements[targetRowIndex];
-
-    const targetColumnIndex =
-      lastSelectedRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR)
-        .length - 1;
-
-    const target = Array.from(
-      targetRowElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
-    )[targetColumnIndex];
-
-    if (!(target instanceof HTMLElement)) {
-      return;
-    }
-
-    const targetCellElement = target;
-
-    if (!(targetCellElement instanceof HTMLElement)) {
-      return;
-    }
-
-    this.updateHighlightElement(
-      this.dragHighlightElement,
-      targetCellElement,
-      this.dragOriginCellElement || this.lastDragSelectedCellElement,
-    );
-
-    this.updateSelectedCells(this.dragHighlightElement);
-
     return;
   }
 
@@ -89,12 +35,7 @@ export function handlePointermove(
     return;
   }
 
-  if (this.dragOriginCellElement === closestCellElement) {
-    return;
-  }
-
   this.isDragging = true;
-
   this.updateHighlightElement(
     this.dragHighlightElement,
     closestCellElement,
