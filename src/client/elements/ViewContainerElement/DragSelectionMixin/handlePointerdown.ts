@@ -29,8 +29,6 @@ export function handlePointerdown(
 
   this.clearRowSelection();
 
-  window.document.body.classList.add('prevent-scroll');
-
   const result = this.removeHighlightElement(
     this.dragHighlightElement,
     this.dragOriginCellElement,

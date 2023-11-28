@@ -17,6 +17,7 @@ export function handlePointermove(
     return;
   }
 
+  window.document.body.classList.add('prevent-scroll');
   event.preventDefault();
   event.stopImmediatePropagation();
   event.stopPropagation();
@@ -31,48 +32,12 @@ export function handlePointermove(
       return;
     }
 
-    // const allCells = Array.from(
-    //   this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
-    // );
-
-    // for (const cell of allCells) {
-    //   if (cell.hasAttribute('aria-selected')) {
-    //     cell.setAttribute('data-selected', '');
-    //   } else {
-    //     cell.removeAttribute('data-selected');
-    //   }
-    // }
-
     const lastSelectedRowElement =
       this.lastDragSelectedCellElement?.closest('[role="row"]');
 
     if (!(lastSelectedRowElement instanceof HTMLElement)) {
       return;
     }
-
-    const gridRect = this.gridElement.getBoundingClientRect();
-
-    const isAboveGrid = event.clientY < gridRect.top;
-    const isBelowGrid = event.clientY > gridRect.bottom;
-    const isOutOfGridYBounds = isAboveGrid || isBelowGrid;
-
-    const isLeftOfGrid = event.clientX < gridRect.left;
-    const isRightOfGrid = event.clientX > gridRect.right;
-    const isOutOfGridXBounds = isLeftOfGrid || isRightOfGrid;
-
-    const lastSelectedCellRect =
-      this.lastDragSelectedCellElement.getBoundingClientRect();
-    const isAboveCell = event.clientY < lastSelectedCellRect.top;
-    const isBelowCell = event.clientY > lastSelectedCellRect.bottom;
-    const isOutOfCellYBounds = isAboveCell || isBelowCell;
-
-    const isLeftOfCell = event.clientX < lastSelectedCellRect.left;
-    const isRightOfCell = event.clientX > lastSelectedCellRect.right;
-    const isOutOfCellXBounds = isLeftOfCell || isRightOfCell;
-
-    const lastSelectedColumnIndex = Array.from(
-      lastSelectedRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
-    ).indexOf(this.lastDragSelectedCellElement);
 
     const rowElements = Array.from(
       this.gridElement.querySelectorAll(
@@ -87,22 +52,13 @@ export function handlePointermove(
       return;
     }
 
-    const selectedCellRowIndex = rowElements.indexOf(selectedCellRowElement);
-
-    const targetRowIndex = isOutOfGridXBounds
-      ? isAboveGrid
-        ? 0
-        : rowElements.length - 1
-      : selectedCellRowIndex;
+    const targetRowIndex = rowElements.indexOf(selectedCellRowElement);
 
     const targetRowElement = rowElements[targetRowIndex];
 
-    const targetColumnIndex = isOutOfGridYBounds
-      ? lastSelectedColumnIndex
-      : isLeftOfGrid
-        ? 0
-        : lastSelectedRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR)
-            .length - 1;
+    const targetColumnIndex =
+      lastSelectedRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR)
+        .length - 1;
 
     const target = Array.from(
       targetRowElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
@@ -130,6 +86,10 @@ export function handlePointermove(
   }
 
   if (!(this.dragOriginCellElement instanceof HTMLElement)) {
+    return;
+  }
+
+  if (this.dragOriginCellElement === closestCellElement) {
     return;
   }
 
