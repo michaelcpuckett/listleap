@@ -1,3 +1,4 @@
+import { LinkElement } from 'components/elements/LinkElement';
 import React from 'react';
 import { Referrer, AnyRow } from 'shared/types';
 
@@ -5,9 +6,6 @@ export function TriggerEditRowForm(
   props: React.PropsWithChildren<{
     row: AnyRow;
     referrer: Referrer;
-    autofocus?: boolean;
-    role?: string;
-    tabindex?: number;
   }>,
 ) {
   const urlPathname = `/databases/${props.row.databaseId}/rows/${props.row.id}`;
@@ -19,14 +17,12 @@ export function TriggerEditRowForm(
   const href = url.href.replace(url.origin, '');
 
   return (
-    <a
+    <LinkElement
       href={href}
-      className="button"
-      tabIndex={props.tabindex}
-      role={props.role || 'button'}
-      data-auto-focus={props.autofocus}
+      button
+      role="button"
     >
       Edit
-    </a>
+    </LinkElement>
   );
 }

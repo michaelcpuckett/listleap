@@ -1,11 +1,10 @@
+import { ButtonElement } from 'components/elements/ButtonElement';
 import React from 'react';
 import { PartialDatabase } from 'shared/types';
 
 export function DeleteDatabaseForm(
   props: React.PropsWithoutRef<{
     database: PartialDatabase;
-    role?: string;
-    tabindex?: number;
   }>,
 ) {
   return (
@@ -19,14 +18,7 @@ export function DeleteDatabaseForm(
         name="_method"
         value="DELETE"
       />
-      <button
-        className="button"
-        type="submit"
-        role={props.role}
-        tabIndex={props.tabindex}
-      >
-        Delete
-      </button>
+      <ButtonElement>Delete</ButtonElement>
     </form>
   );
 }

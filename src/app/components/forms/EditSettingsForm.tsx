@@ -1,3 +1,4 @@
+import { ButtonElement } from 'components/elements/ButtonElement';
 import React from 'react';
 import { Settings } from 'shared/types';
 
@@ -32,12 +33,7 @@ export function EditSettingsForm(
           </option>
         </select>
       </label>
-      <button
-        className="button"
-        type="submit"
-      >
-        Save
-      </button>
+      <ButtonElement>Save</ButtonElement>
     </form>
   );
 }

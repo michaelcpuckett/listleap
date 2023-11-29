@@ -2,6 +2,7 @@ import React from 'react';
 import { Database, Property, AnyRow, AnyProperty } from 'shared/types';
 import { PostFormElement } from 'components/elements/PostFormElement';
 import { LexoRank } from 'lexorank';
+import { ButtonElement } from 'components/elements/ButtonElement';
 
 export function AddNewPropertyAboveForm(
   props: React.PropsWithChildren<{
@@ -28,12 +29,7 @@ export function AddNewPropertyAboveForm(
         name="position"
         value={position}
       />
-      <button
-        type="submit"
-        className="button"
-      >
-        Add Property to Left
-      </button>
+      <ButtonElement>Add Property to Left</ButtonElement>
     </PostFormElement>
   );
 }

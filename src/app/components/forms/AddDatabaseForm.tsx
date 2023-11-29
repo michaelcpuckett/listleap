@@ -1,5 +1,6 @@
 import React from 'react';
 import { PostFormElement } from 'components/elements/PostFormElement';
+import { ButtonElement } from 'components/elements/ButtonElement';
 
 export function AddDatabaseForm() {
   return (
@@ -29,12 +30,7 @@ export function AddDatabaseForm() {
           </>
         )}
       </select>
-      <button
-        type="submit"
-        className="button"
-      >
-        Add Database
-      </button>
+      <ButtonElement>Add Database</ButtonElement>
     </PostFormElement>
   );
 }

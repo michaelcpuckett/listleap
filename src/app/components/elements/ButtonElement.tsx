@@ -7,6 +7,7 @@ export function ButtonElement(
     currentColor?: boolean;
     bordered?: boolean;
     label?: string;
+    disabled?: boolean;
   }>,
 ) {
   const buttonClass = props.button === false ? '' : 'button ';
@@ -24,6 +25,7 @@ export function ButtonElement(
       aria-label={props.label}
       type={props.type || 'submit'}
       className={className}
+      aria-disabled={props.disabled}
     >
       {props.children}
     </button>

@@ -593,6 +593,12 @@ flyout-menu [role='menu'] {
   }
 }
 
+:is([role='columnheader'], [role='rowheader'], [role='gridcell']):not(
+    :has(:is(input, summary, a))
+  ) {
+  padding: 1rem;
+}
+
 :is(auto-save-search, auto-save-text) input[data-dirty]:not(:focus) {
   outline: 1px solid var(--unsaved-color);
   outline-offset: 2px;

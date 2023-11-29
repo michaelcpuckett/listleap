@@ -1,3 +1,4 @@
+import { LinkElement } from 'components/elements/LinkElement';
 import React from 'react';
 import { AnyRow, Referrer } from 'shared/types';
 
@@ -5,8 +6,6 @@ export function TriggerDeleteRowForm(
   props: React.PropsWithChildren<{
     row: AnyRow;
     referrer: Referrer;
-    role?: string;
-    tabindex?: number;
   }>,
 ) {
   const urlPathname = `/databases/${props.row.databaseId}/rows/${props.row.id}`;
@@ -18,13 +17,12 @@ export function TriggerDeleteRowForm(
   const href = url.href.replace(url.origin, '');
 
   return (
-    <a
+    <LinkElement
       href={href}
-      className="button"
-      tabIndex={props.tabindex}
-      role={props.role || 'button'}
+      button
+      role="button"
     >
       Delete
-    </a>
+    </LinkElement>
   );
 }

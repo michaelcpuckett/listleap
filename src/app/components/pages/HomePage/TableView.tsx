@@ -40,7 +40,7 @@ export function TableView(
             </SelectAllCheckboxElement>
           </ColumnHeaderElement>
           <ColumnHeaderElement>Database</ColumnHeaderElement>
-          <ColumnHeaderElement>Actions</ColumnHeaderElement>
+          <ColumnHeaderElement label="Actions"></ColumnHeaderElement>
         </RowElement>
       </RowGroupElement>
       <RowGroupElement>

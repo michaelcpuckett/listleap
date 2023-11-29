@@ -1,6 +1,7 @@
 import React from 'react';
 import { Database, AnyProperty } from 'shared/types';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
+import { ButtonElement } from 'components/elements/ButtonElement';
 
 export function EditPropertyForm(
   props: React.PropsWithChildren<{
@@ -25,12 +26,7 @@ export function EditPropertyForm(
         name="name"
         value={props.property.name}
       />
-      <button
-        className="button"
-        type="submit"
-      >
-        Save
-      </button>
+      <ButtonElement>Save</ButtonElement>
     </form>
   );
 }

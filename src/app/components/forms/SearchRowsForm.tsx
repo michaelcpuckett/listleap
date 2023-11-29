@@ -2,6 +2,7 @@ import React from 'react';
 import { Referrer } from 'shared/types';
 import { AutoSaveSearchElement } from 'components/elements/AutoSaveSearchElement';
 import { ClearSearchElement } from 'components/elements/ClearSearchElement';
+import { ButtonElement } from 'components/elements/ButtonElement';
 
 export function SearchRowsForm(
   props: React.PropsWithoutRef<{ referrer: Referrer }>,
@@ -42,12 +43,7 @@ export function SearchRowsForm(
         Search
       </button>
       <noscript>
-        <button
-          className="button"
-          type="submit"
-        >
-          Search
-        </button>
+        <ButtonElement>Search</ButtonElement>
       </noscript>
     </form>
   );

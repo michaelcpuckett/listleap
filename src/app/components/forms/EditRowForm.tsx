@@ -1,3 +1,4 @@
+import { ButtonElement } from 'components/elements/ButtonElement';
 import React from 'react';
 import { Database, AnyProperty, Row } from 'shared/types';
 
@@ -33,12 +34,7 @@ export function EditRowForm(
           </label>
         );
       })}
-      <button
-        className="button"
-        type="submit"
-      >
-        Save
-      </button>
+      <ButtonElement>Save</ButtonElement>
     </form>
   );
 }

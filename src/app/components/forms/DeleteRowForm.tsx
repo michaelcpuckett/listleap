@@ -1,11 +1,10 @@
+import { ButtonElement } from 'components/elements/ButtonElement';
 import React from 'react';
 import { Database, AnyProperty, Row } from 'shared/types';
 
 export function DeleteRowForm(
   props: React.PropsWithoutRef<{
     row: Row<Database<AnyProperty[]>>;
-    role?: string;
-    tabindex?: number;
   }>,
 ) {
   return (
@@ -19,14 +18,7 @@ export function DeleteRowForm(
         name="_method"
         value="DELETE"
       />
-      <button
-        className="button"
-        type="submit"
-        role={props.role}
-        tabIndex={props.tabindex}
-      >
-        Delete
-      </button>
+      <ButtonElement>Delete</ButtonElement>
     </form>
   );
 }

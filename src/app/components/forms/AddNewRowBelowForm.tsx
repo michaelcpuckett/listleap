@@ -2,6 +2,7 @@ import React from 'react';
 import { Database, Property, AnyRow } from 'shared/types';
 import { PostFormElement } from 'components/elements/PostFormElement';
 import { LexoRank } from 'lexorank';
+import { ButtonElement } from 'components/elements/ButtonElement';
 
 export function AddNewRowBelowForm(
   props: React.PropsWithChildren<{
@@ -28,12 +29,7 @@ export function AddNewRowBelowForm(
         name="position"
         value={position}
       />
-      <button
-        type="submit"
-        className="button"
-      >
-        Add Row Below
-      </button>
+      <ButtonElement>Add Row Below</ButtonElement>
     </PostFormElement>
   );
 }

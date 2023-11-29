@@ -1,3 +1,4 @@
+import { LinkElement } from 'components/elements/LinkElement';
 import React from 'react';
 import { AnyProperty, Referrer } from 'shared/types';
 
@@ -5,8 +6,6 @@ export function TriggerDeletePropertyForm(
   props: React.PropsWithChildren<{
     property: AnyProperty;
     referrer: Referrer;
-    role?: string;
-    tabindex?: number;
   }>,
 ) {
   const urlPathname = `/databases/${props.property.databaseId}/properties/${props.property.id}`;
@@ -18,13 +17,12 @@ export function TriggerDeletePropertyForm(
   const href = url.href.replace(url.origin, '');
 
   return (
-    <a
+    <LinkElement
       href={href}
-      className="button"
-      tabIndex={props.tabindex}
-      role={props.role || 'button'}
+      button
+      role="button"
     >
       Delete
-    </a>
+    </LinkElement>
   );
 }

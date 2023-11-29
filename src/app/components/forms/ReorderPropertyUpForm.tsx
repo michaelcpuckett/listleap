@@ -1,3 +1,4 @@
+import { ButtonElement } from 'components/elements/ButtonElement';
 import React from 'react';
 import { AnyProperty } from 'shared/types';
 
@@ -6,9 +7,6 @@ export function ReorderPropertyUpForm(
     property: AnyProperty;
     prevProperty?: AnyProperty;
     isDisabled?: boolean;
-    autofocus?: boolean;
-    role?: string;
-    tabindex?: number;
   }>,
 ) {
   return (
@@ -29,16 +27,12 @@ export function ReorderPropertyUpForm(
           value={props.prevProperty.position}
         />
       ) : null}
-      <button
-        className="button"
-        tabIndex={props.tabindex}
-        role={props.role}
+      <ButtonElement
         type={props.isDisabled ? 'button' : 'submit'}
-        data-auto-focus={props.autofocus}
-        aria-disabled={props.isDisabled}
+        disabled={props.isDisabled}
       >
         Move Left
-      </button>
+      </ButtonElement>
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import { ButtonElement } from 'components/elements/ButtonElement';
 import React from 'react';
 import { AnyProperty } from 'shared/types';
 
@@ -17,12 +18,7 @@ export function DeletePropertyForm(
         name="_method"
         value="DELETE"
       />
-      <button
-        className="button"
-        type="submit"
-      >
-        Delete
-      </button>
+      <ButtonElement>Delete</ButtonElement>
     </form>
   );
 }

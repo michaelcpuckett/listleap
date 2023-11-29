@@ -1,3 +1,4 @@
+import { LinkElement } from 'components/elements/LinkElement';
 import React from 'react';
 import { PartialDatabase, Referrer } from 'shared/types';
 
@@ -5,8 +6,6 @@ export function TriggerDeleteDatabaseForm(
   props: React.PropsWithChildren<{
     database: PartialDatabase;
     referrer: Referrer;
-    role?: string;
-    tabindex?: number;
   }>,
 ) {
   const urlPathname = '/';
@@ -19,13 +18,12 @@ export function TriggerDeleteDatabaseForm(
   const href = url.href.replace(url.origin, '');
 
   return (
-    <a
+    <LinkElement
       href={href}
-      className="button"
-      tabIndex={props.tabindex}
-      role={props.role || 'button'}
+      button
+      role="button"
     >
       Delete
-    </a>
+    </LinkElement>
   );
 }

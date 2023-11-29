@@ -1,3 +1,4 @@
+import { LinkElement } from 'components/elements/LinkElement';
 import React from 'react';
 import { Referrer, Property, AnyChecklistRow } from 'shared/types';
 
@@ -23,32 +24,28 @@ export function FilterRowsForm(
     >
       <ul className="no-bullet">
         <li>
-          <a
-            aria-current={!props.referrer.filter ? 'page' : undefined}
+          <LinkElement
+            current={!props.referrer.filter}
             href={allRowsUrl.href}
           >
             All ({props.rows.length})
-          </a>
+          </LinkElement>
         </li>
         <li>
-          <a
-            aria-current={
-              props.referrer.filter === 'incompleted' ? 'page' : undefined
-            }
+          <LinkElement
+            current={props.referrer.filter === 'incompleted'}
             href={incompleteRowsUrl.href}
           >
             Incomplete ({props.rows.filter((row) => !row.completed).length})
-          </a>
+          </LinkElement>
         </li>
         <li>
-          <a
-            aria-current={
-              props.referrer.filter === 'completed' ? 'page' : undefined
-            }
+          <LinkElement
+            aria-current={props.referrer.filter === 'completed'}
             href={completedRowsUrl.href}
           >
             Completed ({props.rows.filter((row) => row.completed).length})
-          </a>
+          </LinkElement>
         </li>
       </ul>
     </div>
