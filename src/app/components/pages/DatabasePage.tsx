@@ -22,6 +22,7 @@ import { ERROR_MESSAGES } from 'utilities/errors';
 import { PostFormElement } from 'components/elements/PostFormElement';
 import { Icon } from 'components/icons/Icon';
 import { ViewContainerElement } from 'components/elements/ViewContainerElement';
+import { ButtonElement } from 'components/elements/ButtonElement';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
@@ -176,12 +177,7 @@ export function DatabasePage(
                     >
                       <option value="DELETE">Delete Selected Rows</option>
                     </select>
-                    <button
-                      type="submit"
-                      className="button"
-                    >
-                      Submit
-                    </button>
+                    <ButtonElement>Submit</ButtonElement>
                   </div>
                 </form>
               </details>
@@ -221,18 +217,18 @@ export function DatabasePage(
                     Clear Selected Cells
                   </button>
                 </PostFormElement>
-
                 <PostFormElement
                   action={`/databases/${props.database.id}/rows`}
                   id="add-row-form"
                 >
-                  <button
-                    className="button--full-width button--bordered"
+                  <ButtonElement
                     id="add-new-row-button"
-                    type="submit"
+                    button={false}
+                    full-width
+                    bordered
                   >
                     Add New Row
-                  </button>
+                  </ButtonElement>
                 </PostFormElement>
                 {props.database.rows.length - queriedRows.length > 0 ? (
                   <p className="notice">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ButtonElement } from './ButtonElement';
 
 export function ClearSearchElement(props: React.PropsWithChildren<{}>) {
   return (
@@ -13,12 +14,7 @@ export function ClearSearchElement(props: React.PropsWithChildren<{}>) {
         />
         <slot></slot>
       </template>
-      <button
-        type="reset"
-        className="button"
-      >
-        Clear
-      </button>
+      <ButtonElement type="reset">Clear</ButtonElement>
     </clear-search>
   );
 }
