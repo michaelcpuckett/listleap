@@ -26,6 +26,7 @@ export function AutoSaveCheckboxElement(
       <input
         form={props.form}
         type="checkbox"
+        tabIndex={0}
         id={`auto-save-checkbox--field__${props.name.replace('[]', '')}--${
           props.id
         }`}

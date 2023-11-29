@@ -38,6 +38,7 @@ export function TableView(
                 <input
                   form="select-multiple-rows-form"
                   className="input"
+                  tabIndex={0}
                   type="checkbox"
                   aria-label="Select all rows"
                   name="row[]"
@@ -109,6 +110,7 @@ export function TableView(
                     form="select-multiple-rows-form"
                     className="input"
                     type="checkbox"
+                    tabIndex={0}
                     aria-label="Select row"
                     name="row[]"
                     checked={row.selected}
