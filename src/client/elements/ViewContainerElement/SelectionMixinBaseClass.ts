@@ -361,7 +361,7 @@ export class SelectionMixinBaseClass extends HTMLElement {
     }
   }
 
-  selectAll() {
+  selectAllRows() {
     const selectMultipleRowsCheckbox = this.querySelector(
       'select-all-checkbox input[type="checkbox"]',
     );
@@ -376,33 +376,28 @@ export class SelectionMixinBaseClass extends HTMLElement {
       return;
     }
 
-    const rawRowSelectionFormData = new FormData(selectMultipleRowsForm);
-    const rowSelectionFormData = Object.fromEntries(
-      rawRowSelectionFormData.entries(),
+    const rowCheckboxElements = Array.from(
+      selectMultipleRowsForm.elements,
+    ).filter(
+      (formElement): formElement is HTMLInputElement =>
+        formElement instanceof HTMLInputElement &&
+        formElement.type === 'checkbox' &&
+        formElement.name === 'row[]',
     );
 
-    if (rowSelectionFormData['row[]'] !== undefined) {
-      const rowCheckboxElements = Array.from(
-        selectMultipleRowsForm.elements,
-      ).filter(
-        (formElement): formElement is HTMLInputElement =>
-          formElement instanceof HTMLInputElement &&
-          formElement.type === 'checkbox' &&
-          formElement.name === 'row[]',
-      );
+    for (const rowCheckboxElement of rowCheckboxElements) {
+      rowCheckboxElement.checked = true;
+    }
+  }
 
-      for (const rowCheckboxElement of rowCheckboxElements) {
-        rowCheckboxElement.checked = true;
-      }
-    } else {
-      const allCellElements = Array.from(
-        this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
-      );
+  selectAllCells() {
+    const allCellElements = Array.from(
+      this.gridElement.querySelectorAll(SELECTABLE_CELL_ELEMENT_SELECTOR),
+    );
 
-      for (const cellElement of allCellElements) {
-        cellElement.setAttribute('aria-selected', 'true');
-        cellElement.setAttribute('data-selected', '');
-      }
+    for (const cellElement of allCellElements) {
+      cellElement.setAttribute('aria-selected', 'true');
+      cellElement.setAttribute('data-selected', '');
     }
   }
 }

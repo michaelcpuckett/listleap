@@ -69,10 +69,19 @@ export function handleKeydown(
       break;
     case 'a':
       if (event.ctrlKey) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        event.stopPropagation();
-        this.selectAll();
+        if (cellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          event.stopPropagation();
+          this.selectAllCells();
+        }
+
+        if (cellElement.matches(':has([name="row[]"])')) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          event.stopPropagation();
+          this.selectAllRows();
+        }
       }
       break;
     case ' ':
