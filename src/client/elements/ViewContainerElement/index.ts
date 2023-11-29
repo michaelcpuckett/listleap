@@ -2,6 +2,7 @@ import {
   SELECTABLE_CELL_ELEMENT_SELECTOR,
   isHtmlElement,
   INPUT_SELECTOR,
+  ANY_CELL_ELEMENT_SELECTOR,
 } from './constants';
 import { SelectionMixinBaseClass } from './SelectionMixinBaseClass';
 import { DragSelectionMixin } from './DragSelectionMixin';
@@ -189,7 +190,7 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
       return;
     }
 
-    const cellElement = event.target.closest(SELECTABLE_CELL_ELEMENT_SELECTOR);
+    const cellElement = event.target.closest(ANY_CELL_ELEMENT_SELECTOR);
 
     if (!(cellElement instanceof HTMLElement)) {
       return;
@@ -203,7 +204,13 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
 
     const cellIndex = Array.from(rowElement.children).indexOf(cellElement);
 
-    const nextRowElement = rowElement.nextElementSibling;
+    const rowElements = Array.from(
+      this.gridElement.querySelectorAll('[role="row"]'),
+    );
+
+    const rowIndex = rowElements.indexOf(rowElement);
+
+    const nextRowElement = rowElements[rowIndex + 1];
 
     if (!(nextRowElement instanceof HTMLElement)) {
       return;
