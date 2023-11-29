@@ -5,7 +5,7 @@ import {
   RowElement,
   RowGroupElement,
 } from 'components/elements/GridElement';
-import { LinkElement } from 'components/elements/LinkElement';
+import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import { SelectAllCheckboxElement } from 'components/elements/SelectAllCheckboxElement';
 import { DatabaseActionsFlyoutMenu } from 'components/menus/DatabaseActionsFlyoutMenu';
 import { PartialDatabase, Referrer } from 'shared/types';
@@ -58,12 +58,12 @@ export function TableView(
               />
             </CellElement>
             <CellElement role="rowheader">
-              <LinkElement
+              <HyperLinkElement
                 href={`/databases/${database.id}`}
                 full-width
               >
                 {database.name}
-              </LinkElement>
+              </HyperLinkElement>
             </CellElement>
             <CellElement>
               <DatabaseActionsFlyoutMenu

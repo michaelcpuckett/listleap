@@ -72,8 +72,9 @@ body {
   white-space: nowrap;
 }
 
-a {
+.link {
   color: var(--swatch-interactive);
+  text-decoration: underline;
 }
 
 .container {
@@ -594,7 +595,7 @@ flyout-menu [role='menu'] {
 }
 
 :is([role='columnheader'], [role='rowheader'], [role='gridcell']):not(
-    :has(:is(input, summary, a))
+    :has(:is(input, summary, a, [tabindex='0']))
   ) {
   padding: 1rem;
 }

@@ -1,4 +1,4 @@
-import { LinkElement } from 'components/elements/LinkElement';
+import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import React from 'react';
 import { Referrer, AnyRow } from 'shared/types';
 
@@ -17,12 +17,12 @@ export function TriggerEditRowForm(
   const href = url.href.replace(url.origin, '');
 
   return (
-    <LinkElement
+    <HyperLinkElement
       href={href}
       button
       role="button"
     >
       Edit
-    </LinkElement>
+    </HyperLinkElement>
   );
 }

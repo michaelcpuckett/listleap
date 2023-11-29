@@ -8,3 +8,4 @@ import 'elements/SelectAllCheckboxElement';
 import 'elements/ModalDialogElement';
 import 'elements/FlyoutMenuElement';
 import 'elements/ViewContainerElement';
+import 'elements/HyperLinkElement';

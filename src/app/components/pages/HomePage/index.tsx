@@ -13,7 +13,7 @@ import {
 } from 'components/elements/GridElement';
 import { TableView } from './TableView';
 import { ViewContainerElement } from 'components/elements/ViewContainerElement';
-import { LinkElement } from 'components/elements/LinkElement';
+import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import { ButtonElement } from 'components/elements/ButtonElement';
 import { Icon } from 'components/icons/Icon';
 
@@ -56,7 +56,7 @@ export function HomePage(
         inert={isShowingModal ? '' : undefined}
       >
         <nav className="layout--split">
-          <LinkElement href="/settings">Settings</LinkElement>
+          <HyperLinkElement href="/settings">Settings</HyperLinkElement>
         </nav>
         <main>
           <h1>ListLeap</h1>

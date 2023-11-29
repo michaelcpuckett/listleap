@@ -1,4 +1,4 @@
-export function LinkElement(
+export function HyperLinkElement(
   props: React.PropsWithChildren<{
     href: string;
     current?: boolean;
@@ -13,17 +13,17 @@ export function LinkElement(
     ? ' text-color--currentColor '
     : '';
   const fullWidthClass = props['full-width'] ? ' link--full-width ' : '';
-  const className = `${currentColorClass}${fullWidthClass}${buttonClass}`;
+  const className = `link${currentColorClass}${fullWidthClass}${buttonClass}`;
 
   return (
-    <a
-      tabIndex={0}
-      href={props.href}
+    <hyper-link
+      tabindex="0"
+      role={props.role || 'link'}
+      data-href={props.href}
       aria-current={props.current ? 'page' : undefined}
-      className={className}
-      role={props.role}
+      class={className}
     >
       {props.children}
-    </a>
+    </hyper-link>
   );
 }

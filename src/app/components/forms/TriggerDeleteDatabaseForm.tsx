@@ -1,4 +1,4 @@
-import { LinkElement } from 'components/elements/LinkElement';
+import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import React from 'react';
 import { PartialDatabase, Referrer } from 'shared/types';
 
@@ -18,12 +18,12 @@ export function TriggerDeleteDatabaseForm(
   const href = url.href.replace(url.origin, '');
 
   return (
-    <LinkElement
+    <HyperLinkElement
       href={href}
       button
       role="button"
     >
       Delete
-    </LinkElement>
+    </HyperLinkElement>
   );
 }

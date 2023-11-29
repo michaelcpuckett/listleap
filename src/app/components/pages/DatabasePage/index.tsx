@@ -22,7 +22,7 @@ import { PostFormElement } from 'components/elements/PostFormElement';
 import { Icon } from 'components/icons/Icon';
 import { ViewContainerElement } from 'components/elements/ViewContainerElement';
 import { ButtonElement } from 'components/elements/ButtonElement';
-import { LinkElement } from 'components/elements/LinkElement';
+import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
@@ -140,9 +140,9 @@ export function DatabasePage(
         inert={isShowingModal ? '' : undefined}
       >
         <nav className="layout--split">
-          <LinkElement href="/">Home</LinkElement>
+          <HyperLinkElement href="/">Home</HyperLinkElement>
           <SearchRowsForm referrer={props.referrer} />
-          <LinkElement href="/settings">Settings</LinkElement>
+          <HyperLinkElement href="/settings">Settings</HyperLinkElement>
         </nav>
         <main>
           <header>
@@ -235,12 +235,12 @@ export function DatabasePage(
                     Not showing{' '}
                     {props.database.rows.length - queriedRows.length} rows due
                     to search filter.{' '}
-                    <LinkElement
+                    <HyperLinkElement
                       currentColor
                       href={clearSearchUrl.href}
                     >
                       Clear
-                    </LinkElement>
+                    </HyperLinkElement>
                   </p>
                 ) : null}
               </>

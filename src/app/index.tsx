@@ -20,7 +20,10 @@ declare module 'react' {
 }
 
 type CustomElement = React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLElement>,
+  React.HTMLAttributes<HTMLDivElement> & {
+    class?: string;
+    tabindex?: string;
+  },
   HTMLElement
 >;
 
@@ -39,6 +42,7 @@ declare global {
       'grid-keyboard-navigation': CustomElement;
       'modal-dialog': CustomElement;
       'view-container': CustomElement;
+      'hyper-link': CustomElement;
     }
   }
 }
