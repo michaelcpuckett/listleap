@@ -35,7 +35,6 @@ export function AutoSaveCheckboxElement(
         checked={props.checked}
         value={props.value}
         className="expand-touch-target"
-        tabIndex={props.tabindex}
       />
     </auto-save-checkbox>
   );
