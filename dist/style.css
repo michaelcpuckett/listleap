@@ -579,9 +579,7 @@ flyout-menu [role='menu'] {
 }
 
 [role='row']:has([name='row[]']:checked)
-  :is([role='gridcell'], [role='rowheader']):has(
-    :is(auto-save-search, auto-save-text) input[type='text']
-  ) {
+  :is([role='gridcell'], [role='rowheader']) {
   background: var(--highlight-color);
 
   & :is(auto-save-search, auto-save-text) input[type='text'] {
