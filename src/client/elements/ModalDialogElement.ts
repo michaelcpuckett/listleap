@@ -28,13 +28,15 @@ export class ModalDialogElement extends HTMLElement {
     }
 
     if (event.key === 'Escape') {
-      const closeDialogFormElement = this.dialogElement.querySelector('form');
+      const closeDialogButtonElement = this.dialogElement.querySelector(
+        '#close-dialog-button',
+      );
 
-      if (!(closeDialogFormElement instanceof HTMLFormElement)) {
+      if (!(closeDialogButtonElement instanceof HTMLElement)) {
         return;
       }
 
-      closeDialogFormElement.submit();
+      closeDialogButtonElement.click();
     }
   }
 }

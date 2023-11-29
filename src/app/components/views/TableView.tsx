@@ -205,7 +205,7 @@ export function TableView(
  * Uses shadowrootdelegatesfocus to focus the first focusable element when
  * #focus() is called.
  **/
-function ColumnHeaderElement(
+export function ColumnHeaderElement(
   props: React.PropsWithChildren<{
     className?: string;
     label?: string;
@@ -234,7 +234,7 @@ function ColumnHeaderElement(
  * Uses shadowrootdelegatesfocus to focus the first focusable element when
  * #focus() is called.
  **/
-function CellElement(
+export function CellElement(
   props: React.PropsWithChildren<{
     role?: string;
     className?: string;
@@ -267,7 +267,7 @@ function CellElement(
 /**
  * Row (tr) Element
  */
-function RowElement(props: React.PropsWithChildren<{ label?: string }>) {
+export function RowElement(props: React.PropsWithChildren<{ label?: string }>) {
   return (
     <div
       role="row"
@@ -281,7 +281,7 @@ function RowElement(props: React.PropsWithChildren<{ label?: string }>) {
 /**
  * Row Group (thead, tbody) Element
  */
-function RowGroupElement(
+export function RowGroupElement(
   props: React.PropsWithChildren<{
     label?: string;
   }>,

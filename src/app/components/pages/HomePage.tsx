@@ -4,6 +4,13 @@ import { PageShell } from 'components/pages/PageShell';
 import { AddDatabaseForm } from 'components/forms/AddDatabaseForm';
 import { DatabaseActionsFlyoutMenu } from 'components/menus/DatabaseActionsFlyoutMenu';
 import { DeleteDatabaseModalDialog } from 'components/dialogs/DeleteDatabaseModalDialog';
+import {
+  CellElement,
+  ColumnHeaderElement,
+  RowElement,
+  RowGroupElement,
+} from 'components/views/TableView';
+import { ViewContainerElement } from 'components/elements/ViewContainerElement';
 
 export function HomePage(
   props: React.PropsWithChildren<{
@@ -50,38 +57,42 @@ export function HomePage(
         </nav>
         <main>
           <h1>ListLeap</h1>
-          <div
-            role="grid"
-            className="view"
-            style={{
-              '--grid-columns': gridColumnsCss,
-            }}
-          >
-            <div role="rowgroup">
-              <div role="row">
-                <div role="columnheader">Database</div>
-                <div role="columnheader">Actions</div>
+          <ViewContainerElement>
+            <div className="view-scroll-container">
+              <div
+                role="grid"
+                aria-rowcount={props.databases.length}
+                className="view view--table"
+                style={{
+                  '--grid-columns': gridColumnsCss,
+                }}
+              >
+                <RowGroupElement>
+                  <RowElement>
+                    <ColumnHeaderElement>Database</ColumnHeaderElement>
+                    <ColumnHeaderElement>Actions</ColumnHeaderElement>
+                  </RowElement>
+                </RowGroupElement>
+                <RowGroupElement>
+                  {props.databases.map((database) => (
+                    <RowElement key={database.id}>
+                      <CellElement role="rowheader">
+                        <a href={`/databases/${database.id}`}>
+                          {database.name}
+                        </a>
+                      </CellElement>
+                      <CellElement>
+                        <DatabaseActionsFlyoutMenu
+                          database={database}
+                          referrer={props.referrer}
+                        />
+                      </CellElement>
+                    </RowElement>
+                  ))}
+                </RowGroupElement>
               </div>
             </div>
-            <div role="rowgroup">
-              {props.databases.map((database) => (
-                <div
-                  role="row"
-                  key={database.id}
-                >
-                  <div role="columnheader">
-                    <a href={`/databases/${database.id}`}>{database.name}</a>
-                  </div>
-                  <div role="gridcell">
-                    <DatabaseActionsFlyoutMenu
-                      database={database}
-                      referrer={props.referrer}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          </ViewContainerElement>
           <AddDatabaseForm />
         </main>
       </div>

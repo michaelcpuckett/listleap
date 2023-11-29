@@ -4,7 +4,7 @@ export function ButtonElement(
     id?: string;
     button?: boolean;
     'full-width'?: boolean;
-    currentColor: boolean;
+    currentColor?: boolean;
     bordered?: boolean;
     label?: string;
   }>,
