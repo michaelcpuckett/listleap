@@ -1,6 +1,7 @@
 import {
   addBlankRowToIndexedDb,
   addPropertyToIndexedDb,
+  deleteDatabaseByIdFromIndexedDb,
   getDatabaseFromIndexedDb,
   getIdb,
 } from 'utilities/idb';
@@ -8,7 +9,6 @@ import { getUniqueId } from 'shared/getUniqueId';
 import { addPartialDatabaseToIndexedDb } from 'utilities/idb';
 import { assertIsDatabase } from 'shared/assertions';
 import { Referrer, NormalizedFormData, Property } from 'shared/types';
-import { unwrap, wrap } from 'idb';
 
 export async function PostDatabase(
   event: FetchEvent,
@@ -16,6 +16,22 @@ export async function PostDatabase(
   formData: NormalizedFormData,
   referrer: Referrer,
 ) {
+  if (formData.bulkAction !== undefined) {
+    if (formData.bulkAction === 'DELETE') {
+      const rowIds = formData['row[]'] || [];
+
+      for (const databaseId of rowIds) {
+        await deleteDatabaseByIdFromIndexedDb(databaseId);
+      }
+
+      return Response.redirect(event.request.referrer, 303);
+    } else {
+      return new Response('Not found', {
+        status: 404,
+      });
+    }
+  }
+
   const id = getUniqueId();
 
   const partialDatabase = {

@@ -160,6 +160,12 @@ flyout-menu .button {
   border: 1px solid;
 }
 
+.link--full-width {
+  display: flex;
+  width: 100%;
+  padding: 1rem;
+}
+
 .summary {
   justify-content: flex-start;
 }

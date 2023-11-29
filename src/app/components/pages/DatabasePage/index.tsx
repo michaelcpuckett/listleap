@@ -9,12 +9,11 @@ import {
 } from 'shared/types';
 import { guardIsTable } from 'shared/assertions';
 import { PageShell } from 'components/pages/PageShell';
-import { TableView } from 'components/views/TableView';
+import { TableView } from './TableView';
 import { SearchRowsForm } from 'components/forms/SearchRowsForm';
 import { EditDatabaseForm } from 'components/forms/EditDatabaseForm';
 import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
 import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
-import { AddPropertyModalDialog } from 'components/dialogs/AddPropertyModalDialog';
 import { EditPropertyModalDialog } from 'components/dialogs/EditPropertyModalDialog';
 import { DeletePropertyModalDialog } from 'components/dialogs/DeletePropertyModalDialog';
 import { ModalDialogElement } from 'components/elements/ModalDialogElement';
@@ -23,6 +22,7 @@ import { PostFormElement } from 'components/elements/PostFormElement';
 import { Icon } from 'components/icons/Icon';
 import { ViewContainerElement } from 'components/elements/ViewContainerElement';
 import { ButtonElement } from 'components/elements/ButtonElement';
+import { LinkElement } from 'components/elements/LinkElement';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
@@ -140,9 +140,9 @@ export function DatabasePage(
         inert={isShowingModal ? '' : undefined}
       >
         <nav className="layout--split">
-          <a href="/">Home</a>
+          <LinkElement href="/">Home</LinkElement>
           <SearchRowsForm referrer={props.referrer} />
-          <a href="/settings">Settings</a>
+          <LinkElement href="/settings">Settings</LinkElement>
         </nav>
         <main>
           <header>
@@ -235,12 +235,12 @@ export function DatabasePage(
                     Not showing{' '}
                     {props.database.rows.length - queriedRows.length} rows due
                     to search filter.{' '}
-                    <a
-                      className="text-color--currentColor"
+                    <LinkElement
+                      currentColor
                       href={clearSearchUrl.href}
                     >
                       Clear
-                    </a>
+                    </LinkElement>
                   </p>
                 ) : null}
               </>

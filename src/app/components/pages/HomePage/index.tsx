@@ -7,10 +7,15 @@ import { DeleteDatabaseModalDialog } from 'components/dialogs/DeleteDatabaseModa
 import {
   CellElement,
   ColumnHeaderElement,
+  GridElement,
   RowElement,
   RowGroupElement,
-} from 'components/views/TableView';
+} from 'components/elements/GridElement';
+import { TableView } from './TableView';
 import { ViewContainerElement } from 'components/elements/ViewContainerElement';
+import { LinkElement } from 'components/elements/LinkElement';
+import { ButtonElement } from 'components/elements/ButtonElement';
+import { Icon } from 'components/icons/Icon';
 
 export function HomePage(
   props: React.PropsWithChildren<{
@@ -35,8 +40,6 @@ export function HomePage(
   closeUrl.search = closeUrlSearchParams.toString();
   const closeUrlHref = closeUrl.href.replace(closeUrl.origin, '');
 
-  const gridColumnsCss = `minmax(0, 1fr) auto`;
-
   return (
     <PageShell
       pageTitle="Home"
@@ -53,47 +56,50 @@ export function HomePage(
         inert={isShowingModal ? '' : undefined}
       >
         <nav className="layout--split">
-          <a href="/settings">Settings</a>
+          <LinkElement href="/settings">Settings</LinkElement>
         </nav>
         <main>
           <h1>ListLeap</h1>
           <ViewContainerElement>
-            <div className="view-scroll-container">
-              <div
-                role="grid"
-                aria-rowcount={props.databases.length}
-                className="view view--table"
-                style={{
-                  '--grid-columns': gridColumnsCss,
-                }}
-              >
-                <RowGroupElement>
-                  <RowElement>
-                    <ColumnHeaderElement>Database</ColumnHeaderElement>
-                    <ColumnHeaderElement>Actions</ColumnHeaderElement>
-                  </RowElement>
-                </RowGroupElement>
-                <RowGroupElement>
-                  {props.databases.map((database) => (
-                    <RowElement key={database.id}>
-                      <CellElement role="rowheader">
-                        <a href={`/databases/${database.id}`}>
-                          {database.name}
-                        </a>
-                      </CellElement>
-                      <CellElement>
-                        <DatabaseActionsFlyoutMenu
-                          database={database}
-                          referrer={props.referrer}
-                        />
-                      </CellElement>
-                    </RowElement>
-                  ))}
-                </RowGroupElement>
-              </div>
-            </div>
+            <aside aria-label="Actions">
+              <details>
+                <summary className="summary button--full-width">
+                  <Icon
+                    name="arrow-down"
+                    height={16}
+                    width={16}
+                  />
+                  Actions
+                </summary>
+                <form
+                  role="none"
+                  method="POST"
+                  action="/databases"
+                  id="select-multiple-rows-form"
+                >
+                  <input
+                    type="hidden"
+                    name="_method"
+                    value="POST"
+                  />
+                  <div style={{ display: 'flex', gap: '1rem' }}>
+                    <select
+                      name="bulkAction"
+                      className="button--full-width"
+                    >
+                      <option value="DELETE">Delete Selected Rows</option>
+                    </select>
+                    <ButtonElement>Submit</ButtonElement>
+                  </div>
+                </form>
+              </details>
+            </aside>
+            <TableView
+              databases={props.databases}
+              referrer={props.referrer}
+            />
+            <AddDatabaseForm />
           </ViewContainerElement>
-          <AddDatabaseForm />
         </main>
       </div>
     </PageShell>
