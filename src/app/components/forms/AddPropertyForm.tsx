@@ -3,6 +3,7 @@ import { Database, AnyProperty } from 'shared/types';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
 import { PostFormElement } from 'components/elements/PostFormElement';
 import { Icon } from 'components/icons/Icon';
+import { ButtonElement } from 'components/elements/ButtonElement';
 
 export function AddPropertyForm(
   props: React.PropsWithChildren<{ database: Database<AnyProperty[]> }>,
@@ -17,14 +18,15 @@ export function AddPropertyForm(
         name="type"
         value="String"
       />
-      <button
-        type="submit"
-        className="text-color--currentColor button--full-width"
+      <ButtonElement
+        full-width
+        currentColor
+        button={false}
         id="add-property-button"
-        aria-label="Add Property"
+        label="Add Property"
       >
         <Icon name="plus" />
-      </button>
+      </ButtonElement>
     </PostFormElement>
   );
 }
