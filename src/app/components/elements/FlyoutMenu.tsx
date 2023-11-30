@@ -53,6 +53,7 @@ export function FlyoutMenu(
           role="menu"
           id={`rows-actions-menu--${props.id}`}
           aria-labelledby={`rows-actions-menu-trigger--${props.id}`}
+          hidden
         >
           {props.children}
         </div>
