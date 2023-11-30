@@ -36,7 +36,7 @@ export function PageShell(
           href="/manifest.json"
         />
       </head>
-      <body>
+      <body tabIndex={-1}>
         <Symbols />
         {props.children}
         <unload-handler></unload-handler>
