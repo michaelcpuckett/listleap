@@ -43,6 +43,109 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
     );
 
     this.addEventListener('change', this.boundChangeHandler);
+
+    this.addEventListener('column-selector:select', (event: Event) => {
+      if (!(event instanceof CustomEvent)) {
+        return;
+      }
+
+      const { detail: propertyName } = event;
+
+      if (!propertyName) {
+        return;
+      }
+
+      const closestCellElement =
+        this.getClosestCellElementFromComposedPath(event);
+
+      if (!(closestCellElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const closestRowElement = closestCellElement.closest('[role="row"]');
+
+      if (!(closestRowElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const columnIndex = Array.from(
+        closestRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
+      ).indexOf(closestCellElement);
+
+      const rowElements = Array.from(
+        this.querySelectorAll('[role="row"]:not(:has([role="columnheader"]))'),
+      ).filter(isHtmlElement);
+
+      const firstRowElement = rowElements[0];
+      const lastRowElement = rowElements[rowElements.length - 1];
+
+      const firstRowTargetCellElement = Array.from(
+        firstRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
+      )[columnIndex];
+
+      if (!(firstRowTargetCellElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const lastRowTargetCellElement = Array.from(
+        lastRowElement.querySelectorAll(ANY_CELL_ELEMENT_SELECTOR),
+      )[columnIndex];
+
+      if (!(lastRowTargetCellElement instanceof HTMLElement)) {
+        return;
+      }
+
+      const currentlySelectedCells = Array.from(
+        this.querySelectorAll(
+          `[aria-selected]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
+        ),
+      ).filter(isHtmlElement);
+
+      this.clearRowSelection();
+      this.clearCellSelection();
+
+      if (
+        'keyboardHighlightElement' in this &&
+        'keyboardOriginCellElement' in this
+      ) {
+        const selectionResult = this.selectCellElement({
+          targetCellElement: lastRowTargetCellElement,
+          relativeCellElement: firstRowTargetCellElement,
+          originCellElement: firstRowTargetCellElement,
+          highlightElement: null,
+        });
+
+        this.keyboardOriginCellElement = firstRowTargetCellElement;
+
+        if (selectionResult) {
+          this.keyboardHighlightElement = selectionResult.highlightElement;
+          this.keyboardOriginCellElement = selectionResult.originCellElement;
+        }
+
+        const newlySelectedCells = Array.from(
+          this.querySelectorAll(
+            `[aria-selected]:is(${SELECTABLE_CELL_ELEMENT_SELECTOR})`,
+          ),
+        ).filter(isHtmlElement);
+
+        if (
+          isHtmlElement(this.keyboardHighlightElement) &&
+          isHtmlElement(this.keyboardOriginCellElement)
+        ) {
+          this.removeHighlightElement(
+            this.keyboardHighlightElement,
+            this.keyboardOriginCellElement,
+          );
+        }
+
+        for (const cellElement of [
+          ...currentlySelectedCells,
+          ...newlySelectedCells,
+        ]) {
+          cellElement.setAttribute('aria-selected', 'true');
+        }
+      }
+    });
   }
 
   disconnectedCallback() {

@@ -7,6 +7,7 @@ import { ReorderPropertyUpForm } from 'components/forms/ReorderPropertyUpForm';
 import { ReorderPropertyDownForm } from 'components/forms/ReorderPropertyDownForm';
 import { AddNewPropertyAboveForm } from 'components/forms/AddNewPropertyAboveForm';
 import { AddNewPropertyBelowForm } from 'components/forms/AddNewPropertyBelowForm';
+import { SelectColumnForm } from 'components/forms/SelectColumnForm';
 
 export function PropertyActionsFlyoutMenu(
   props: React.PropsWithChildren<{
@@ -14,15 +15,16 @@ export function PropertyActionsFlyoutMenu(
     previousProperty?: AnyProperty;
     nextProperty?: AnyProperty;
     referrer: Referrer;
-    tabindex?: number;
   }>,
 ) {
   return (
     <FlyoutMenu
       id={props.property.id}
       label={props.property.name}
-      tabindex={props.tabindex}
     >
+      <FlyoutMenuItem>
+        <SelectColumnForm property={props.property} />
+      </FlyoutMenuItem>
       <FlyoutMenuItem>
         <ReorderPropertyUpForm
           property={props.property}

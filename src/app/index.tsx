@@ -44,6 +44,7 @@ declare global {
       'view-container': CustomElement;
       'hyper-link': CustomElement;
       'disclosure-widget': CustomElement;
+      'column-selector': CustomElement;
     }
   }
 }
