@@ -175,7 +175,9 @@ export function DatabasePage(
                     <select
                       name="bulkAction"
                       className="button--full-width"
+                      required
                     >
+                      <option value="">Actions...</option>
                       <option value="DELETE">Delete Selected Rows</option>
                     </select>
                     <ButtonElement>Submit</ButtonElement>
