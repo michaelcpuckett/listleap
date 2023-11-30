@@ -16,6 +16,7 @@ import { ViewContainerElement } from 'components/elements/ViewContainerElement';
 import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import { ButtonElement } from 'components/elements/ButtonElement';
 import { Icon } from 'components/icons/Icon';
+import { DisclosureWidgetElement } from 'components/elements/DisclosureWidgetElement';
 
 export function HomePage(
   props: React.PropsWithChildren<{
@@ -62,7 +63,7 @@ export function HomePage(
           <h1>ListLeap</h1>
           <ViewContainerElement>
             <aside aria-label="Actions">
-              <details>
+              <DisclosureWidgetElement>
                 <summary className="summary button--full-width">
                   <Icon
                     name="arrow-down"
@@ -92,7 +93,7 @@ export function HomePage(
                     <ButtonElement>Submit</ButtonElement>
                   </div>
                 </form>
-              </details>
+              </DisclosureWidgetElement>
             </aside>
             <TableView
               databases={props.databases}

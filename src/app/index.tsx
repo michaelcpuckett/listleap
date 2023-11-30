@@ -43,6 +43,7 @@ declare global {
       'modal-dialog': CustomElement;
       'view-container': CustomElement;
       'hyper-link': CustomElement;
+      'disclosure-widget': CustomElement;
     }
   }
 }

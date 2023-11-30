@@ -1,6 +1,7 @@
 import { Icon } from 'components/icons/Icon';
 import React from 'react';
 import { getUniqueId } from 'shared/getUniqueId';
+import { DisclosureWidgetElement } from './DisclosureWidgetElement';
 
 export function FlyoutMenuItem(props: React.PropsWithChildren<{}>) {
   return (
@@ -41,7 +42,7 @@ export function FlyoutMenu(
         />
         <slot></slot>
       </template>
-      <details role="none">
+      <DisclosureWidgetElement role="none">
         <summary
           part="button"
           id={`rows-actions-menu-trigger--${props.id}`}
@@ -59,7 +60,7 @@ export function FlyoutMenu(
         >
           {props.children}
         </div>
-      </details>
+      </DisclosureWidgetElement>
     </flyout-menu>
   );
 }

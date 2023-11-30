@@ -6,7 +6,6 @@ export class FlyoutMenuElement extends HTMLElement {
   private menuItemElements: HTMLElement[];
   private boundKeydownHandler = this.handleKeydown.bind(this);
   private boundToggleHandler = this.handleToggle.bind(this);
-  private boundClickHandler = this.handleClick.bind(this);
   private boundFocusoutHandler = this.handleFocusout.bind(this);
 
   constructor() {
@@ -50,14 +49,12 @@ export class FlyoutMenuElement extends HTMLElement {
   connectedCallback() {
     this.addEventListener('keydown', this.boundKeydownHandler);
     this.addEventListener('focusout', this.boundFocusoutHandler);
-    this.summaryElement.addEventListener('click', this.boundClickHandler);
     this.detailsElement.addEventListener('toggle', this.boundToggleHandler);
   }
 
   disconnectedCallback() {
     this.removeEventListener('keydown', this.boundKeydownHandler);
     this.removeEventListener('focusout', this.boundFocusoutHandler);
-    this.summaryElement.removeEventListener('click', this.boundClickHandler);
     this.detailsElement.removeEventListener('toggle', this.boundToggleHandler);
   }
 
@@ -74,10 +71,6 @@ export class FlyoutMenuElement extends HTMLElement {
     this.style.setProperty('--popover-transform', transformValue);
     this.style.setProperty('--popover-left', `${left + width}px`);
     this.style.setProperty('--popover-top', `${top}px`);
-  }
-
-  handleClick() {
-    this.positionPopover();
   }
 
   handleKeydown(event: Event) {
@@ -158,21 +151,7 @@ export class FlyoutMenuElement extends HTMLElement {
 
   handleToggle() {
     if (this.detailsElement.open) {
-      for (const menuItemElement of this.menuItemElements) {
-        menuItemElement.removeAttribute('tabindex');
-      }
-
-      const [firstMenuItem] = this.menuItemElements;
-
-      if (!(firstMenuItem instanceof HTMLElement)) {
-        return;
-      }
-
-      this.focusElement(firstMenuItem);
-    } else {
-      for (const menuItemElement of this.menuItemElements) {
-        menuItemElement.setAttribute('tabindex', '-1');
-      }
+      this.positionPopover();
     }
   }
 

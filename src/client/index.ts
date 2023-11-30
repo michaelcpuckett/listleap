@@ -9,3 +9,4 @@ import 'elements/ModalDialogElement';
 import 'elements/FlyoutMenuElement';
 import 'elements/ViewContainerElement';
 import 'elements/HyperLinkElement';
+import 'elements/DisclosureWidgetElement';

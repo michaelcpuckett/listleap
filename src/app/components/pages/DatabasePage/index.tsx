@@ -23,6 +23,7 @@ import { Icon } from 'components/icons/Icon';
 import { ViewContainerElement } from 'components/elements/ViewContainerElement';
 import { ButtonElement } from 'components/elements/ButtonElement';
 import { HyperLinkElement } from 'components/elements/HyperLinkElement';
+import { DisclosureWidgetElement } from 'components/elements/DisclosureWidgetElement';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
@@ -150,7 +151,7 @@ export function DatabasePage(
           </header>
           <ViewContainerElement>
             <aside aria-label="Actions">
-              <details>
+              <DisclosureWidgetElement>
                 <summary className="summary button--full-width">
                   <Icon
                     name="arrow-down"
@@ -180,7 +181,7 @@ export function DatabasePage(
                     <ButtonElement>Submit</ButtonElement>
                   </div>
                 </form>
-              </details>
+              </DisclosureWidgetElement>
             </aside>
             {guardIsTable(props.database) ? (
               <>
