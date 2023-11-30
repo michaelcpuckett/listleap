@@ -158,6 +158,10 @@ export class FlyoutMenuElement extends HTMLElement {
 
   handleToggle() {
     if (this.detailsElement.open) {
+      for (const menuItemElement of this.menuItemElements) {
+        menuItemElement.removeAttribute('tabindex');
+      }
+
       const [firstMenuItem] = this.menuItemElements;
 
       if (!(firstMenuItem instanceof HTMLElement)) {
@@ -165,6 +169,10 @@ export class FlyoutMenuElement extends HTMLElement {
       }
 
       this.focusElement(firstMenuItem);
+    } else {
+      for (const menuItemElement of this.menuItemElements) {
+        menuItemElement.setAttribute('tabindex', '-1');
+      }
     }
   }
 

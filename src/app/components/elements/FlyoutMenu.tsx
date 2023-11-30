@@ -4,7 +4,10 @@ import { getUniqueId } from 'shared/getUniqueId';
 
 export function FlyoutMenuItem(props: React.PropsWithChildren<{}>) {
   return (
-    <flyout-menu-item role="menuitem">
+    <flyout-menu-item
+      role="menuitem"
+      tabindex="-1"
+    >
       <template
         shadowrootmode="open"
         shadowrootdelegatesfocus="true"
@@ -53,7 +56,6 @@ export function FlyoutMenu(
           role="menu"
           id={`rows-actions-menu--${props.id}`}
           aria-labelledby={`rows-actions-menu-trigger--${props.id}`}
-          hidden
         >
           {props.children}
         </div>
