@@ -1,5 +1,6 @@
 export type Referrer = {
   url: string;
+  version: number;
   mode?: string;
   index?: number;
   id?: string;

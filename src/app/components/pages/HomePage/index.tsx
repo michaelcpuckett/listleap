@@ -43,6 +43,7 @@ export function HomePage(
 
   return (
     <PageShell
+      version={props.referrer.version}
       pageTitle="Home"
       settings={props.settings}
     >

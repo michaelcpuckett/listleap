@@ -8,6 +8,7 @@ export function SettingsPage(
 ) {
   return (
     <PageShell
+      version={props.referrer.version}
       pageTitle="Settings"
       settings={props.settings}
     >

@@ -98,6 +98,7 @@ export function DatabasePage(
 
   return (
     <PageShell
+      version={props.referrer.version}
       pageTitle={props.database.name}
       settings={props.settings}
     >

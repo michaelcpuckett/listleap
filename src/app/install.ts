@@ -8,26 +8,33 @@ export function handleInstall(event: Event) {
 
   event.waitUntil(
     (async () => {
-      console.log('install; open idb');
-      const idb = await getIdb();
-      const cacheVersion = await fetch('/version.txt').then((r) => r.text());
-      await saveCacheVersionToIndexedDb(Number(cacheVersion), idb);
-      idb.close();
+      return fetch('/version.txt', {
+        cache: 'no-cache',
+      })
+        .then((r) => r.text())
+        .then(async (latestCacheVersion) => {
+          const idb = await getIdb();
 
-      const hasCache = await caches.has(`v${cacheVersion}`);
+          await saveCacheVersionToIndexedDb(Number(latestCacheVersion), idb);
 
-      if (hasCache) {
-        console.log(event);
-        return;
-      }
+          idb.close();
 
-      return caches
-        .open(`v${cacheVersion}`)
-        .then(function (cache) {
-          return cache.addAll(URLS_TO_CACHE);
-        })
-        .catch(function (error) {
-          console.error(error);
+          // const hasCache = await caches.has(`v${latestCacheVersion}`);
+
+          // if (hasCache) {
+          //   return;
+          // }
+
+          const urlsToCache = URLS_TO_CACHE.map((url) => {
+            return new Request(new URL(url, self.location.origin).href, {
+              cache: 'no-cache',
+              headers: {
+                'Cache-Control': 'max-age=0, no-cache',
+              },
+            });
+          });
+          const cache = await caches.open(`v${latestCacheVersion}`);
+          await cache.addAll(urlsToCache);
         });
     })(),
   );

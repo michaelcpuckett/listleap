@@ -31,6 +31,47 @@ import {
   saveCacheVersionToIndexedDb,
 } from 'utilities/idb';
 
+async function fetchCacheVersion() {
+  return await fetch('/version.txt', {
+    cache: 'no-cache',
+  })
+    .then((r) => r.text())
+    .then(async (latestCacheVersion) => {
+      const idb = await getIdb();
+      const savedCacheVersion = await getCacheVersionFromIndexedDb(idb);
+      idb.close();
+
+      if (Number(latestCacheVersion) !== savedCacheVersion) {
+        const idb = await getIdb();
+
+        await saveCacheVersionToIndexedDb(Number(latestCacheVersion), idb);
+
+        idb.close();
+
+        const urlsToCache = URLS_TO_CACHE.map((url) => {
+          return new Request(new URL(url, self.location.origin).href, {
+            cache: 'no-cache',
+            headers: {
+              'Cache-Control': 'max-age=0, no-cache',
+            },
+          });
+        });
+        const cache = await caches.open(`v${latestCacheVersion}`);
+        await cache.addAll(urlsToCache);
+      }
+
+      return Number(latestCacheVersion);
+    })
+    .catch(async () => {
+      console.log('OFFLINE.');
+      const idb = await getIdb();
+      const savedCacheVersion = await getCacheVersionFromIndexedDb(idb);
+      idb.close();
+
+      return savedCacheVersion;
+    });
+}
+
 export function handleFetch(event: Event) {
   if (!(event instanceof FetchEvent)) {
     return;
@@ -46,6 +87,7 @@ export function handleFetch(event: Event) {
   const error = url.searchParams.get('error') || '';
   const autofocus = url.searchParams.get('autofocus') || '';
   const referrer: Referrer = {
+    version: 0,
     filter,
     query,
     mode,
@@ -74,52 +116,45 @@ export function handleFetch(event: Event) {
   ).exec(pathname);
 
   if (event.request.method === 'GET') {
-    fetch('/version.txt')
-      .then((r) => r.text())
-      .then(async (latestCacheVersion) => {
-        const idb = await getIdb();
-        const cacheVersion = await getCacheVersionFromIndexedDb(idb);
-        idb.close();
-
-        if (Number(latestCacheVersion) !== cacheVersion) {
-          console.log('will open idb 2');
-          const idb = await getIdb();
-          console.log('opened idb 2');
-
-          await saveCacheVersionToIndexedDb(Number(latestCacheVersion), idb);
-
-          idb.close();
-          console.log('closed idb 2');
-
-          const hasCache = await caches.has(`v${latestCacheVersion}`);
-
-          if (hasCache) {
-            return;
-          }
-
-          const cache = await caches.open(`v${latestCacheVersion}`);
-          await cache.addAll(URLS_TO_CACHE);
-        }
-      });
-
     return event.respondWith(
       (async () => {
-        if (URLS_TO_CACHE.includes(pathname)) {
-          console.log('opened idb');
-          const idb = await getIdb();
-          const cacheVersion = await getCacheVersionFromIndexedDb(idb);
-          idb.close();
-          console.log('closed idb');
-
-          const cache = await caches.open(`v${cacheVersion}`);
-          const cachedResponse = await cache.match(event.request);
-
-          if (!cachedResponse) {
-            return fetch(event.request);
-          }
-
-          return cachedResponse;
+        if (pathname === '/version.txt') {
+          return fetch(event.request);
         }
+
+        if (URLS_TO_CACHE.includes(pathname)) {
+          return fetchCacheVersion().then(async (cacheVersion) => {
+            const cache = await caches.open(`v${cacheVersion}`);
+            const cachedResponse = await cache.match(
+              new URL(event.request.url).pathname,
+            );
+
+            if (!cachedResponse) {
+              console.log('aborting...', cacheVersion, event.request.url);
+
+              const [headers, result]: [Headers, string] = await fetch(
+                event.request,
+                {
+                  cache: 'no-store',
+                },
+              ).then(async (res) => {
+                return [res.headers, await res.text()];
+              });
+
+              return new Response(result, {
+                headers: {
+                  ...Object.fromEntries(headers.entries()),
+                  'Cache-Control': 'no-cache',
+                },
+              });
+            }
+
+            return cachedResponse;
+          });
+        }
+
+        const version = await fetchCacheVersion();
+        referrer.version = version;
 
         switch (true) {
           case !!matchesHome: {
