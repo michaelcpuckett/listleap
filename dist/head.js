@@ -14,7 +14,16 @@ new BroadcastChannel('sw-messages').onmessage = (event) => {
       }
     });
 
-    window.location.reload();
+    navigator.serviceWorker.register('/app.js').then(
+      () => {
+        navigator.serviceWorker.ready.then(() => {
+          window.location.reload();
+        });
+      },
+      (err) => {
+        console.log('ServiceWorker registration failed: ', err);
+      },
+    );
   }
 };
 
