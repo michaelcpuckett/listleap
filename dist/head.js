@@ -6,6 +6,18 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 
+new BroadcastChannel('sw-messages').onmessage = (event) => {
+  if (event.data === 'unregister') {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      for (const registration of registrations) {
+        registration.unregister();
+      }
+    });
+
+    window.location.reload();
+  }
+};
+
 (() => {
   const currentUrl = new URL(window.location.href);
 

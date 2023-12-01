@@ -31,7 +31,7 @@ import {
   saveCacheVersionToIndexedDb,
 } from 'utilities/idb';
 
-async function fetchCacheVersion() {
+async function fetchCacheVersion(): Promise<[number, boolean]> {
   return await fetch('/version.txt', {
     cache: 'no-cache',
   })
@@ -58,9 +58,21 @@ async function fetchCacheVersion() {
         });
         const cache = await caches.open(`v${latestCacheVersion}`);
         await cache.addAll(urlsToCache);
+
+        const returnValue: [number, boolean] = [
+          Number(latestCacheVersion),
+          true,
+        ];
+
+        return returnValue;
       }
 
-      return Number(latestCacheVersion);
+      const returnValue: [number, boolean] = [
+        Number(latestCacheVersion),
+        false,
+      ];
+
+      return returnValue;
     })
     .catch(async () => {
       console.log('OFFLINE.');
@@ -68,7 +80,9 @@ async function fetchCacheVersion() {
       const savedCacheVersion = await getCacheVersionFromIndexedDb(idb);
       idb.close();
 
-      return savedCacheVersion;
+      const returnValue: [number, boolean] = [savedCacheVersion, false];
+
+      return returnValue;
     });
 }
 
@@ -123,7 +137,7 @@ export function handleFetch(event: Event) {
         }
 
         if (URLS_TO_CACHE.includes(pathname)) {
-          return fetchCacheVersion().then(async (cacheVersion) => {
+          return fetchCacheVersion().then(async ([cacheVersion]) => {
             const cache = await caches.open(`v${cacheVersion}`);
             const cachedResponse = await cache.match(
               new URL(event.request.url).pathname,
@@ -153,8 +167,15 @@ export function handleFetch(event: Event) {
           });
         }
 
-        const version = await fetchCacheVersion();
+        const [version, isNewVersion] = await fetchCacheVersion();
         referrer.version = version;
+
+        if (isNewVersion) {
+          setTimeout(() => {
+            const broadcast = new BroadcastChannel('sw-messages');
+            broadcast.postMessage('unregister');
+          });
+        }
 
         switch (true) {
           case !!matchesHome: {
