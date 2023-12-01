@@ -25,6 +25,11 @@ import { PutDatabaseProperty } from 'endpoints/put/databases/property';
 import { PatchSettings } from 'endpoints/patch/settings';
 import { GetSettings } from 'endpoints/get/settings';
 import { DeleteDatabase } from 'endpoints/delete/databases';
+import {
+  getCacheVersionFromIndexedDb,
+  getIdb,
+  saveCacheVersionToIndexedDb,
+} from 'utilities/idb';
 
 export function handleFetch(event: Event) {
   if (!(event instanceof FetchEvent)) {
@@ -69,15 +74,51 @@ export function handleFetch(event: Event) {
   ).exec(pathname);
 
   if (event.request.method === 'GET') {
+    fetch('/version.txt')
+      .then((r) => r.text())
+      .then(async (latestCacheVersion) => {
+        const idb = await getIdb();
+        const cacheVersion = await getCacheVersionFromIndexedDb(idb);
+        idb.close();
+
+        if (Number(latestCacheVersion) !== cacheVersion) {
+          console.log('will open idb 2');
+          const idb = await getIdb();
+          console.log('opened idb 2');
+
+          await saveCacheVersionToIndexedDb(Number(latestCacheVersion), idb);
+
+          idb.close();
+          console.log('closed idb 2');
+
+          const hasCache = await caches.has(`v${latestCacheVersion}`);
+
+          if (hasCache) {
+            return;
+          }
+
+          const cache = await caches.open(`v${latestCacheVersion}`);
+          await cache.addAll(URLS_TO_CACHE);
+        }
+      });
+
     return event.respondWith(
       (async () => {
         if (URLS_TO_CACHE.includes(pathname)) {
-          const cache = await caches.open('v1');
+          console.log('opened idb');
+          const idb = await getIdb();
+          const cacheVersion = await getCacheVersionFromIndexedDb(idb);
+          idb.close();
+          console.log('closed idb');
+
+          const cache = await caches.open(`v${cacheVersion}`);
           const cachedResponse = await cache.match(event.request);
 
-          if (cachedResponse) {
-            return cachedResponse;
+          if (!cachedResponse) {
+            return fetch(event.request);
           }
+
+          return cachedResponse;
         }
 
         switch (true) {

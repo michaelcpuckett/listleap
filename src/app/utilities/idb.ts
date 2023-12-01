@@ -61,6 +61,7 @@ export async function getIdb(options?: {
     });
 
     openRequest.addEventListener('upgradeneeded', () => {
+      openRequest.result.createObjectStore('cache');
       openRequest.result.createObjectStore('settings');
       openRequest.result.createObjectStore('databases');
     });
@@ -85,6 +86,28 @@ export async function getSettingsFromIndexedDb(
   const theme = (await store.get('theme')) || '';
   await tx.done;
   return { theme };
+}
+
+export async function getCacheVersionFromIndexedDb(
+  idb: SwotionIDB,
+): Promise<number> {
+  const db = idb as IDBPDatabase<unknown>;
+  const tx = db.transaction('cache', 'readonly');
+  const store = tx.objectStore('cache');
+  const version = (await store.get('version')) || '';
+  await tx.done;
+  return version;
+}
+
+export async function saveCacheVersionToIndexedDb(
+  cacheVersion: number,
+  idb: SwotionIDB,
+): Promise<void> {
+  const db = idb as IDBPDatabase<unknown>;
+  const tx = db.transaction('cache', 'readwrite');
+  const store = tx.objectStore('cache');
+  await store.put(cacheVersion, 'version');
+  await tx.done;
 }
 
 export function getPropertyTypeFromString(type: string) {
