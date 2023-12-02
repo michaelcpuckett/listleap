@@ -143,8 +143,21 @@ export async function PostDatabaseRows(
     `/databases/${database.id}`,
     new URL(event.request.url).origin,
   );
+  console.log({
+    'formData._autofocus': formData._autofocus,
+  });
+  const autofocusedPropertyName = formData._autofocus
+    ? (
+        (formData._autofocus || '').split('auto-save-text--field__')[1] || ''
+      ).split('--')[0]
+    : '';
   const firstPropertyName = database.properties[0]?.id || '';
-  const autoFocusId = `auto-save-text--field__${firstPropertyName}--${rowToAdd.id}`;
+  const propertyName = autofocusedPropertyName || firstPropertyName;
+  const autoFocusId = `auto-save-text--field__${propertyName}--${rowToAdd.id}`;
+  console.log({
+    autofocusedPropertyName,
+    propertyName,
+  });
   redirectUrl.searchParams.set('autofocus', autoFocusId);
 
   return Response.redirect(redirectUrl.href, 303);

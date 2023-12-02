@@ -52,12 +52,11 @@ window.addEventListener('pageshow', (event) => {
     broadcastChannel.close();
     broadcastChannel = null;
   });
-})();
 
-(() => {
   const currentUrl = new URL(window.location.href);
+  const autofocusId = currentUrl.searchParams.get('autofocus');
 
-  if (currentUrl.searchParams.get('autofocus')) {
+  if (autofocusId) {
     const nextUrl = new URL(window.location.href);
     nextUrl.searchParams.delete('autofocus');
     window.history.replaceState({}, '', nextUrl.href);
@@ -84,45 +83,45 @@ window.addEventListener('pageshow', (event) => {
   };
 
   window.addEventListener('scroll', handleScroll);
-})();
 
-window.addEventListener('DOMContentLoaded', () => {
-  const FOCUSED_ELEMENT_ID_STORAGE_KEY = 'focus-element-id';
-  const SCROLL_STORAGE_KEY = 'scroll-position-y';
+  window.addEventListener('DOMContentLoaded', () => {
+    const FOCUSED_ELEMENT_ID_STORAGE_KEY = 'focus-element-id';
+    const SCROLL_STORAGE_KEY = 'scroll-position-y';
 
-  const scrollValue = sessionStorage.getItem(SCROLL_STORAGE_KEY) || 0;
+    const scrollValue = sessionStorage.getItem(SCROLL_STORAGE_KEY) || 0;
 
-  window.document.documentElement.style.minHeight = null;
+    window.document.documentElement.style.minHeight = null;
 
-  const autofocusElement = window.document.querySelector(
-    '[data-auto-focus="true"]',
-  );
-  const focusedElementId =
-    sessionStorage.getItem(FOCUSED_ELEMENT_ID_STORAGE_KEY) || '';
-  const focusElement = window.document.getElementById(focusedElementId);
-  const elementToAutoFocus = autofocusElement || focusElement;
+    const autofocusElement = window.document.querySelector(
+      autofocusId ? `#${autofocusId}` : '[data-auto-focus="true"]',
+    );
+    const focusedElementId =
+      sessionStorage.getItem(FOCUSED_ELEMENT_ID_STORAGE_KEY) || '';
+    const focusElement = window.document.getElementById(focusedElementId);
+    const elementToAutoFocus = autofocusElement || focusElement;
 
-  if (elementToAutoFocus instanceof HTMLElement) {
-    window.scrollTo(0, Number(scrollValue));
+    if (elementToAutoFocus instanceof HTMLElement) {
+      window.scrollTo(0, Number(scrollValue));
 
-    elementToAutoFocus.focus();
+      elementToAutoFocus.focus();
 
-    if (
-      elementToAutoFocus instanceof HTMLInputElement &&
-      elementToAutoFocus.value.length > 0 &&
-      (elementToAutoFocus.type === 'text' ||
-        elementToAutoFocus.type === 'search')
-    ) {
-      elementToAutoFocus.selectionStart = elementToAutoFocus.selectionEnd =
-        elementToAutoFocus.value.length;
+      if (
+        elementToAutoFocus instanceof HTMLInputElement &&
+        elementToAutoFocus.value.length > 0 &&
+        (elementToAutoFocus.type === 'text' ||
+          elementToAutoFocus.type === 'search')
+      ) {
+        elementToAutoFocus.selectionStart = elementToAutoFocus.selectionEnd =
+          elementToAutoFocus.value.length;
+      }
     }
-  }
 
-  const handleFocus = () => {
-    const focusedElement = window.document.activeElement;
-    const focusedElementId = focusedElement?.id ?? '';
-    sessionStorage.setItem(FOCUSED_ELEMENT_ID_STORAGE_KEY, focusedElementId);
-  };
+    const handleFocus = () => {
+      const focusedElement = window.document.activeElement;
+      const focusedElementId = focusedElement?.id ?? '';
+      sessionStorage.setItem(FOCUSED_ELEMENT_ID_STORAGE_KEY, focusedElementId);
+    };
 
-  window.document.body.addEventListener('focusin', handleFocus);
-});
+    window.document.body.addEventListener('focusin', handleFocus);
+  });
+})();

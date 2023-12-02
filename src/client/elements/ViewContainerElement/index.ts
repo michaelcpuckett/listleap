@@ -186,6 +186,12 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
       return;
     }
 
+    const inputElement = target.querySelector(INPUT_SELECTOR);
+
+    if (!(inputElement instanceof HTMLInputElement)) {
+      return;
+    }
+
     const rowElement = target.closest('[role="row"]');
 
     if (!(rowElement instanceof HTMLElement)) {
@@ -214,7 +220,16 @@ export class ViewContainerElement extends SelectionMixinBaseClass {
       throw new Error('Could not find add new row form element');
     }
 
+    const hiddenInputElement = document.createElement('input');
+    hiddenInputElement.setAttribute('type', 'hidden');
+    hiddenInputElement.setAttribute('name', '_autofocus');
+    hiddenInputElement.setAttribute('value', inputElement.id);
+
+    addRowFormElement.append(hiddenInputElement);
+
     addRowFormElement.submit();
+
+    hiddenInputElement.remove();
   }
 
   handleClearCells(event: Event) {

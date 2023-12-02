@@ -58,6 +58,7 @@ async function fetchCacheVersion(): Promise<[number, boolean]> {
         });
         const cache = await caches.open(`v${latestCacheVersion}`);
         await cache.addAll(urlsToCache);
+        await caches.delete(`v${savedCacheVersion}`);
 
         const broadcastChannel = new BroadcastChannel('sw-messages');
 
