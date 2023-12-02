@@ -75,17 +75,5 @@ export async function PostDatabase(
   const databaseUrl = `/databases/${id}`;
   const url = new URL(databaseUrl, new URL(event.request.url).origin);
 
-  if (referrer.version > 0) {
-    return new Response(
-      `<meta http-equiv="refresh" content="0; url=${url.href} />`,
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/html',
-        },
-      },
-    );
-  }
-
   return Response.redirect(url.href, 303);
 }
