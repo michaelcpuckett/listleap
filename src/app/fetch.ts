@@ -59,8 +59,25 @@ async function fetchCacheVersion(): Promise<[number, boolean]> {
         const cache = await caches.open(`v${latestCacheVersion}`);
         await cache.addAll(urlsToCache);
 
-        const broadcast = new BroadcastChannel('sw-messages');
-        broadcast.postMessage('unregister');
+        const broadcastChannel = new BroadcastChannel('sw-messages');
+
+        const reloadedPromise = new Promise((resolve) => {
+          broadcastChannel.addEventListener(
+            'message',
+            (event) => {
+              if (event.data === 'reload') {
+                resolve(void 0);
+              }
+            },
+            {
+              once: true,
+            },
+          );
+        });
+
+        broadcastChannel.postMessage('unregister');
+
+        await reloadedPromise;
 
         const returnValue: [number, boolean] = [
           Number(latestCacheVersion),
@@ -170,7 +187,17 @@ export function handleFetch(event: Event) {
           });
         }
 
-        const [version] = await fetchCacheVersion();
+        const [version, hasNewVersion] = await fetchCacheVersion();
+
+        if (hasNewVersion) {
+          return new Response(`<meta http-equiv="refresh" content="0">`, {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/html',
+            },
+          });
+        }
+
         referrer.version = version;
 
         switch (true) {

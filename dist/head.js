@@ -6,26 +6,43 @@ window.addEventListener('pageshow', (event) => {
   }
 });
 
-new BroadcastChannel('sw-messages').onmessage = (event) => {
-  if (event.data === 'unregister') {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      for (const registration of registrations) {
-        registration.unregister();
-      }
-    });
+(() => {
+  let broadcastChannel = new BroadcastChannel('sw-messages');
+  broadcastChannel.addEventListener('message', handleServiceWorkerMessage);
 
-    navigator.serviceWorker.register('/app.js').then(
-      () => {
-        navigator.serviceWorker.ready.then(() => {
-          window.location.reload();
-        });
-      },
-      (err) => {
-        console.log('ServiceWorker registration failed: ', err);
-      },
-    );
+  function handleServiceWorkerMessage(event) {
+    if (event.data === 'unregister') {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const registration of registrations) {
+          registration.unregister();
+        }
+      });
+
+      navigator.serviceWorker.register('/app.js').then(
+        () => {
+          navigator.serviceWorker.ready.then(() => {
+            broadcastChannel.postMessage('reload');
+          });
+        },
+        (err) => {
+          console.log('ServiceWorker registration failed: ', err);
+        },
+      );
+    }
   }
-};
+
+  window.addEventListener('pageshow', () => {
+    if (!broadcastChannel) {
+      broadcastChannel = new BroadcastChannel('sw-messages');
+      broadcastChannel.addEventListener('message', handleServiceWorkerMessage);
+    }
+  });
+
+  window.addEventListener('pagehide', () => {
+    broadcastChannel.close();
+    broadcastChannel = null;
+  });
+})();
 
 (() => {
   const currentUrl = new URL(window.location.href);
