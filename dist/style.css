@@ -532,7 +532,7 @@ flyout-menu [role='menu'] {
   left: var(--popover-left, 0);
   top: var(--popover-top, 0);
   transform: var(--popover-transform);
-  min-width: 300px;
+  min-width: 240px;
   z-index: 2;
   display: flex;
 }

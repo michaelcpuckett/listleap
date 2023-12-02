@@ -7,10 +7,38 @@ window.addEventListener('pageshow', (event) => {
 });
 
 (() => {
-  let broadcastChannel = new BroadcastChannel('sw-messages');
+  let isDirty = false;
+  const broadcastChannel = new BroadcastChannel('sw-messages');
+  const isAutoRefreshed = new URL(window.location.href).searchParams.has(
+    'autorefreshed',
+  );
+
+  if (!isAutoRefreshed) {
+    broadcastChannel.postMessage('refresh');
+  }
+
   broadcastChannel.addEventListener('message', handleServiceWorkerMessage);
 
+  function handlePageVisible() {
+    if (!window.document.hidden) {
+      if (isDirty) {
+        const currentUrl = new URL(window.location.href);
+        const searchParams = new URLSearchParams(currentUrl.search);
+        searchParams.set('autorefreshed', 'true');
+        currentUrl.search = searchParams.toString();
+        window.location.href = currentUrl.href;
+      }
+    }
+  }
+
+  window.addEventListener('focus', handlePageVisible);
+  window.addEventListener('visibilitychange', handlePageVisible);
+
   function handleServiceWorkerMessage(event) {
+    if (event.data === 'refresh') {
+      isDirty = true;
+    }
+
     if (event.data === 'unregister') {
       navigator.serviceWorker.getRegistrations().then((registrations) => {
         for (const registration of registrations) {
@@ -41,24 +69,13 @@ window.addEventListener('pageshow', (event) => {
     }
   }
 
-  window.addEventListener('pageshow', () => {
-    if (!broadcastChannel) {
-      broadcastChannel = new BroadcastChannel('sw-messages');
-      broadcastChannel.addEventListener('message', handleServiceWorkerMessage);
-    }
-  });
-
-  window.addEventListener('pagehide', () => {
-    broadcastChannel.close();
-    broadcastChannel = null;
-  });
-
   const currentUrl = new URL(window.location.href);
   const autofocusId = currentUrl.searchParams.get('autofocus');
 
   if (autofocusId) {
     const nextUrl = new URL(window.location.href);
     nextUrl.searchParams.delete('autofocus');
+    nextUrl.searchParams.delete('autorefreshed');
     window.history.replaceState({}, '', nextUrl.href);
   }
 
