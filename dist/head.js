@@ -18,6 +18,15 @@ window.addEventListener('pageshow', (event) => {
         }
       });
 
+      const isSafari = window.CSS.supports(
+        '(-webkit-text-decoration-skip: auto) and (-webkit-appearance: none)',
+      );
+
+      if (isSafari) {
+        window.location.href = `/?redirect=${window.location.href}`;
+        return;
+      }
+
       navigator.serviceWorker.register('/app.js').then(
         () => {
           navigator.serviceWorker.ready.then(() => {
@@ -26,6 +35,7 @@ window.addEventListener('pageshow', (event) => {
         },
         (err) => {
           console.log('ServiceWorker registration failed: ', err);
+          window.location.href = `/?redirect=${window.location.href}`;
         },
       );
     }

@@ -48,7 +48,7 @@ async function fetchCacheVersion(): Promise<[number, boolean]> {
 
         idb.close();
 
-        const urlsToCache = ['/', ...URLS_TO_CACHE].map((url) => {
+        const urlsToCache = URLS_TO_CACHE.map((url) => {
           return new Request(new URL(url, self.location.origin).href, {
             cache: 'no-cache',
             headers: {
@@ -238,26 +238,6 @@ export function handleFetch(event: Event) {
 
   return event.respondWith(
     (async () => {
-      const [, hasNewVersion] = await fetchCacheVersion();
-
-      if (hasNewVersion) {
-        const cachedResponse = await caches.match('/');
-
-        if (!cachedResponse) {
-          return new Response(
-            `<meta http-equiv="refresh" content="0; url=/">`,
-            {
-              status: 200,
-              headers: {
-                'Content-Type': 'text/html',
-              },
-            },
-          );
-        }
-
-        return cachedResponse;
-      }
-
       const rawFormData = await event.request.formData();
       const formData: NormalizedFormData = Object.fromEntries(
         Array.from(rawFormData.entries()).map(([key, value]) => {

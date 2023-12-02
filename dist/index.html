@@ -25,7 +25,14 @@
       navigator.serviceWorker.register('/app.js').then(
         () => {
           navigator.serviceWorker.ready.then(() => {
-            window.location.reload();
+            const searchParams = new URLSearchParams(window.location.search);
+            const redirectUrl = searchParams.get('redirect');
+
+            if (redirectUrl) {
+              window.location = redirectUrl;
+            } else {
+              window.location.reload();
+            }
           });
         },
         (err) => {
