@@ -190,15 +190,12 @@ export function handleFetch(event: Event) {
         const [version, hasNewVersion] = await fetchCacheVersion();
 
         if (hasNewVersion) {
-          return new Response(
-            `<meta http-equiv="refresh" content="0; url=${referrer.url}">`,
-            {
-              status: 200,
-              headers: {
-                'Content-Type': 'text/html',
-              },
+          return new Response(`<meta http-equiv="refresh" content="0">`, {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/html',
             },
-          );
+          });
         }
 
         referrer.version = version;
@@ -241,6 +238,12 @@ export function handleFetch(event: Event) {
 
   return event.respondWith(
     (async () => {
+      const [version, hasNewVersion] = await fetchCacheVersion();
+
+      if (hasNewVersion) {
+        referrer.version = version;
+      }
+
       const rawFormData = await event.request.formData();
       const formData: NormalizedFormData = Object.fromEntries(
         Array.from(rawFormData.entries()).map(([key, value]) => {

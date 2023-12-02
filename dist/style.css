@@ -15,7 +15,6 @@ html {
   --highlight-color: rgba(90, 190, 190, 0.333);
 
   &.theme--dark {
-    color-scheme: dark;
     --swatch-interactive: deepskyblue;
     --swatch-gray-background: #333;
     --swatch-gray-text: #ccc;
