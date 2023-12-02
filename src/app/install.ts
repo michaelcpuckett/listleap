@@ -25,7 +25,7 @@ export function handleInstall(event: Event) {
           //   return;
           // }
 
-          const urlsToCache = URLS_TO_CACHE.map((url) => {
+          const urlsToCache = ['/', ...URLS_TO_CACHE].map((url) => {
             return new Request(new URL(url, self.location.origin).href, {
               cache: 'no-cache',
               headers: {
