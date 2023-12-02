@@ -148,7 +148,6 @@ export function DatabasePage(
         </nav>
         <main>
           <header>
-            <h1>Edit Database</h1>
             <EditDatabaseForm database={props.database} />
           </header>
           <ViewContainerElement>
