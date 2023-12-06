@@ -1,10 +1,6 @@
 import { handleInstall } from './install';
 import { URLS_TO_CACHE } from 'utilities/urlsToCache';
-import {
-  ExpressWorker,
-  ExpressWorkerRequest,
-  ExpressWorkerResponse,
-} from '@express-worker/app';
+import { ExpressWorker } from '@express-worker/app';
 import { GetStaticFile } from './middleware/CacheMiddleware';
 import { FormDataMiddleware } from './middleware/FormDataMiddleware';
 import { ReferrerMiddleware } from './middleware/ReferrerMiddleware';
@@ -13,9 +9,7 @@ import * as Endpoints from 'endpoints/index';
 
 self.addEventListener('install', handleInstall);
 
-const app = new ExpressWorker({
-  debug: true,
-});
+const app = new ExpressWorker();
 
 for (const url of URLS_TO_CACHE) {
   app.get(url, GetStaticFile);
