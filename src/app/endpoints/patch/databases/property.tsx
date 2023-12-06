@@ -1,4 +1,8 @@
 import {
+  ExpressWorkerRequest,
+  ExpressWorkerResponse,
+} from '@express-worker/app';
+import {
   Referrer,
   PartialDatabase,
   NormalizedFormData,
@@ -12,23 +16,26 @@ import {
   getPropertyByPositionFromIndexedDb,
   reorderPropertyInIndexedDb,
 } from 'utilities/idb';
+import { AdditionalRequestProperties } from '../../../middleware';
 
 export async function PatchDatabaseProperty(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  formData: NormalizedFormData,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
+  if (req.data._method !== 'PATCH') {
+    return;
+  }
+
   const idb = await getIdb();
-  const databaseId = match?.[1] || '';
-  const propertyId = match?.[2] || '';
+  const databaseId = req.params.databaseId || '';
+  const propertyId = req.params.id || '';
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   const property = database.properties.find(
@@ -37,9 +44,9 @@ export async function PatchDatabaseProperty(
 
   if (!property) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   const updatedPropertyType = getPropertyTypeFromString(database.type);
@@ -49,19 +56,19 @@ export async function PatchDatabaseProperty(
     id: property.id,
     databaseId: database.id,
     type: updatedPropertyType,
-    name: typeof formData.name === 'string' ? formData.name : property.name,
+    name: typeof req.data.name === 'string' ? req.data.name : property.name,
   };
 
-  if (formData.position !== undefined) {
+  if (req.data.position !== undefined) {
     const propertyToReorder = await getPropertyByPositionFromIndexedDb(
-      formData.position,
+      req.data.position,
       databaseId,
       idb,
     );
 
     await reorderPropertyInIndexedDb(updatedProperty, propertyToReorder, idb);
 
-    updatedProperty.position = formData.position;
+    updatedProperty.position = req.data.position;
   }
 
   await editPropertyInIndexedDb(updatedProperty, idb);
@@ -69,9 +76,9 @@ export async function PatchDatabaseProperty(
   idb.close();
 
   const redirectUrl = new URL(
-    formData._redirect || `/databases/${databaseId}`,
-    new URL(event.request.url).origin,
+    req.data._redirect || `/databases/${databaseId}`,
+    new URL(req.url).origin,
   );
 
-  return Response.redirect(redirectUrl.href, 303);
+  res.redirect(redirectUrl.href);
 }

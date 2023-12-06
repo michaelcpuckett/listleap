@@ -19,7 +19,8 @@
       "components/*": ["./components/*"],
       "endpoints/*": ["./endpoints/*"],
       "utilities/*": ["./utilities/*"],
-      "shared/*": ["../shared/*"]
+      "shared/*": ["../shared/*"],
+      "middleware/*": ["../middleware/*"]
     }
   },
   "exclude": ["../../node_modules"],
@@ -29,6 +30,7 @@
     "install.ts",
     "components/**/*",
     "endpoints/**/*",
-    "utilities/**/*"
+    "utilities/**/*",
+    "middleware/**/*"
   ]
 }

@@ -1,11 +1,4 @@
 import {
-  PartialProperty,
-  Referrer,
-  Property,
-  NormalizedFormData,
-  AnyProperty,
-} from 'shared/types';
-import {
   getIdb,
   addPropertyToIndexedDb,
   getPropertyTypeFromString,
@@ -14,35 +7,43 @@ import {
 import { getUniqueId } from 'shared/getUniqueId';
 import { ERROR_CODES } from 'utilities/errors';
 import { guardIsProperty } from 'shared/assertions';
+import {
+  ExpressWorkerRequest,
+  ExpressWorkerResponse,
+} from '@express-worker/app';
+import { AdditionalRequestProperties } from '../../../middleware';
 
 export async function PostDatabaseProperties(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  formData: NormalizedFormData,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
+  if (req.data._method !== 'POST') {
+    return;
+  }
+
   const idb = await getIdb();
-  const databaseId = match?.[1] || '';
+  const databaseId = req.params.databaseId;
 
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
     idb.close();
-    const redirectUrl = new URL(referrer.url);
+    const redirectUrl = new URL(req.ref.url);
     redirectUrl.searchParams.set('error', ERROR_CODES['DATABASE_NOT_FOUND']);
-    return Response.redirect(redirectUrl.href, 303);
+    res.redirect(redirectUrl.href);
+    return;
   }
 
   const propertyToAddType = getPropertyTypeFromString(
-    formData.type || 'string',
+    req.data.type || 'string',
   );
 
   const propertyToAdd = {
     id: getUniqueId(),
     databaseId,
-    name: formData.name || '',
+    name: req.data.name || '',
     type: propertyToAddType,
-    position: formData.position,
+    position: req.data.position,
   };
 
   if (propertyToAdd.position === undefined) {
@@ -51,19 +52,20 @@ export async function PostDatabaseProperties(
 
   if (!guardIsProperty(propertyToAdd)) {
     idb.close();
-    const url = new URL(event.request.referrer);
+    const url = new URL(req.referrer);
     url.searchParams.set('error', 'Invalid property');
 
-    return Response.redirect(url.href, 303);
+    res.redirect(url.href);
+    return;
   }
 
   await addPropertyToIndexedDb<typeof database>(propertyToAdd, idb);
   idb.close();
 
   const redirectUrl = new URL(
-    formData._redirect || `/databases/${databaseId}`,
-    new URL(event.request.url).origin,
+    req.data._redirect || `/databases/${databaseId}`,
+    new URL(req.url).origin,
   );
 
-  return Response.redirect(redirectUrl.href, 303);
+  res.redirect(redirectUrl.href);
 }

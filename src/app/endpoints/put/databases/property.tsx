@@ -1,9 +1,8 @@
 import {
-  Referrer,
-  NormalizedFormData,
-  PartialDatabase,
-  Property,
-} from 'shared/types';
+  ExpressWorkerRequest,
+  ExpressWorkerResponse,
+} from '@express-worker/app';
+import { Property } from 'shared/types';
 import {
   getIdb,
   getDatabaseFromIndexedDb,
@@ -12,38 +11,41 @@ import {
   reorderPropertyInIndexedDb,
   getPropertyByPositionFromIndexedDb,
 } from 'utilities/idb';
+import { AdditionalRequestProperties } from '../../../middleware';
 
 export async function PutDatabaseProperty(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  formData: NormalizedFormData,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
+  if (req.data._method !== 'PUT') {
+    return;
+  }
+
   const idb = await getIdb();
-  const propertyId = match?.[1] || '';
-  const databaseId = match?.[2] || '';
+  const databaseId = req.params.databaseId || '';
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
+  const propertyId = req.params.id || '';
   const property = database.properties.find(
     (property) => property.id === propertyId,
   );
 
   if (!property) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   const updatedPropertyType = getPropertyTypeFromString(
-    typeof formData.type === 'string' ? database.type : database.name,
+    typeof req.data.type === 'string' ? database.type : database.name,
   );
 
   const updatedProperty: Property<typeof updatedPropertyType> = {
@@ -51,28 +53,28 @@ export async function PutDatabaseProperty(
     id: property.id,
     databaseId: database.id,
     type: updatedPropertyType,
-    name: typeof formData.name === 'string' ? formData.name : property.name,
+    name: typeof req.data.name === 'string' ? req.data.name : property.name,
   };
 
-  if (formData.position !== undefined) {
+  if (req.data.position !== undefined) {
     const propertyToReorder = await getPropertyByPositionFromIndexedDb(
-      formData.position,
+      req.data.position,
       databaseId,
       idb,
     );
 
     await reorderPropertyInIndexedDb(updatedProperty, propertyToReorder, idb);
 
-    updatedProperty.position = formData.position;
+    updatedProperty.position = req.data.position;
   }
 
   await editPropertyInIndexedDb(updatedProperty, idb);
   idb.close();
 
   const redirectUrl = new URL(
-    formData._redirect || `/databases/${databaseId}`,
-    new URL(event.request.url).origin,
+    req.data._redirect || `/databases/${databaseId}`,
+    new URL(req.url).origin,
   );
 
-  return Response.redirect(redirectUrl.href, 303);
+  res.redirect(redirectUrl.href);
 }

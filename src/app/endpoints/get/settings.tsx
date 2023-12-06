@@ -1,3 +1,7 @@
+import {
+  ExpressWorkerResponse,
+  ExpressWorkerRequest,
+} from '@express-worker/app';
 import { HomePage } from 'components/pages/HomePage';
 import { SettingsPage } from 'components/pages/SettingsPage';
 import { renderToString } from 'react-dom/server';
@@ -8,11 +12,11 @@ import {
   getPartialDatabasesFromIndexedDb,
   getSettingsFromIndexedDb,
 } from 'utilities/idb';
+import { AdditionalRequestProperties } from '../../middleware';
 
 export async function GetSettings(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
   const idb = await getIdb();
   const settings = await getSettingsFromIndexedDb(idb);
@@ -21,11 +25,10 @@ export async function GetSettings(
   const renderResult = renderToString(
     <SettingsPage
       settings={settings}
-      referrer={referrer}
+      referrer={req.ref}
     />,
   );
 
-  return new Response(`<!DOCTYPE html>${renderResult}`, {
-    headers: { 'Content-Type': 'text/html' },
-  });
+  res.body = `<!DOCTYPE html>${renderResult}`;
+  res.headers.set('Content-Type', 'text/html');
 }

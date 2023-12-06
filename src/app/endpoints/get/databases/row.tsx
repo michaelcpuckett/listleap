@@ -6,44 +6,47 @@ import {
   getDatabaseFromIndexedDb,
   getSettingsFromIndexedDb,
 } from 'utilities/idb';
+import {
+  ExpressWorkerRequest,
+  ExpressWorkerResponse,
+} from '@express-worker/app';
+import { AdditionalRequestProperties } from '../../../middleware';
 
 export async function GetDatabaseRow(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
   const idb = await getIdb();
-  const databaseId = match?.[1] || '';
-  const id = match?.[2] || '';
-
+  const databaseId = req.params.databaseId || '';
+  const id = req.params.id || '';
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   const row = database.rows.find((row) => row.id === id);
 
   if (!row) {
-    return new Response('Not found', {
-      status: 404,
-    });
+    idb.close();
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   const settings = await getSettingsFromIndexedDb(idb);
   idb.close();
 
-  const mode =
-    new URL(event.request.url).searchParams.get('mode') || 'EDIT_ROW';
+  const mode = new URL(req.url).searchParams.get('mode') || 'EDIT_ROW';
 
   const renderResult = renderToString(
     <DatabasePage
       database={database}
       referrer={{
-        ...referrer,
+        ...req.ref,
         id,
         mode,
       }}
@@ -51,7 +54,6 @@ export async function GetDatabaseRow(
     />,
   );
 
-  return new Response(`<!DOCTYPE html>${renderResult}`, {
-    headers: { 'Content-Type': 'text/html' },
-  });
+  res.body = `<!DOCTYPE html>${renderResult}`;
+  res.headers.set('Content-Type', 'text/html');
 }

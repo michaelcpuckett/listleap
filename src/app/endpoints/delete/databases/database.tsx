@@ -1,7 +1,7 @@
 import {
   getIdb,
   getDatabaseFromIndexedDb,
-  deleteRowByIdFromIndexedDb,
+  deleteDatabaseByIdFromIndexedDb,
 } from 'utilities/idb';
 import {
   ExpressWorkerRequest,
@@ -9,7 +9,7 @@ import {
 } from '@express-worker/app';
 import { AdditionalRequestProperties } from '../../../middleware';
 
-export async function DeleteDatabaseRow(
+export async function DeleteDatabase(
   req: ExpressWorkerRequest & AdditionalRequestProperties,
   res: ExpressWorkerResponse,
 ) {
@@ -19,21 +19,19 @@ export async function DeleteDatabaseRow(
 
   const idb = await getIdb();
   const databaseId = req.params.databaseId || '';
-  const id = req.params.id || '';
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
+  idb.close();
 
   if (!database) {
-    idb.close();
     res.status = 404;
     res.body = 'Not found';
     return;
   }
 
-  await deleteRowByIdFromIndexedDb(id, databaseId, idb);
-  idb.close();
+  await deleteDatabaseByIdFromIndexedDb(databaseId);
 
   const redirectUrl = new URL(
-    req.data._redirect || `/databases/${databaseId}`,
+    req.data._redirect || `/`,
     new URL(req.url).origin,
   );
 

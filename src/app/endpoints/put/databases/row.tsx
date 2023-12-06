@@ -14,33 +14,40 @@ import {
   addBlankRowToIndexedDb,
 } from 'utilities/idb';
 import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
+import {
+  ExpressWorkerRequest,
+  ExpressWorkerResponse,
+} from '@express-worker/app';
+import { AdditionalRequestProperties } from '../../../middleware';
 
 export async function PutDatabaseRow(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  formData: NormalizedFormData,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
+  if (req.data._method !== 'PUT') {
+    return;
+  }
+
   const idb = await getIdb();
-  const databaseId = match?.[1] || '';
-  const id = match?.[2] || '';
+  const databaseId = req.params.databaseId || '';
   const database: Database<AnyProperty[]> | null =
     await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
+  const id = req.params.id || '';
   const existingRow = database.rows.find((row) => row.id === id);
 
   if (!existingRow) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   const rowToPut = {
@@ -51,7 +58,7 @@ export async function PutDatabaseRow(
 
   for (const property of database.properties) {
     const formDataValue = formatPropertyValueFromFormData<typeof property>(
-      formData[property.id] ?? existingRow[property.id],
+      req.data[property.id] ?? existingRow[property.id],
       property,
     );
 
@@ -69,23 +76,23 @@ export async function PutDatabaseRow(
     )
   ) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   if (guardIsChecklistRow(rowToPut, database)) {
-    rowToPut.completed = formData.completed === 'on';
+    rowToPut.completed = req.data.completed === 'on';
   }
 
-  if (formData.position && formData.position !== existingRow.position) {
+  if (req.data.position && req.data.position !== existingRow.position) {
     const rowToReorder = await getRowByPositionFromIndexedDb(
-      formData.position,
+      req.data.position,
       databaseId,
       idb,
     );
     await reorderRowInIndexedDb(existingRow, rowToReorder, idb);
-    rowToPut.position = formData.position;
+    rowToPut.position = req.data.position;
   }
 
   await editRowInIndexedDb<typeof database>(rowToPut, idb);
@@ -93,9 +100,9 @@ export async function PutDatabaseRow(
   idb.close();
 
   const redirectUrl = new URL(
-    formData._redirect || `/databases/${databaseId}`,
-    new URL(event.request.url).origin,
+    req.data._redirect || `/databases/${databaseId}`,
+    new URL(req.url).origin,
   );
 
-  return Response.redirect(redirectUrl.href, 303);
+  res.redirect(redirectUrl.href);
 }

@@ -1,3 +1,7 @@
+import {
+  ExpressWorkerResponse,
+  ExpressWorkerRequest,
+} from '@express-worker/app';
 import { DatabasePage } from 'components/pages/DatabasePage';
 import { renderToString } from 'react-dom/server';
 import { Database, Property, Referrer, Settings } from 'shared/types';
@@ -6,21 +10,21 @@ import {
   getDatabaseFromIndexedDb,
   getSettingsFromIndexedDb,
 } from 'utilities/idb';
+import { AdditionalRequestProperties } from '../../../middleware';
 
 export async function GetDatabaseRows(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
   const idb = await getIdb();
-  const databaseId = match?.[1] || '';
+  const databaseId = req.params.databaseId || '';
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   const settings = await getSettingsFromIndexedDb(idb);
@@ -29,12 +33,11 @@ export async function GetDatabaseRows(
   const renderResult = renderToString(
     <DatabasePage
       database={database}
-      referrer={referrer}
+      referrer={req.ref}
       settings={settings}
     />,
   );
 
-  return new Response(`<!DOCTYPE html>${renderResult}`, {
-    headers: { 'Content-Type': 'text/html' },
-  });
+  res.body = `<!DOCTYPE html>${renderResult}`;
+  res.headers.set('Content-Type', 'text/html');
 }

@@ -11,28 +11,34 @@ import {
   editRowInIndexedDb,
 } from 'utilities/idb';
 import { LexoRank } from 'lexorank';
+import {
+  ExpressWorkerRequest,
+  ExpressWorkerResponse,
+} from '@express-worker/app';
+import { AdditionalRequestProperties } from '../../../middleware';
 
 export async function PostDatabaseRows(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  formData: NormalizedFormData,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
-  console.log('POST DB');
+  if (req.data._method !== 'POST') {
+    return;
+  }
+
   const idb = await getIdb();
-  const id = match?.[1] || '';
-  const database = await getDatabaseFromIndexedDb(id, idb);
+  const databaseId = req.params.databaseId || '';
+  const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
-  if (formData.bulkAction !== undefined) {
-    if (formData.bulkAction === 'DELETE') {
-      const rowIds = formData['row[]'] || [];
+  if (req.data.bulkAction !== undefined) {
+    if (req.data.bulkAction === 'DELETE') {
+      const rowIds = req.data['row[]'] || [];
 
       for (const rowId of rowIds) {
         const row = await getRowByIdFromIndexedDb(rowId, database.id, idb);
@@ -43,8 +49,8 @@ export async function PostDatabaseRows(
 
         await deleteRowByIdFromIndexedDb(row.id, database.id, idb);
       }
-    } else if (formData.bulkAction === 'CLEAR') {
-      const cellEntries = formData['cell[]'] || [];
+    } else if (req.data.bulkAction === 'CLEAR') {
+      const cellEntries = req.data['cell[]'] || [];
 
       for (const cellEntry of cellEntries) {
         const [rowId, propertyId] = cellEntry.split(':');
@@ -73,22 +79,23 @@ export async function PostDatabaseRows(
           !guardIsTableRow(rowToPatch, database)
         ) {
           idb.close();
-          return new Response('Not found', {
-            status: 404,
-          });
+          res.status = 404;
+          res.body = 'Not found';
+          return;
         }
 
         await editRowInIndexedDb(rowToPatch, idb);
       }
     } else {
       idb.close();
-      return new Response('Not found', {
-        status: 404,
-      });
+      res.status = 404;
+      res.body = 'Not found';
+      return;
     }
 
     idb.close();
-    return Response.redirect(event.request.referrer, 303);
+    res.redirect(req.referrer);
+    return;
   }
 
   const rowToAdd = {
@@ -98,7 +105,7 @@ export async function PostDatabaseRows(
 
   for (const property of database.properties) {
     const formDataValue = formatPropertyValueFromFormData<typeof property>(
-      formData[property.id],
+      req.data[property.id],
       property,
     );
 
@@ -114,18 +121,19 @@ export async function PostDatabaseRows(
     !guardIsTableRow(rowToAdd, database)
   ) {
     idb.close();
-    const url = new URL(event.request.referrer);
+    const url = new URL(req.referrer);
     url.searchParams.set('error', 'Invalid row');
 
-    return Response.redirect(url.href, 303);
+    res.redirect(url.href);
+    return;
   }
 
   if (guardIsChecklistRow(rowToAdd, database)) {
-    rowToAdd.completed = formData.completed === 'on';
+    rowToAdd.completed = req.data.completed === 'on';
   }
 
-  if (formData.position !== undefined) {
-    rowToAdd.position = formData.position;
+  if (req.data.position !== undefined) {
+    rowToAdd.position = req.data.position;
   } else {
     const lastRow = database.rows[database.rows.length - 1];
 
@@ -141,14 +149,11 @@ export async function PostDatabaseRows(
 
   const redirectUrl = new URL(
     `/databases/${database.id}`,
-    new URL(event.request.url).origin,
+    new URL(req.url).origin,
   );
-  console.log({
-    'formData._autofocus': formData._autofocus,
-  });
-  const autofocusedPropertyName = formData._autofocus
+  const autofocusedPropertyName = req.data._autofocus
     ? (
-        (formData._autofocus || '').split('auto-save-text--field__')[1] || ''
+        (req.data._autofocus || '').split('auto-save-text--field__')[1] || ''
       ).split('--')[0]
     : '';
   const firstPropertyName = database.properties[0]?.id || '';
@@ -160,5 +165,5 @@ export async function PostDatabaseRows(
   });
   redirectUrl.searchParams.set('autofocus', autoFocusId);
 
-  return Response.redirect(redirectUrl.href, 303);
+  res.redirect(redirectUrl.href);
 }

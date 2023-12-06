@@ -8,27 +8,35 @@ import {
 import { getUniqueId } from 'shared/getUniqueId';
 import { addPartialDatabaseToIndexedDb } from 'utilities/idb';
 import { assertIsDatabase } from 'shared/assertions';
-import { Referrer, NormalizedFormData, Property } from 'shared/types';
+import { Property } from 'shared/types';
+import {
+  ExpressWorkerRequest,
+  ExpressWorkerResponse,
+} from '@express-worker/app';
+import { AdditionalRequestProperties } from '../../../middleware';
 
 export async function PostDatabase(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  formData: NormalizedFormData,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
-  if (formData.bulkAction !== undefined) {
-    if (formData.bulkAction === 'DELETE') {
-      const rowIds = formData['row[]'] || [];
+  if (req.data._method !== 'POST') {
+    return;
+  }
+
+  if (req.data.bulkAction !== undefined) {
+    if (req.data.bulkAction === 'DELETE') {
+      const rowIds = req.data['row[]'] || [];
 
       for (const databaseId of rowIds) {
         await deleteDatabaseByIdFromIndexedDb(databaseId);
       }
 
-      return Response.redirect(event.request.referrer, 303);
+      res.redirect(req.referrer);
+      return;
     } else {
-      return new Response('Not found', {
-        status: 404,
-      });
+      res.status = 404;
+      res.body = 'Not found';
+      return;
     }
   }
 
@@ -36,8 +44,8 @@ export async function PostDatabase(
 
   const partialDatabase = {
     id,
-    type: formData.type,
-    name: formData.name || '',
+    type: req.data.type,
+    name: req.data.name || '',
     properties: [],
     rows: [],
   };
@@ -61,9 +69,9 @@ export async function PostDatabase(
 
   if (!database) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   await addBlankRowToIndexedDb(database, idb);
@@ -73,7 +81,7 @@ export async function PostDatabase(
   idb.close();
 
   const databaseUrl = `/databases/${id}`;
-  const url = new URL(databaseUrl, new URL(event.request.url).origin);
+  const url = new URL(databaseUrl, new URL(req.url).origin);
 
-  return Response.redirect(url.href, 303);
+  res.redirect(url.href);
 }

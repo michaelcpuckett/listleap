@@ -8,32 +8,39 @@ import {
 import { Referrer, NormalizedFormData } from 'shared/types';
 import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
 import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
+import {
+  ExpressWorkerRequest,
+  ExpressWorkerResponse,
+} from '@express-worker/app';
+import { AdditionalRequestProperties } from '../../../middleware';
 
 export async function PatchDatabaseRow(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  formData: NormalizedFormData,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
+  if (req.data._method !== 'PATCH') {
+    return;
+  }
+
   const idb = await getIdb();
-  const databaseId = match?.[1] || '';
-  const id = match?.[2] || '';
+  const databaseId = req.params.databaseId || '';
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
+  const id = req.params.id || '';
   const existingRow = database.rows.find((row) => row.id === id);
 
   if (!existingRow) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   const rowToPatch = {
@@ -44,7 +51,7 @@ export async function PatchDatabaseRow(
 
   for (const property of database.properties) {
     const formDataValue = formatPropertyValueFromFormData<typeof property>(
-      formData[property.id] ?? existingRow[property.id],
+      req.data[property.id] ?? existingRow[property.id],
       property,
     );
 
@@ -62,28 +69,29 @@ export async function PatchDatabaseRow(
     )
   ) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
-  if (formData.position !== undefined) {
+  if (req.data.position !== undefined) {
     const rowToReorder = await getRowByPositionFromIndexedDb(
-      formData.position,
+      req.data.position,
       databaseId,
       idb,
     );
     await reorderRowInIndexedDb(existingRow, rowToReorder, idb);
-    rowToPatch.position = formData.position;
+    rowToPatch.position = req.data.position;
   }
 
   await editRowInIndexedDb<typeof database>(rowToPatch, idb);
   idb.close();
 
   const redirectUrl = new URL(
-    formData._redirect || `/databases/${databaseId}`,
-    new URL(event.request.url).origin,
+    req.data._redirect || `/databases/${databaseId}`,
+    new URL(req.url).origin,
   );
-  redirectUrl.search = new URL(event.request.referrer).search;
-  return Response.redirect(redirectUrl.href, 303);
+  redirectUrl.search = new URL(req.referrer).search;
+
+  res.redirect(redirectUrl.href);
 }

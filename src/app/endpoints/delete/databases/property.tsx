@@ -4,31 +4,39 @@ import {
   deletePropertyByIdFromIndexedDb,
 } from 'utilities/idb';
 import { Referrer, NormalizedFormData } from 'shared/types';
+import {
+  ExpressWorkerRequest,
+  ExpressWorkerResponse,
+} from '@express-worker/app';
+import { AdditionalRequestProperties } from '../../../middleware';
 
 export async function DeleteDatabaseProperty(
-  event: FetchEvent,
-  match: RegExpExecArray | null,
-  formData: NormalizedFormData,
-  referrer: Referrer,
+  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  res: ExpressWorkerResponse,
 ) {
+  if (req.data._method !== 'DELETE') {
+    return;
+  }
+
   const idb = await getIdb();
-  const databaseId = match?.[1] || '';
-  const id = match?.[2] || '';
+  const databaseId = req.params.databaseId || '';
+  const id = req.params.id || '';
   const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
   if (!database) {
     idb.close();
-    return new Response('Not found', {
-      status: 404,
-    });
+    res.status = 404;
+    res.body = 'Not found';
+    return;
   }
 
   await deletePropertyByIdFromIndexedDb(id, databaseId, idb);
   idb.close();
 
   const redirectUrl = new URL(
-    formData._redirect || `/databases/${databaseId}`,
-    new URL(event.request.url).origin,
+    req.data._redirect || `/databases/${databaseId}`,
+    new URL(req.url).origin,
   );
-  return Response.redirect(redirectUrl.href, 303);
+
+  res.redirect(redirectUrl.href);
 }
