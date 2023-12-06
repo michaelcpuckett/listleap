@@ -126,7 +126,7 @@ export async function PostDatabaseRows(
     !guardIsTableRow(rowToAdd, database)
   ) {
     idb.close();
-    const url = new URL(req.referrer);
+    const url = new URL(req.ref.url);
     url.searchParams.set('error', 'Invalid row');
 
     res.redirect(url.href);

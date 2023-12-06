@@ -29,7 +29,7 @@ export async function PatchSettings(
 
   idb.close();
 
-  const url = new URL(req.referrer);
+  const url = new URL(req.ref.url);
 
   res.redirect(url.href);
 }

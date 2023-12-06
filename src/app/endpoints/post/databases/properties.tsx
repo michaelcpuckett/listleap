@@ -52,7 +52,7 @@ export async function PostDatabaseProperties(
 
   if (!guardIsProperty(propertyToAdd)) {
     idb.close();
-    const url = new URL(req.referrer);
+    const url = new URL(req.ref.url);
     url.searchParams.set('error', 'Invalid property');
 
     res.redirect(url.href);
