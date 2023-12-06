@@ -25,7 +25,7 @@ export async function DeleteDatabaseRow(
   if (!database) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 

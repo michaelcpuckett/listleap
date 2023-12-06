@@ -24,7 +24,7 @@ export async function DeleteDatabase(
 
   if (!database) {
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 

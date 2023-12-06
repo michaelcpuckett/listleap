@@ -21,7 +21,7 @@ export async function PatchSettings(
   if (!VALID_THEMES.includes(theme)) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 

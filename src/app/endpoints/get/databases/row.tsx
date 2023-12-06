@@ -1,4 +1,3 @@
-import { Referrer } from 'shared/types';
 import { renderToString } from 'react-dom/server';
 import { DatabasePage } from 'components/pages/DatabasePage';
 import {
@@ -24,7 +23,7 @@ export async function GetDatabaseRow(
   if (!database) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 
@@ -33,7 +32,7 @@ export async function GetDatabaseRow(
   if (!row) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 
@@ -54,6 +53,5 @@ export async function GetDatabaseRow(
     />,
   );
 
-  res.body = `<!DOCTYPE html>${renderResult}`;
-  res.headers.set('Content-Type', 'text/html');
+  res.send(`<!DOCTYPE html>${renderResult}`);
 }

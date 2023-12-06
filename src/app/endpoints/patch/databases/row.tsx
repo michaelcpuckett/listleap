@@ -29,7 +29,7 @@ export async function PatchDatabaseRow(
   if (!database) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 
@@ -39,7 +39,7 @@ export async function PatchDatabaseRow(
   if (!existingRow) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 
@@ -70,7 +70,7 @@ export async function PatchDatabaseRow(
   ) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 

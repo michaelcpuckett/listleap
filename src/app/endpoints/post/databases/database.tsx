@@ -2,6 +2,7 @@ import {
   addBlankRowToIndexedDb,
   addPropertyToIndexedDb,
   deleteDatabaseByIdFromIndexedDb,
+  deleteRowByIdFromIndexedDb,
   getDatabaseFromIndexedDb,
   getIdb,
 } from 'utilities/idb';
@@ -23,19 +24,30 @@ export async function PostDatabase(
     return;
   }
 
+  const databaseId = req.params.databaseId || '';
+
   if (req.data.bulkAction !== undefined) {
     if (req.data.bulkAction === 'DELETE') {
       const rowIds = req.data['row[]'] || [];
 
-      for (const databaseId of rowIds) {
-        await deleteDatabaseByIdFromIndexedDb(databaseId);
+      const idb = await getIdb();
+
+      for (const rowId of rowIds) {
+        await deleteRowByIdFromIndexedDb(rowId, databaseId, idb);
       }
 
-      res.redirect(req.referrer);
+      idb.close();
+
+      const redirectUrl = new URL(
+        req.data._redirect || `/databases/${databaseId}`,
+        new URL(req.url).origin,
+      );
+
+      res.redirect(redirectUrl.href);
       return;
     } else {
       res.status = 404;
-      res.body = 'Not found';
+      res.text('Not found');
       return;
     }
   }
@@ -70,7 +82,7 @@ export async function PostDatabase(
   if (!database) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 

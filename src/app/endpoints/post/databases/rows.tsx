@@ -32,7 +32,7 @@ export async function PostDatabaseRows(
   if (!database) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 
@@ -80,7 +80,7 @@ export async function PostDatabaseRows(
         ) {
           idb.close();
           res.status = 404;
-          res.body = 'Not found';
+          res.text('Not found');
           return;
         }
 
@@ -89,12 +89,17 @@ export async function PostDatabaseRows(
     } else {
       idb.close();
       res.status = 404;
-      res.body = 'Not found';
+      res.text('Not found');
       return;
     }
 
     idb.close();
-    res.redirect(req.referrer);
+    const redirectUrl = new URL(
+      req.data._redirect || `/databases/${databaseId}`,
+      new URL(req.url).origin,
+    );
+
+    res.redirect(redirectUrl.href);
     return;
   }
 

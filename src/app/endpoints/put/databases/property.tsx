@@ -28,7 +28,7 @@ export async function PutDatabaseProperty(
   if (!database) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 
@@ -40,7 +40,7 @@ export async function PutDatabaseProperty(
   if (!property) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 

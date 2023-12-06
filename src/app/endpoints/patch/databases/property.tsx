@@ -34,7 +34,7 @@ export async function PatchDatabaseProperty(
   if (!database) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 
@@ -45,7 +45,7 @@ export async function PatchDatabaseProperty(
   if (!property) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 

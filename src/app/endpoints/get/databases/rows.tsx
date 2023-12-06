@@ -4,7 +4,6 @@ import {
 } from '@express-worker/app';
 import { DatabasePage } from 'components/pages/DatabasePage';
 import { renderToString } from 'react-dom/server';
-import { Database, Property, Referrer, Settings } from 'shared/types';
 import {
   getIdb,
   getDatabaseFromIndexedDb,
@@ -23,7 +22,7 @@ export async function GetDatabaseRows(
   if (!database) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 
@@ -38,6 +37,5 @@ export async function GetDatabaseRows(
     />,
   );
 
-  res.body = `<!DOCTYPE html>${renderResult}`;
-  res.headers.set('Content-Type', 'text/html');
+  res.send(`<!DOCTYPE html>${renderResult}`);
 }

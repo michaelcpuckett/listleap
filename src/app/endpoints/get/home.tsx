@@ -28,6 +28,5 @@ export async function GetHome(
     />,
   );
 
-  res.body = `<!DOCTYPE html>${renderResult}`;
-  res.headers.set('Content-Type', 'text/html');
+  res.send(`<!DOCTYPE html>${renderResult}`);
 }

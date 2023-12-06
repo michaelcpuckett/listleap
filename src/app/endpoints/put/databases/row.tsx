@@ -36,7 +36,7 @@ export async function PutDatabaseRow(
   if (!database) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 
@@ -46,7 +46,7 @@ export async function PutDatabaseRow(
   if (!existingRow) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 
@@ -77,7 +77,7 @@ export async function PutDatabaseRow(
   ) {
     idb.close();
     res.status = 404;
-    res.body = 'Not found';
+    res.text('Not found');
     return;
   }
 

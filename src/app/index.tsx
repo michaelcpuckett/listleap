@@ -9,7 +9,9 @@ import * as Endpoints from 'endpoints/index';
 
 self.addEventListener('install', handleInstall);
 
-const app = new ExpressWorker();
+const app = new ExpressWorker({
+  debug: true,
+});
 
 for (const url of URLS_TO_CACHE) {
   app.get(url, GetStaticFile);
