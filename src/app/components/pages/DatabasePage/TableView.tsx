@@ -1,12 +1,9 @@
-import React from 'react';
-import { AnyTable, AnyTableRow, Referrer } from 'shared/types';
-import { RowActionsFlyoutMenu } from 'components/menus/RowActionsFlyoutMenu';
 import { AutoSaveTextElement } from 'components/elements/AutoSaveTextElement';
+import { RowActionsFlyoutMenu } from 'components/menus/RowActionsFlyoutMenu';
+import React from 'react';
+import { AnyTable, AnyTableRow } from 'shared/types';
 // import {DateContentEditable} from 'components/elements/DateContentEditable';
 import { AutoSaveCheckboxElement } from 'components/elements/AutoSaveCheckboxElement';
-import { PropertyActionsFlyoutMenu } from 'components/menus/PropertyActionsFlyoutMenu';
-import { SelectAllCheckboxElement } from 'components/elements/SelectAllCheckboxElement';
-import { AddPropertyForm } from 'components/forms/AddPropertyForm';
 import {
   CellElement,
   ColumnHeaderElement,
@@ -14,11 +11,15 @@ import {
   RowElement,
   RowGroupElement,
 } from 'components/elements/GridElement';
+import { SelectAllCheckboxElement } from 'components/elements/SelectAllCheckboxElement';
+import { AddPropertyForm } from 'components/forms/AddPropertyForm';
+import { PropertyActionsFlyoutMenu } from 'components/menus/PropertyActionsFlyoutMenu';
 
 export function TableView(
   props: React.PropsWithoutRef<{
     database: AnyTable;
-    referrer: Referrer;
+    query: Record<string, string>;
+    url: string;
     queriedRows: AnyTableRow[];
   }>,
 ) {
@@ -66,7 +67,7 @@ export function TableView(
                 <AutoSaveTextElement
                   inline
                   id={property.id}
-                  referrer={props.referrer}
+                  query={props.query}
                   name="name"
                   label={property.name}
                   value={property.name}
@@ -82,7 +83,8 @@ export function TableView(
                 property={property}
                 previousProperty={properties[index - 1]}
                 nextProperty={properties[index + 1]}
-                referrer={props.referrer}
+                query={props.query}
+                url={props.url}
               />
             </ColumnHeaderElement>
           ))}
@@ -133,7 +135,7 @@ export function TableView(
                       form={formId}
                       id={row.id}
                       label={property.name}
-                      referrer={props.referrer}
+                      query={props.query}
                       name={property.id}
                       value={row[property.id]}
                     />
@@ -148,7 +150,7 @@ export function TableView(
                   ) : property.type === Number ? (
                     <AutoSaveTextElement
                       form={formId}
-                      referrer={props.referrer}
+                      query={props.query}
                       id={row.id}
                       label={property.name}
                       name={property.id}
@@ -165,7 +167,8 @@ export function TableView(
                   row={row}
                   previousRow={props.queriedRows[filteredIndex - 1]}
                   nextRow={props.queriedRows[filteredIndex + 1]}
-                  referrer={props.referrer}
+                  query={props.query}
+                  url={props.url}
                 />
                 <form
                   noValidate

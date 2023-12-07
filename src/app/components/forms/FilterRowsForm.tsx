@@ -1,20 +1,20 @@
 import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import React from 'react';
-import { Referrer, Property, AnyChecklistRow } from 'shared/types';
+import { AnyChecklistRow } from 'shared/types';
 
 export function FilterRowsForm(
   props: React.PropsWithoutRef<{
     rows: AnyChecklistRow[];
-    referrer: Referrer;
+    query: Record<string, string>;
   }>,
 ) {
-  const allRowsUrl = new URL(props.referrer.url);
+  const allRowsUrl = new URL(props.url);
   allRowsUrl.searchParams.delete('filter');
 
-  const completedRowsUrl = new URL(props.referrer.url);
+  const completedRowsUrl = new URL(props.url);
   completedRowsUrl.searchParams.set('filter', 'completed');
 
-  const incompleteRowsUrl = new URL(props.referrer.url);
+  const incompleteRowsUrl = new URL(props.url);
   incompleteRowsUrl.searchParams.set('filter', 'incompleted');
 
   return (
@@ -25,7 +25,7 @@ export function FilterRowsForm(
       <ul className="no-bullet">
         <li>
           <HyperLinkElement
-            current={!props.referrer.filter}
+            current={!props.query.filter}
             href={allRowsUrl.href}
           >
             All ({props.rows.length})
@@ -33,7 +33,7 @@ export function FilterRowsForm(
         </li>
         <li>
           <HyperLinkElement
-            current={props.referrer.filter === 'incompleted'}
+            current={props.query.filter === 'incompleted'}
             href={incompleteRowsUrl.href}
           >
             Incomplete ({props.rows.filter((row) => !row.completed).length})
@@ -41,7 +41,7 @@ export function FilterRowsForm(
         </li>
         <li>
           <HyperLinkElement
-            aria-current={props.referrer.filter === 'completed'}
+            aria-current={props.query.filter === 'completed'}
             href={completedRowsUrl.href}
           >
             Completed ({props.rows.filter((row) => row.completed).length})

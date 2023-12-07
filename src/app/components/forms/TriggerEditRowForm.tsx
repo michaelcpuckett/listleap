@@ -1,15 +1,16 @@
 import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import React from 'react';
-import { Referrer, AnyRow } from 'shared/types';
+import { AnyRow } from 'shared/types';
 
 export function TriggerEditRowForm(
   props: React.PropsWithChildren<{
     row: AnyRow;
-    referrer: Referrer;
+    query: Record<string, string>;
+    url: string;
   }>,
 ) {
   const urlPathname = `/databases/${props.row.databaseId}/rows/${props.row.id}`;
-  const url = new URL(props.referrer.url);
+  const url = new URL(props.url);
   const urlSearchParams = new URLSearchParams(url.search);
   urlSearchParams.delete('mode');
   url.pathname = urlPathname;

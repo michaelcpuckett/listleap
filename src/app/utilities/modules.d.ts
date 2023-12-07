@@ -1,3 +1,20 @@
+import * as React from 'react';
+
+declare module 'react' {
+  interface HTMLAttributes<T>
+    extends React.AriaAttributes,
+      React.DOMAttributes<T> {
+    shadowrootmode?: string;
+    shadowrootdelegatesfocus?: string;
+    part?: string;
+    inert?: string;
+  }
+
+  interface CSSProperties {
+    [key: `--${string}`]: string | number;
+  }
+}
+
 type CustomElement = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement> & {
     class?: string;
@@ -7,21 +24,6 @@ type CustomElement = React.DetailedHTMLProps<
 >;
 
 declare global {
-  namespace react {
-    interface HTMLAttributes<T>
-      extends React.AriaAttributes,
-        React.DOMAttributes<T> {
-      shadowrootmode?: string;
-      shadowrootdelegatesfocus?: string;
-      part?: string;
-      inert?: string;
-    }
-
-    interface CSSProperties {
-      [key: `--${string}`]: string | number;
-    }
-  }
-
   namespace JSX {
     interface IntrinsicElements {
       'auto-save-text': CustomElement;

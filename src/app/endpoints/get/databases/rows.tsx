@@ -1,15 +1,15 @@
 import {
-  ExpressWorkerResponse,
   ExpressWorkerRequest,
+  ExpressWorkerResponse,
 } from '@express-worker/app';
 import { DatabasePage } from 'components/pages/DatabasePage';
+import { handleRequest } from 'middleware/index';
 import { renderToString } from 'react-dom/server';
 import {
-  getIdb,
   getDatabaseFromIndexedDb,
+  getIdb,
   getSettingsFromIndexedDb,
 } from 'utilities/idb';
-import { handleRequest } from '../../../middleware';
 
 export async function GetDatabaseRows(
   req: ExpressWorkerRequest,
@@ -36,6 +36,7 @@ export async function GetDatabaseRows(
         version={req.version}
         query={req.query}
         settings={settings}
+        url={req.url}
       />,
     );
 

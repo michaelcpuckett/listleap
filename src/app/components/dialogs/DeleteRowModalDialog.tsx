@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Referrer, AnyProperty, Database } from 'shared/types';
+import { Row, AnyProperty, Database } from 'shared/types';
 import { ModalDialogElement } from 'components/elements/ModalDialogElement';
 import { DeleteRowForm } from 'components/forms/DeleteRowForm';
 

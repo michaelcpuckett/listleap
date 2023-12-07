@@ -20,18 +20,16 @@
       "endpoints/*": ["./endpoints/*"],
       "utilities/*": ["./utilities/*"],
       "shared/*": ["../shared/*"],
-      "middleware/*": ["../middleware/*"]
+      "middleware/*": ["./middleware/*"]
     }
   },
   "exclude": ["../../node_modules"],
   "include": [
     "index.tsx",
-    "fetch.ts",
     "install.ts",
     "components/**/*",
     "endpoints/**/*",
     "utilities/**/*",
-    "middleware/**/*",
-    "modules.d.ts"
+    "middleware/**/*"
   ]
 }

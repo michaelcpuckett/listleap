@@ -1,36 +1,36 @@
-import React from 'react';
-import {
-  Referrer,
-  Settings,
-  Property,
-  Database,
-  AnyRow,
-  AnyProperty,
-} from 'shared/types';
-import { guardIsTable } from 'shared/assertions';
-import { PageShell } from 'components/pages/PageShell';
-import { TableView } from './TableView';
-import { SearchRowsForm } from 'components/forms/SearchRowsForm';
-import { EditDatabaseForm } from 'components/forms/EditDatabaseForm';
-import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
+import { DeletePropertyModalDialog } from 'components/dialogs/DeletePropertyModalDialog';
 import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
 import { EditPropertyModalDialog } from 'components/dialogs/EditPropertyModalDialog';
-import { DeletePropertyModalDialog } from 'components/dialogs/DeletePropertyModalDialog';
-import { ModalDialogElement } from 'components/elements/ModalDialogElement';
-import { ERROR_MESSAGES } from 'utilities/errors';
-import { PostFormElement } from 'components/elements/PostFormElement';
-import { Icon } from 'components/icons/Icon';
-import { ViewContainerElement } from 'components/elements/ViewContainerElement';
+import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
 import { ButtonElement } from 'components/elements/ButtonElement';
-import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import { DisclosureWidgetElement } from 'components/elements/DisclosureWidgetElement';
+import { HyperLinkElement } from 'components/elements/HyperLinkElement';
+import { ModalDialogElement } from 'components/elements/ModalDialogElement';
+import { PostFormElement } from 'components/elements/PostFormElement';
+import { ViewContainerElement } from 'components/elements/ViewContainerElement';
+import { EditDatabaseForm } from 'components/forms/EditDatabaseForm';
+import { SearchRowsForm } from 'components/forms/SearchRowsForm';
+import { Icon } from 'components/icons/Icon';
+import { PageShell } from 'components/pages/PageShell';
+import React from 'react';
+import { guardIsTable } from 'shared/assertions';
+import {
+  AnyProperty,
+  AnyRow,
+  Database,
+  Property,
+  Settings,
+} from 'shared/types';
+import { ERROR_MESSAGES } from 'utilities/errors';
+import { TableView } from './TableView';
 
 export function DatabasePage(
   props: React.PropsWithChildren<{
     database: Database<AnyProperty[]>;
     settings: Settings;
-    query: Referrer;
+    query: Record<string, string>;
     version: number;
+    url: string;
   }>,
 ) {
   const row = props.database.rows.find((row) => row.id === props.query.id);
@@ -51,7 +51,7 @@ export function DatabasePage(
     isEditingProperty ||
     isDeletingProperty;
   const closeUrlPathname = `/databases/${props.database.id}`;
-  const closeUrl = new URL(props.query.url);
+  const closeUrl = new URL(props.url);
   const closeUrlSearchParams = new URLSearchParams(closeUrl.search);
   closeUrlSearchParams.delete('mode');
   closeUrlSearchParams.delete('error');
@@ -59,7 +59,7 @@ export function DatabasePage(
   closeUrl.search = closeUrlSearchParams.toString();
   const closeUrlHref = closeUrl.href.replace(closeUrl.origin, '');
 
-  const clearSearchUrl = new URL(props.query.url);
+  const clearSearchUrl = new URL(props.url);
   const clearSearchSearchParams = new URLSearchParams(clearSearchUrl.search);
   clearSearchSearchParams.delete('query');
   clearSearchUrl.search = clearSearchSearchParams.toString();
@@ -143,7 +143,10 @@ export function DatabasePage(
       >
         <nav className="layout--split">
           <HyperLinkElement href="/">Home</HyperLinkElement>
-          <SearchRowsForm referrer={props.query} />
+          <SearchRowsForm
+            query={props.query}
+            url={props.url}
+          />
           <HyperLinkElement href="/settings">Settings</HyperLinkElement>
         </nav>
         <main>
@@ -190,8 +193,9 @@ export function DatabasePage(
               <>
                 <TableView
                   database={props.database}
-                  referrer={props.query}
+                  query={props.query}
                   queriedRows={queriedRows}
+                  url={props.url}
                 />
                 <PostFormElement
                   action={`/databases/${props.database.id}/rows`}

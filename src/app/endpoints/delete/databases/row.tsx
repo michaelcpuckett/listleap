@@ -7,7 +7,7 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { handleRequest } from '../../../middleware';
+import { handleRequest } from 'middleware/index';
 
 export async function DeleteDatabaseRow(
   req: ExpressWorkerRequest,

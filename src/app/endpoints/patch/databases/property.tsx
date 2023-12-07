@@ -11,7 +11,7 @@ import {
   getPropertyByPositionFromIndexedDb,
   reorderPropertyInIndexedDb,
 } from 'utilities/idb';
-import { handleRequest } from '../../../middleware';
+import { handleRequest } from 'middleware/index';
 
 export async function PatchDatabaseProperty(
   req: ExpressWorkerRequest,

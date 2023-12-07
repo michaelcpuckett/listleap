@@ -3,11 +3,11 @@ import {
   ExpressWorkerResponse,
   applyAdditionalRequestProperties as ExpressWorkerApplyAdditionalRequestProperties,
 } from '@express-worker/app';
-import { NormalizedFormData, Referrer } from 'shared/types';
+import { NormalizedFormData } from 'shared/types';
 
 export interface AdditionalRequestProperties {
   version: number;
-  query: Referrer;
+  query: Record<string, string>;
   data: NormalizedFormData;
 }
 

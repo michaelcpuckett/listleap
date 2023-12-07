@@ -1,4 +1,4 @@
-import { Referrer, NormalizedFormData, PartialRow, AnyRow } from 'shared/types';
+import { NormalizedFormData, PartialRow, AnyRow } from 'shared/types';
 import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
 import { getUniqueId } from 'shared/getUniqueId';
 import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
@@ -15,10 +15,7 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import {
-  AdditionalRequestProperties,
-  handleRequest,
-} from '../../../middleware';
+import { AdditionalRequestProperties, handleRequest } from 'middleware/index';
 
 export async function PostDatabaseRows(
   req: ExpressWorkerRequest,

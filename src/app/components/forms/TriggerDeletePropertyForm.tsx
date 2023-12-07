@@ -1,15 +1,16 @@
 import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import React from 'react';
-import { AnyProperty, Referrer } from 'shared/types';
+import { AnyProperty } from 'shared/types';
 
 export function TriggerDeletePropertyForm(
   props: React.PropsWithChildren<{
     property: AnyProperty;
-    referrer: Referrer;
+    query: Record<string, string>;
+    url: string;
   }>,
 ) {
   const urlPathname = `/databases/${props.property.databaseId}/properties/${props.property.id}`;
-  const url = new URL(props.referrer.url);
+  const url = new URL(props.url);
   url.pathname = urlPathname;
   const urlSearchParams = new URLSearchParams(url.search);
   urlSearchParams.set('mode', 'DELETE_PROPERTY');

@@ -8,12 +8,13 @@ import {
 import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import { SelectAllCheckboxElement } from 'components/elements/SelectAllCheckboxElement';
 import { DatabaseActionsFlyoutMenu } from 'components/menus/DatabaseActionsFlyoutMenu';
-import { PartialDatabase, Referrer } from 'shared/types';
+import { PartialDatabase } from 'shared/types';
 
 export function TableView(
   props: React.PropsWithChildren<{
     databases: PartialDatabase[];
-    referrer: Referrer;
+    query: Record<string, string>;
+    url: string;
   }>,
 ) {
   const gridColumnsCss = `auto minmax(0, 1fr) auto`;
@@ -68,7 +69,8 @@ export function TableView(
             <CellElement>
               <DatabaseActionsFlyoutMenu
                 database={database}
-                referrer={props.referrer}
+                query={props.query}
+                url={props.url}
               />
             </CellElement>
           </RowElement>

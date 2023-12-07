@@ -1,10 +1,9 @@
 import React from 'react';
-import { Referrer } from 'shared/types';
 
 export function AutoSaveTextElement(
   props: React.PropsWithChildren<{
     form?: string;
-    referrer: Referrer;
+    query: Record<string, string>;
     placeholder?: string;
     inline?: boolean;
     id: string;
@@ -33,7 +32,7 @@ export function AutoSaveTextElement(
       <input
         form={props.form}
         id={id}
-        data-auto-focus={props.referrer.autofocus === id}
+        data-auto-focus={props.query.autofocus === id}
         autoComplete="turn-off"
         aria-label={props.label}
         placeholder={props.placeholder}

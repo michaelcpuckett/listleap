@@ -1,15 +1,16 @@
 import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import React from 'react';
-import { AnyRow, Referrer } from 'shared/types';
+import { AnyRow } from 'shared/types';
 
 export function TriggerDeleteRowForm(
   props: React.PropsWithChildren<{
     row: AnyRow;
-    referrer: Referrer;
+    query: Record<string, string>;
+    url: string;
   }>,
 ) {
   const urlPathname = `/databases/${props.row.databaseId}/rows/${props.row.id}`;
-  const url = new URL(props.referrer.url);
+  const url = new URL(props.url);
   url.pathname = urlPathname;
   const urlSearchParams = new URLSearchParams(url.search);
   urlSearchParams.set('mode', 'DELETE_ROW');

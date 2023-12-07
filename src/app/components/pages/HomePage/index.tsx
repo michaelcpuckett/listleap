@@ -1,29 +1,22 @@
-import React from 'react';
-import { PartialDatabase, Referrer, Settings, Property } from 'shared/types';
-import { PageShell } from 'components/pages/PageShell';
-import { AddDatabaseForm } from 'components/forms/AddDatabaseForm';
-import { DatabaseActionsFlyoutMenu } from 'components/menus/DatabaseActionsFlyoutMenu';
 import { DeleteDatabaseModalDialog } from 'components/dialogs/DeleteDatabaseModalDialog';
-import {
-  CellElement,
-  ColumnHeaderElement,
-  GridElement,
-  RowElement,
-  RowGroupElement,
-} from 'components/elements/GridElement';
-import { TableView } from './TableView';
-import { ViewContainerElement } from 'components/elements/ViewContainerElement';
-import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import { ButtonElement } from 'components/elements/ButtonElement';
-import { Icon } from 'components/icons/Icon';
 import { DisclosureWidgetElement } from 'components/elements/DisclosureWidgetElement';
+import { HyperLinkElement } from 'components/elements/HyperLinkElement';
+import { ViewContainerElement } from 'components/elements/ViewContainerElement';
+import { AddDatabaseForm } from 'components/forms/AddDatabaseForm';
+import { Icon } from 'components/icons/Icon';
+import { PageShell } from 'components/pages/PageShell';
+import React from 'react';
+import { PartialDatabase, Settings } from 'shared/types';
+import { TableView } from './TableView';
 
 export function HomePage(
   props: React.PropsWithChildren<{
     databases: PartialDatabase[];
     settings: Settings;
     version: number;
-    query: Referrer;
+    query: Record<string, string>;
+    url: string;
   }>,
 ) {
   const database = props.databases.find(
@@ -34,7 +27,7 @@ export function HomePage(
     !hasError && props.query.mode === 'DELETE_DATABASE' && !!database;
   const isShowingModal = hasError || isDeletingDatabase;
   const closeUrlPathname = `/`;
-  const closeUrl = new URL(props.query.url);
+  const closeUrl = new URL(props.url);
   const closeUrlSearchParams = new URLSearchParams(closeUrl.search);
   closeUrlSearchParams.delete('mode');
   closeUrlSearchParams.delete('error');
@@ -99,7 +92,8 @@ export function HomePage(
             </aside>
             <TableView
               databases={props.databases}
-              referrer={props.query}
+              query={props.query}
+              url={props.url}
             />
             <AddDatabaseForm />
           </ViewContainerElement>

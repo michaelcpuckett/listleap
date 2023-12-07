@@ -3,16 +3,13 @@ import {
   ExpressWorkerResponse,
 } from '@express-worker/app';
 import { HomePage } from 'components/pages/HomePage';
+import { handleRequest } from 'middleware/index';
 import { renderToString } from 'react-dom/server';
 import {
   getIdb,
   getPartialDatabasesFromIndexedDb,
   getSettingsFromIndexedDb,
 } from 'utilities/idb';
-import {
-  AdditionalRequestProperties,
-  handleRequest,
-} from '../../middleware/index';
 
 export async function GetHome(
   req: ExpressWorkerRequest,
@@ -30,6 +27,7 @@ export async function GetHome(
         settings={settings}
         version={req.version}
         query={req.query}
+        url={req.url}
       />,
     );
 

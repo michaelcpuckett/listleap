@@ -1,4 +1,4 @@
-export type Referrer = {
+export type Record<string, string> = {
   url: string;
   version: number;
   mode?: string;

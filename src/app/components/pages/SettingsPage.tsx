@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, Referrer } from 'shared/types';
+import { Settings } from 'shared/types';
 import { PageShell } from './PageShell';
 import { EditSettingsForm } from 'components/forms/EditSettingsForm';
 

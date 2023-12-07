@@ -1,20 +1,20 @@
-import React from 'react';
-import { AnyProperty, AnyRow, Database, Referrer } from 'shared/types';
 import { FlyoutMenu, FlyoutMenuItem } from 'components/elements/FlyoutMenu';
-import { ReorderRowUpForm } from 'components/forms/ReorderRowUpForm';
-import { ReorderRowDownForm } from 'components/forms/ReorderRowDownForm';
-import { TriggerEditRowForm } from 'components/forms/TriggerEditRowForm';
-import { TriggerDeleteRowForm } from 'components/forms/TriggerDeleteRowForm';
+import { AddNewRowAboveForm } from 'components/forms/AddNewRowAboveForm';
 import { AddNewRowBelowForm } from 'components/forms/AddNewRowBelowForm';
 import { DeleteRowForm } from 'components/forms/DeleteRowForm';
-import { AddNewRowAboveForm } from 'components/forms/AddNewRowAboveForm';
+import { ReorderRowDownForm } from 'components/forms/ReorderRowDownForm';
+import { ReorderRowUpForm } from 'components/forms/ReorderRowUpForm';
+import { TriggerEditRowForm } from 'components/forms/TriggerEditRowForm';
+import React from 'react';
+import { AnyRow } from 'shared/types';
 
 export function RowActionsFlyoutMenu(
   props: React.PropsWithChildren<{
     row: AnyRow;
     previousRow?: AnyRow;
     nextRow?: AnyRow;
-    referrer: Referrer;
+    query: Record<string, string>;
+    url: string;
   }>,
 ) {
   return (
@@ -59,7 +59,8 @@ export function RowActionsFlyoutMenu(
       <FlyoutMenuItem>
         <TriggerEditRowForm
           row={props.row}
-          referrer={props.referrer}
+          query={props.query}
+          url={props.url}
         />
       </FlyoutMenuItem>
 

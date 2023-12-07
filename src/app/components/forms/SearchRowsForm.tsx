@@ -1,20 +1,19 @@
-import React from 'react';
-import { Referrer } from 'shared/types';
 import { AutoSaveSearchElement } from 'components/elements/AutoSaveSearchElement';
-import { ClearSearchElement } from 'components/elements/ClearSearchElement';
 import { ButtonElement } from 'components/elements/ButtonElement';
+import { ClearSearchElement } from 'components/elements/ClearSearchElement';
+import React from 'react';
 
 export function SearchRowsForm(
-  props: React.PropsWithoutRef<{ referrer: Referrer }>,
+  props: React.PropsWithoutRef<{ url: string; query: Record<string, string> }>,
 ) {
-  const referrerUrl = new URL(props.referrer.url);
-  const searchParams = new URLSearchParams(referrerUrl.search);
+  const queryUrl = new URL(props.url);
+  const searchParams = new URLSearchParams(queryUrl.search);
   searchParams.delete('query');
   const searchParamEntries = Array.from(searchParams.entries());
 
   return (
     <form
-      action={referrerUrl.pathname}
+      action={queryUrl.pathname}
       method="GET"
       role="none"
     >
@@ -31,7 +30,7 @@ export function SearchRowsForm(
           id="search-rows-input"
           name="query"
           label="Search"
-          value={props.referrer.query ?? ''}
+          value={props.query.query ?? ''}
           placeholder="Search rows"
         />
         <ClearSearchElement />

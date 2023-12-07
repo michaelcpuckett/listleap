@@ -5,7 +5,7 @@ import {
 import { SettingsPage } from 'components/pages/SettingsPage';
 import { renderToString } from 'react-dom/server';
 import { getIdb, getSettingsFromIndexedDb } from 'utilities/idb';
-import { handleRequest } from '../../middleware';
+import { handleRequest } from 'middleware/index';
 
 export async function GetSettings(
   req: ExpressWorkerRequest,

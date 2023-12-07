@@ -1,20 +1,19 @@
 import {
+  ExpressWorkerRequest,
+  ExpressWorkerResponse,
+} from '@express-worker/app';
+import { handleRequest } from 'middleware/index';
+import { assertIsDatabase } from 'shared/assertions';
+import { getUniqueId } from 'shared/getUniqueId';
+import { Property } from 'shared/types';
+import {
   addBlankRowToIndexedDb,
+  addPartialDatabaseToIndexedDb,
   addPropertyToIndexedDb,
-  deleteDatabaseByIdFromIndexedDb,
   deleteRowByIdFromIndexedDb,
   getDatabaseFromIndexedDb,
   getIdb,
 } from 'utilities/idb';
-import { getUniqueId } from 'shared/getUniqueId';
-import { addPartialDatabaseToIndexedDb } from 'utilities/idb';
-import { assertIsDatabase } from 'shared/assertions';
-import { Property } from 'shared/types';
-import {
-  ExpressWorkerRequest,
-  ExpressWorkerResponse,
-} from '@express-worker/app';
-import { handleRequest } from '../../../middleware';
 
 export async function PostDatabase(
   req: ExpressWorkerRequest,

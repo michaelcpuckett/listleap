@@ -1,17 +1,17 @@
 import {
-  getIdb,
-  getDatabaseFromIndexedDb,
-  reorderRowInIndexedDb,
-  editRowInIndexedDb,
-  getRowByPositionFromIndexedDb,
-} from 'utilities/idb';
-import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
-import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
-import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { handleRequest } from '../../../middleware';
+import { handleRequest } from 'middleware/index';
+import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
+import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
+import {
+  editRowInIndexedDb,
+  getDatabaseFromIndexedDb,
+  getIdb,
+  getRowByPositionFromIndexedDb,
+  reorderRowInIndexedDb,
+} from 'utilities/idb';
 
 export async function PatchDatabaseRow(
   req: ExpressWorkerRequest,
@@ -91,7 +91,7 @@ export async function PatchDatabaseRow(
       req.data._redirect || `/databases/${databaseId}`,
       new URL(req.url).origin,
     );
-    redirectUrl.search = new URL(req.referrer).search;
+    redirectUrl.search = new URL(req.url).search;
 
     res.redirect(redirectUrl.href);
   })(req, res);
