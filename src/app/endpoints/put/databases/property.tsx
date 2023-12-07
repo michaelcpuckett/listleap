@@ -11,70 +11,72 @@ import {
   reorderPropertyInIndexedDb,
   getPropertyByPositionFromIndexedDb,
 } from 'utilities/idb';
-import { AdditionalRequestProperties } from '../../../middleware';
+import { handleRequest } from '../../../middleware';
 
 export async function PutDatabaseProperty(
-  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  req: ExpressWorkerRequest,
   res: ExpressWorkerResponse,
 ) {
-  if (req.data._method !== 'PUT') {
-    return;
-  }
+  return handleRequest(async (req, res) => {
+    if (req.data._method !== 'PUT') {
+      return;
+    }
 
-  const idb = await getIdb();
-  const databaseId = req.params.databaseId || '';
-  const database = await getDatabaseFromIndexedDb(databaseId, idb);
+    const idb = await getIdb();
+    const databaseId = req.params.databaseId || '';
+    const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
-  if (!database) {
-    idb.close();
-    res.status = 404;
-    res.text('Not found');
-    return;
-  }
+    if (!database) {
+      idb.close();
+      res.status = 404;
+      res.text('Not found');
+      return;
+    }
 
-  const propertyId = req.params.id || '';
-  const property = database.properties.find(
-    (property) => property.id === propertyId,
-  );
-
-  if (!property) {
-    idb.close();
-    res.status = 404;
-    res.text('Not found');
-    return;
-  }
-
-  const updatedPropertyType = getPropertyTypeFromString(
-    typeof req.data.type === 'string' ? database.type : database.name,
-  );
-
-  const updatedProperty: Property<typeof updatedPropertyType> = {
-    position: property.position,
-    id: property.id,
-    databaseId: database.id,
-    type: updatedPropertyType,
-    name: typeof req.data.name === 'string' ? req.data.name : property.name,
-  };
-
-  if (req.data.position !== undefined) {
-    const propertyToReorder = await getPropertyByPositionFromIndexedDb(
-      req.data.position,
-      databaseId,
-      idb,
+    const propertyId = req.params.id || '';
+    const property = database.properties.find(
+      (property) => property.id === propertyId,
     );
 
-    await reorderPropertyInIndexedDb(updatedProperty, propertyToReorder, idb);
+    if (!property) {
+      idb.close();
+      res.status = 404;
+      res.text('Not found');
+      return;
+    }
 
-    updatedProperty.position = req.data.position;
-  }
+    const updatedPropertyType = getPropertyTypeFromString(
+      typeof req.data.type === 'string' ? database.type : database.name,
+    );
 
-  await editPropertyInIndexedDb(updatedProperty, idb);
-  idb.close();
+    const updatedProperty: Property<typeof updatedPropertyType> = {
+      position: property.position,
+      id: property.id,
+      databaseId: database.id,
+      type: updatedPropertyType,
+      name: typeof req.data.name === 'string' ? req.data.name : property.name,
+    };
 
-  const redirectUrl = new URL(
-    req.data._redirect || `/databases/${databaseId}`,
-    new URL(req.url).origin,
-  );
+    if (req.data.position !== undefined) {
+      const propertyToReorder = await getPropertyByPositionFromIndexedDb(
+        req.data.position,
+        databaseId,
+        idb,
+      );
 
-  res.redirect(redirectUrl.href);
+      await reorderPropertyInIndexedDb(updatedProperty, propertyToReorder, idb);
+
+      updatedProperty.position = req.data.position;
+    }
+
+    await editPropertyInIndexedDb(updatedProperty, idb);
+    idb.close();
+
+    const redirectUrl = new URL(
+      req.data._redirect || `/databases/${databaseId}`,
+      new URL(req.url).origin,
+    );
+
+    res.redirect(redirectUrl.href);
+  })(req, res);
 }

@@ -9,33 +9,36 @@ import {
   getDatabaseFromIndexedDb,
   getSettingsFromIndexedDb,
 } from 'utilities/idb';
-import { AdditionalRequestProperties } from '../../../middleware';
+import { handleRequest } from '../../../middleware';
 
 export async function GetDatabaseRows(
-  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  req: ExpressWorkerRequest,
   res: ExpressWorkerResponse,
 ) {
-  const idb = await getIdb();
-  const databaseId = req.params.databaseId || '';
-  const database = await getDatabaseFromIndexedDb(databaseId, idb);
+  return handleRequest(async (req, res) => {
+    const idb = await getIdb();
+    const databaseId = req.params.databaseId || '';
+    const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
-  if (!database) {
+    if (!database) {
+      idb.close();
+      res.status = 404;
+      res.text('Not found');
+      return;
+    }
+
+    const settings = await getSettingsFromIndexedDb(idb);
     idb.close();
-    res.status = 404;
-    res.text('Not found');
-    return;
-  }
 
-  const settings = await getSettingsFromIndexedDb(idb);
-  idb.close();
+    const renderResult = renderToString(
+      <DatabasePage
+        database={database}
+        version={req.version}
+        query={req.query}
+        settings={settings}
+      />,
+    );
 
-  const renderResult = renderToString(
-    <DatabasePage
-      database={database}
-      referrer={req.ref}
-      settings={settings}
-    />,
-  );
-
-  res.send(`<!DOCTYPE html>${renderResult}`);
+    res.send(`<!DOCTYPE html>${renderResult}`);
+  })(req, res);
 }

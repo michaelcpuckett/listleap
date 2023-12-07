@@ -1,21 +1,23 @@
 import {
-  ExpressWorkerHandler,
   ExpressWorkerRequest,
   ExpressWorkerResponse,
-  applyAdditionalRequestProperties,
+  applyAdditionalRequestProperties as ExpressWorkerApplyAdditionalRequestProperties,
 } from '@express-worker/app';
 import { NormalizedFormData, Referrer } from 'shared/types';
 
 export interface AdditionalRequestProperties {
-  ref: Referrer;
+  version: number;
+  query: Referrer;
   data: NormalizedFormData;
 }
 
-export function applyMiddleware(
+export function handleRequest(
   handler: (
     req: ExpressWorkerRequest & AdditionalRequestProperties,
     res: ExpressWorkerResponse,
   ) => Promise<void>,
 ) {
-  return applyAdditionalRequestProperties<AdditionalRequestProperties>(handler);
+  return ExpressWorkerApplyAdditionalRequestProperties<AdditionalRequestProperties>(
+    handler,
+  );
 }

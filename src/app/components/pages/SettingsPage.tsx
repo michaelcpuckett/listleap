@@ -4,11 +4,14 @@ import { PageShell } from './PageShell';
 import { EditSettingsForm } from 'components/forms/EditSettingsForm';
 
 export function SettingsPage(
-  props: React.PropsWithChildren<{ settings: Settings; referrer: Referrer }>,
+  props: React.PropsWithChildren<{
+    settings: Settings;
+    version: number;
+  }>,
 ) {
   return (
     <PageShell
-      version={props.referrer.version}
+      version={props.version}
       pageTitle="Settings"
       settings={props.settings}
     >

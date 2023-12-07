@@ -7,35 +7,37 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { AdditionalRequestProperties } from '../../../middleware';
+import { handleRequest } from '../../../middleware';
 
 export async function DeleteDatabaseRow(
-  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  req: ExpressWorkerRequest,
   res: ExpressWorkerResponse,
 ) {
-  if (req.data._method !== 'DELETE') {
-    return;
-  }
+  return handleRequest(async (req, res) => {
+    if (req.data._method !== 'DELETE') {
+      return;
+    }
 
-  const idb = await getIdb();
-  const databaseId = req.params.databaseId || '';
-  const id = req.params.id || '';
-  const database = await getDatabaseFromIndexedDb(databaseId, idb);
+    const idb = await getIdb();
+    const databaseId = req.params.databaseId || '';
+    const id = req.params.id || '';
+    const database = await getDatabaseFromIndexedDb(databaseId, idb);
 
-  if (!database) {
+    if (!database) {
+      idb.close();
+      res.status = 404;
+      res.text('Not found');
+      return;
+    }
+
+    await deleteRowByIdFromIndexedDb(id, databaseId, idb);
     idb.close();
-    res.status = 404;
-    res.text('Not found');
-    return;
-  }
 
-  await deleteRowByIdFromIndexedDb(id, databaseId, idb);
-  idb.close();
+    const redirectUrl = new URL(
+      req.data._redirect || `/databases/${databaseId}`,
+      new URL(req.url).origin,
+    );
 
-  const redirectUrl = new URL(
-    req.data._redirect || `/databases/${databaseId}`,
-    new URL(req.url).origin,
-  );
-
-  res.redirect(redirectUrl.href);
+    res.redirect(redirectUrl.href);
+  })(req, res);
 }

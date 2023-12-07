@@ -1,9 +1,4 @@
-import {
-  Database,
-  Referrer,
-  NormalizedFormData,
-  AnyProperty,
-} from 'shared/types';
+import { Database, AnyProperty } from 'shared/types';
 import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
 import {
   getIdb,
@@ -11,98 +6,99 @@ import {
   editRowInIndexedDb,
   getRowByPositionFromIndexedDb,
   reorderRowInIndexedDb,
-  addBlankRowToIndexedDb,
 } from 'utilities/idb';
 import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
 import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { AdditionalRequestProperties } from '../../../middleware';
+import { handleRequest } from '../../../middleware';
 
 export async function PutDatabaseRow(
-  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  req: ExpressWorkerRequest,
   res: ExpressWorkerResponse,
 ) {
-  if (req.data._method !== 'PUT') {
-    return;
-  }
-
-  const idb = await getIdb();
-  const databaseId = req.params.databaseId || '';
-  const database: Database<AnyProperty[]> | null =
-    await getDatabaseFromIndexedDb(databaseId, idb);
-
-  if (!database) {
-    idb.close();
-    res.status = 404;
-    res.text('Not found');
-    return;
-  }
-
-  const id = req.params.id || '';
-  const existingRow = database.rows.find((row) => row.id === id);
-
-  if (!existingRow) {
-    idb.close();
-    res.status = 404;
-    res.text('Not found');
-    return;
-  }
-
-  const rowToPut = {
-    id: existingRow.id,
-    position: existingRow.position,
-    databaseId: database.id,
-  };
-
-  for (const property of database.properties) {
-    const formDataValue = formatPropertyValueFromFormData<typeof property>(
-      req.data[property.id] ?? existingRow[property.id],
-      property,
-    );
-
-    if (formDataValue === undefined) {
-      continue;
+  return handleRequest(async (req, res) => {
+    if (req.data._method !== 'PUT') {
+      return;
     }
 
-    rowToPut[property.id] = formDataValue;
-  }
+    const idb = await getIdb();
+    const databaseId = req.params.databaseId || '';
+    const database: Database<AnyProperty[]> | null =
+      await getDatabaseFromIndexedDb(databaseId, idb);
 
-  if (
-    !(
-      guardIsChecklistRow(rowToPut, database) ||
-      guardIsTableRow(rowToPut, database)
-    )
-  ) {
+    if (!database) {
+      idb.close();
+      res.status = 404;
+      res.text('Not found');
+      return;
+    }
+
+    const id = req.params.id || '';
+    const existingRow = database.rows.find((row) => row.id === id);
+
+    if (!existingRow) {
+      idb.close();
+      res.status = 404;
+      res.text('Not found');
+      return;
+    }
+
+    const rowToPut = {
+      id: existingRow.id,
+      position: existingRow.position,
+      databaseId: database.id,
+    };
+
+    for (const property of database.properties) {
+      const formDataValue = formatPropertyValueFromFormData<typeof property>(
+        req.data[property.id] ?? existingRow[property.id],
+        property,
+      );
+
+      if (formDataValue === undefined) {
+        continue;
+      }
+
+      rowToPut[property.id] = formDataValue;
+    }
+
+    if (
+      !(
+        guardIsChecklistRow(rowToPut, database) ||
+        guardIsTableRow(rowToPut, database)
+      )
+    ) {
+      idb.close();
+      res.status = 404;
+      res.text('Not found');
+      return;
+    }
+
+    if (guardIsChecklistRow(rowToPut, database)) {
+      rowToPut.completed = req.data.completed === 'on';
+    }
+
+    if (req.data.position && req.data.position !== existingRow.position) {
+      const rowToReorder = await getRowByPositionFromIndexedDb(
+        req.data.position,
+        databaseId,
+        idb,
+      );
+      await reorderRowInIndexedDb(existingRow, rowToReorder, idb);
+      rowToPut.position = req.data.position;
+    }
+
+    await editRowInIndexedDb<typeof database>(rowToPut, idb);
+
     idb.close();
-    res.status = 404;
-    res.text('Not found');
-    return;
-  }
 
-  if (guardIsChecklistRow(rowToPut, database)) {
-    rowToPut.completed = req.data.completed === 'on';
-  }
-
-  if (req.data.position && req.data.position !== existingRow.position) {
-    const rowToReorder = await getRowByPositionFromIndexedDb(
-      req.data.position,
-      databaseId,
-      idb,
+    const redirectUrl = new URL(
+      req.data._redirect || `/databases/${databaseId}`,
+      new URL(req.url).origin,
     );
-    await reorderRowInIndexedDb(existingRow, rowToReorder, idb);
-    rowToPut.position = req.data.position;
-  }
 
-  await editRowInIndexedDb<typeof database>(rowToPut, idb);
-
-  idb.close();
-
-  const redirectUrl = new URL(
-    req.data._redirect || `/databases/${databaseId}`,
-    new URL(req.url).origin,
-  );
-
-  res.redirect(redirectUrl.href);
+    res.redirect(redirectUrl.href);
+  })(req, res);
 }

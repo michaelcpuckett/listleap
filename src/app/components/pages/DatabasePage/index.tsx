@@ -28,22 +28,22 @@ import { DisclosureWidgetElement } from 'components/elements/DisclosureWidgetEle
 export function DatabasePage(
   props: React.PropsWithChildren<{
     database: Database<AnyProperty[]>;
-    referrer: Referrer;
     settings: Settings;
+    query: Referrer;
+    version: number;
   }>,
 ) {
-  const row = props.database.rows.find((row) => row.id === props.referrer.id);
+  const row = props.database.rows.find((row) => row.id === props.query.id);
   const property = props.database.properties.find(
-    (property) => property.id === props.referrer.id,
+    (property) => property.id === props.query.id,
   );
-  const hasError = !!props.referrer.error;
-  const isEditingRow = !hasError && props.referrer.mode === 'EDIT_ROW' && !!row;
-  const isDeletingRow =
-    !hasError && props.referrer.mode === 'DELETE_ROW' && !!row;
+  const hasError = !!props.query.error;
+  const isEditingRow = !hasError && props.query.mode === 'EDIT_ROW' && !!row;
+  const isDeletingRow = !hasError && props.query.mode === 'DELETE_ROW' && !!row;
   const isEditingProperty =
-    !hasError && props.referrer.mode === 'EDIT_PROPERTY' && !!property;
+    !hasError && props.query.mode === 'EDIT_PROPERTY' && !!property;
   const isDeletingProperty =
-    !hasError && props.referrer.mode === 'DELETE_PROPERTY' && !!property;
+    !hasError && props.query.mode === 'DELETE_PROPERTY' && !!property;
   const isShowingModal =
     hasError ||
     isEditingRow ||
@@ -51,7 +51,7 @@ export function DatabasePage(
     isEditingProperty ||
     isDeletingProperty;
   const closeUrlPathname = `/databases/${props.database.id}`;
-  const closeUrl = new URL(props.referrer.url);
+  const closeUrl = new URL(props.query.url);
   const closeUrlSearchParams = new URLSearchParams(closeUrl.search);
   closeUrlSearchParams.delete('mode');
   closeUrlSearchParams.delete('error');
@@ -59,13 +59,13 @@ export function DatabasePage(
   closeUrl.search = closeUrlSearchParams.toString();
   const closeUrlHref = closeUrl.href.replace(closeUrl.origin, '');
 
-  const clearSearchUrl = new URL(props.referrer.url);
+  const clearSearchUrl = new URL(props.query.url);
   const clearSearchSearchParams = new URLSearchParams(clearSearchUrl.search);
   clearSearchSearchParams.delete('query');
   clearSearchUrl.search = clearSearchSearchParams.toString();
 
   const queriedRows: AnyRow[] = props.database.rows.filter((row: AnyRow) => {
-    if (!props.referrer.query) {
+    if (!props.query.query) {
       return true;
     }
 
@@ -85,30 +85,30 @@ export function DatabasePage(
 
     return !!allStringProperties.find(
       (stringPropertyId: Property<StringConstructor>['id']) => {
-        if (!props.referrer.query) {
+        if (!props.query.query) {
           return false;
         }
 
         return ((row[stringPropertyId] as string) || '')
           .toLowerCase()
-          .startsWith(props.referrer.query.toLowerCase());
+          .startsWith(props.query.query.toLowerCase());
       },
     );
   });
 
   return (
     <PageShell
-      version={props.referrer.version}
+      version={props.version}
       pageTitle={props.database.name}
       settings={props.settings}
     >
-      {props.referrer.error ? (
+      {props.query.error ? (
         <ModalDialogElement
           open
           heading={<>Error</>}
           closeUrl={closeUrlHref}
         >
-          <p>{ERROR_MESSAGES[props.referrer.error]}</p>
+          <p>{ERROR_MESSAGES[props.query.error]}</p>
         </ModalDialogElement>
       ) : null}
       {isEditingRow ? (
@@ -143,7 +143,7 @@ export function DatabasePage(
       >
         <nav className="layout--split">
           <HyperLinkElement href="/">Home</HyperLinkElement>
-          <SearchRowsForm referrer={props.referrer} />
+          <SearchRowsForm referrer={props.query} />
           <HyperLinkElement href="/settings">Settings</HyperLinkElement>
         </nav>
         <main>
@@ -190,7 +190,7 @@ export function DatabasePage(
               <>
                 <TableView
                   database={props.database}
-                  referrer={props.referrer}
+                  referrer={props.query}
                   queriedRows={queriedRows}
                 />
                 <PostFormElement

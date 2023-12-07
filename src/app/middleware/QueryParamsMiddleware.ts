@@ -3,11 +3,9 @@ import {
   ExpressWorkerRequest,
 } from '@express-worker/app';
 import { Referrer } from 'shared/types';
-import { fetchCacheVersion } from 'utilities/fetchCacheVersion';
 
-export const ReferrerMiddleware: ExpressWorkerHandler = async function (
+export const QueryParamsMiddleware: ExpressWorkerHandler = async function (
   req,
-  res,
 ) {
   const url = new URL(req.url);
   const id = url.searchParams.get('id') ?? '';
@@ -29,17 +27,5 @@ export const ReferrerMiddleware: ExpressWorkerHandler = async function (
     url: req.url,
   };
 
-  const [version, hasNewVersion] = await fetchCacheVersion();
-
-  if (hasNewVersion) {
-    res.body = `<meta http-equiv="refresh" content="0">`;
-    res.status = 200;
-    res.headers.set('Content-Type', 'text/html');
-    res.end();
-    return;
-  }
-
-  referrer.version = version;
-
-  (req as ExpressWorkerRequest & { ref: Referrer }).ref = referrer;
+  (req as ExpressWorkerRequest & { query: Referrer }).query = referrer;
 };

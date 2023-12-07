@@ -9,24 +9,30 @@ import {
   getPartialDatabasesFromIndexedDb,
   getSettingsFromIndexedDb,
 } from 'utilities/idb';
-import { AdditionalRequestProperties } from '../../middleware/index';
+import {
+  AdditionalRequestProperties,
+  handleRequest,
+} from '../../middleware/index';
 
 export async function GetHome(
-  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  req: ExpressWorkerRequest,
   res: ExpressWorkerResponse,
 ) {
-  const idb = await getIdb();
-  const databases = await getPartialDatabasesFromIndexedDb(idb);
-  const settings = await getSettingsFromIndexedDb(idb);
-  idb.close();
+  return handleRequest(async (req, res) => {
+    const idb = await getIdb();
+    const databases = await getPartialDatabasesFromIndexedDb(idb);
+    const settings = await getSettingsFromIndexedDb(idb);
+    idb.close();
 
-  const renderResult = renderToString(
-    <HomePage
-      databases={databases}
-      settings={settings}
-      referrer={req.ref}
-    />,
-  );
+    const renderResult = renderToString(
+      <HomePage
+        databases={databases}
+        settings={settings}
+        version={req.version}
+        query={req.query}
+      />,
+    );
 
-  res.send(`<!DOCTYPE html>${renderResult}`);
+    res.send(`<!DOCTYPE html>${renderResult}`);
+  })(req, res);
 }

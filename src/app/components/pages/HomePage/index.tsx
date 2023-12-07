@@ -22,18 +22,19 @@ export function HomePage(
   props: React.PropsWithChildren<{
     databases: PartialDatabase[];
     settings: Settings;
-    referrer: Referrer;
+    version: number;
+    query: Referrer;
   }>,
 ) {
   const database = props.databases.find(
-    (database) => database.id === props.referrer.id,
+    (database) => database.id === props.query.id,
   );
-  const hasError = !!props.referrer.error;
+  const hasError = !!props.query.error;
   const isDeletingDatabase =
-    !hasError && props.referrer.mode === 'DELETE_DATABASE' && !!database;
+    !hasError && props.query.mode === 'DELETE_DATABASE' && !!database;
   const isShowingModal = hasError || isDeletingDatabase;
   const closeUrlPathname = `/`;
-  const closeUrl = new URL(props.referrer.url);
+  const closeUrl = new URL(props.query.url);
   const closeUrlSearchParams = new URLSearchParams(closeUrl.search);
   closeUrlSearchParams.delete('mode');
   closeUrlSearchParams.delete('error');
@@ -43,7 +44,7 @@ export function HomePage(
 
   return (
     <PageShell
-      version={props.referrer.version}
+      version={props.version}
       pageTitle="Home"
       settings={props.settings}
     >
@@ -98,7 +99,7 @@ export function HomePage(
             </aside>
             <TableView
               databases={props.databases}
-              referrer={props.referrer}
+              referrer={props.query}
             />
             <AddDatabaseForm />
           </ViewContainerElement>

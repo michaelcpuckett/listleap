@@ -14,86 +14,88 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { AdditionalRequestProperties } from '../../../middleware';
+import { handleRequest } from '../../../middleware';
 
 export async function PostDatabase(
-  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  req: ExpressWorkerRequest,
   res: ExpressWorkerResponse,
 ) {
-  if (req.data._method !== 'POST') {
-    return;
-  }
-
-  const databaseId = req.params.databaseId || '';
-
-  if (req.data.bulkAction !== undefined) {
-    if (req.data.bulkAction === 'DELETE') {
-      const rowIds = req.data['row[]'] || [];
-
-      const idb = await getIdb();
-
-      for (const rowId of rowIds) {
-        await deleteRowByIdFromIndexedDb(rowId, databaseId, idb);
-      }
-
-      idb.close();
-
-      const redirectUrl = new URL(
-        req.data._redirect || `/databases/${databaseId}`,
-        new URL(req.url).origin,
-      );
-
-      res.redirect(redirectUrl.href);
+  return handleRequest(async (req, res) => {
+    if (req.data._method !== 'POST') {
       return;
-    } else {
+    }
+
+    const databaseId = req.params.databaseId || '';
+
+    if (req.data.bulkAction !== undefined) {
+      if (req.data.bulkAction === 'DELETE') {
+        const rowIds = req.data['row[]'] || [];
+
+        const idb = await getIdb();
+
+        for (const rowId of rowIds) {
+          await deleteRowByIdFromIndexedDb(rowId, databaseId, idb);
+        }
+
+        idb.close();
+
+        const redirectUrl = new URL(
+          req.data._redirect || `/databases/${databaseId}`,
+          new URL(req.url).origin,
+        );
+
+        res.redirect(redirectUrl.href);
+        return;
+      } else {
+        res.status = 404;
+        res.text('Not found');
+        return;
+      }
+    }
+
+    const id = getUniqueId();
+
+    const partialDatabase = {
+      id,
+      type: req.data.type,
+      name: req.data.name || '',
+      properties: [],
+      rows: [],
+    };
+
+    assertIsDatabase(partialDatabase);
+
+    await addPartialDatabaseToIndexedDb(partialDatabase);
+
+    const titleProperty: Omit<Property<StringConstructor>, 'position'> = {
+      id: 'title',
+      name: '',
+      databaseId: id,
+      type: String,
+    };
+
+    const idb = await getIdb();
+
+    await addPropertyToIndexedDb(titleProperty, idb);
+
+    const database = await getDatabaseFromIndexedDb(id, idb);
+
+    if (!database) {
+      idb.close();
       res.status = 404;
       res.text('Not found');
       return;
     }
-  }
 
-  const id = getUniqueId();
+    await addBlankRowToIndexedDb(database, idb);
+    await addBlankRowToIndexedDb(database, idb);
+    await addBlankRowToIndexedDb(database, idb);
 
-  const partialDatabase = {
-    id,
-    type: req.data.type,
-    name: req.data.name || '',
-    properties: [],
-    rows: [],
-  };
-
-  assertIsDatabase(partialDatabase);
-
-  await addPartialDatabaseToIndexedDb(partialDatabase);
-
-  const titleProperty: Omit<Property<StringConstructor>, 'position'> = {
-    id: 'title',
-    name: '',
-    databaseId: id,
-    type: String,
-  };
-
-  const idb = await getIdb();
-
-  await addPropertyToIndexedDb(titleProperty, idb);
-
-  const database = await getDatabaseFromIndexedDb(id, idb);
-
-  if (!database) {
     idb.close();
-    res.status = 404;
-    res.text('Not found');
-    return;
-  }
 
-  await addBlankRowToIndexedDb(database, idb);
-  await addBlankRowToIndexedDb(database, idb);
-  await addBlankRowToIndexedDb(database, idb);
+    const databaseUrl = `/databases/${id}`;
+    const url = new URL(databaseUrl, new URL(req.url).origin);
 
-  idb.close();
-
-  const databaseUrl = `/databases/${id}`;
-  const url = new URL(databaseUrl, new URL(req.url).origin);
-
-  res.redirect(url.href);
+    res.redirect(url.href);
+  })(req, res);
 }

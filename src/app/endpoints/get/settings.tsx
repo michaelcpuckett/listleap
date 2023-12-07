@@ -5,22 +5,24 @@ import {
 import { SettingsPage } from 'components/pages/SettingsPage';
 import { renderToString } from 'react-dom/server';
 import { getIdb, getSettingsFromIndexedDb } from 'utilities/idb';
-import { AdditionalRequestProperties } from '../../middleware';
+import { handleRequest } from '../../middleware';
 
 export async function GetSettings(
-  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  req: ExpressWorkerRequest,
   res: ExpressWorkerResponse,
 ) {
-  const idb = await getIdb();
-  const settings = await getSettingsFromIndexedDb(idb);
-  idb.close();
+  return handleRequest(async (req, res) => {
+    const idb = await getIdb();
+    const settings = await getSettingsFromIndexedDb(idb);
+    idb.close();
 
-  const renderResult = renderToString(
-    <SettingsPage
-      settings={settings}
-      referrer={req.ref}
-    />,
-  );
+    const renderResult = renderToString(
+      <SettingsPage
+        settings={settings}
+        version={req.version}
+      />,
+    );
 
-  res.send(`<!DOCTYPE html>${renderResult}`);
+    res.send(`<!DOCTYPE html>${renderResult}`);
+  })(req, res);
 }

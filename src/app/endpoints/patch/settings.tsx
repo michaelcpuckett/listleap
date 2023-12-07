@@ -2,34 +2,35 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { Referrer, NormalizedFormData } from 'shared/types';
 import { getIdb, saveSettingsToIndexedDb } from 'utilities/idb';
-import { AdditionalRequestProperties } from '../../middleware';
+import { handleRequest } from '../../middleware';
 
 export async function PatchSettings(
-  req: ExpressWorkerRequest & AdditionalRequestProperties,
+  req: ExpressWorkerRequest,
   res: ExpressWorkerResponse,
 ) {
-  if (req.data._method !== 'PATCH') {
-    return;
-  }
+  return handleRequest(async (req, res) => {
+    if (req.data._method !== 'PATCH') {
+      return;
+    }
 
-  const idb = await getIdb();
-  const theme = req.data.theme || '';
-  const VALID_THEMES = ['light', 'dark'];
+    const idb = await getIdb();
+    const theme = req.data.theme || '';
+    const VALID_THEMES = ['light', 'dark'];
 
-  if (!VALID_THEMES.includes(theme)) {
+    if (!VALID_THEMES.includes(theme)) {
+      idb.close();
+      res.status = 404;
+      res.text('Not found');
+      return;
+    }
+
+    await saveSettingsToIndexedDb({ theme }, idb);
+
     idb.close();
-    res.status = 404;
-    res.text('Not found');
-    return;
-  }
 
-  await saveSettingsToIndexedDb({ theme }, idb);
+    const url = new URL(req.url);
 
-  idb.close();
-
-  const url = new URL(req.ref.url);
-
-  res.redirect(url.href);
+    res.redirect(url.href);
+  })(req, res);
 }
