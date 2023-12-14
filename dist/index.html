@@ -19,26 +19,69 @@
       place-items: center;
     }
   </style>
-  <div role="status">Loading...</div>
+  <noscript>
+    <div role="status">
+      <h1>JavaScript is required.</h1>
+    </div>
+  </noscript>
+  <div
+    role="status"
+    id="loading"
+  >
+    Loading...
+  </div>
+  <div
+    hidden
+    id="error"
+  >
+    <h1>Something went wrong.</h1>
+    <p>Please try again later.</p>
+  </div>
   <script type="module">
     window.addEventListener('DOMContentLoaded', (event) => {
-      navigator.serviceWorker.register('/app.js').then(
-        () => {
-          navigator.serviceWorker.ready.then(() => {
-            const searchParams = new URLSearchParams(window.location.search);
-            const redirectUrl = searchParams.get('redirect');
+      window.navigator.serviceWorker
+        .register('/app.js')
+        .then(async (registration) => {
+          const serviceWorker =
+            registration.installing ||
+            registration.waiting ||
+            registration.active;
 
-            if (redirectUrl) {
-              window.location = redirectUrl;
+          if (!serviceWorker) {
+            throw new Error('Service worker not found.');
+          }
+
+          // Wait for service worker to activate.
+          await new Promise((resolve, reject) => {
+            if (serviceWorker.state === 'activated') {
+              resolve();
             } else {
-              window.location.reload();
+              serviceWorker.addEventListener('statechange', (e) => {
+                if (e.target.state === 'activated') {
+                  resolve();
+                }
+              });
             }
           });
-        },
-        (err) => {
-          console.log('ServiceWorker registration failed: ', err);
-        },
-      );
+
+          // Fetch the generated HTML for this URL from the service worker.
+          const response = await window.fetch('/').then((res) => res.text());
+          const parser = new DOMParser();
+          const htmlDocument = parser.parseFromString(response, 'text/html');
+          const newDocument = htmlDocument.cloneNode(true);
+
+          // Replace the current document with the generated one.
+          window.document.open();
+          window.document.write(newDocument.documentElement.outerHTML);
+          window.document.close();
+        })
+        .catch((error) => {
+          console.error(error);
+
+          // Show error message.
+          window.document.querySelector('#loading').remove();
+          window.document.querySelector('#error').removeAttribute('hidden');
+        });
     });
   </script>
 </html>

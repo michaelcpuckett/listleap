@@ -1,3 +1,5 @@
+declare var self: ServiceWorkerGlobalScope;
+
 import { getIdb, saveCacheVersionToIndexedDb } from 'utilities/idb';
 import { URLS_TO_CACHE } from 'utilities/urlsToCache';
 
@@ -5,6 +7,8 @@ export function handleInstall(event: Event) {
   if (!(event instanceof ExtendableEvent)) {
     return;
   }
+
+  self.skipWaiting();
 
   event.waitUntil(
     (async () => {

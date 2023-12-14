@@ -10,7 +10,7 @@ export const FormDataMiddleware: ExpressWorkerHandler = async function (req) {
     return;
   }
 
-  const rawFormData = req.formData;
+  const rawFormData = await req.formData();
 
   const formData: NormalizedFormData = Object.fromEntries(
     Array.from(rawFormData.entries()).map(([key, value]) => {
