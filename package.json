@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --config .prettierrc \"**/*.{ts,tsx}\" --write",
-    "build": "parcel build --no-scope-hoist"
+    "build": "parcel build --no-scope-hoist",
+    "serve": "http-server dist -p 8080",
+    "start": "npm run build && npm run serve"
   },
   "app": "dist/app.js",
   "client": "dist/client.js",
