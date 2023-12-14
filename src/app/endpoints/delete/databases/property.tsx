@@ -1,14 +1,13 @@
 import {
-  getIdb,
-  getDatabaseFromIndexedDb,
-  deletePropertyByIdFromIndexedDb,
-} from 'utilities/idb';
-import { NormalizedFormData } from 'shared/types';
-import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
 import { handleRequest } from 'middleware/index';
+import {
+  deletePropertyByIdFromIndexedDb,
+  getDatabaseFromIndexedDb,
+  getIdb,
+} from 'utilities/idb';
 
 export async function DeleteDatabaseProperty(
   req: ExpressWorkerRequest,

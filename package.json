@@ -22,7 +22,7 @@
   "author": "Michael Puckett <michael@puckett.contact>",
   "license": "ISC",
   "dependencies": {
-    "@express-worker/app": "^1.0.12",
+    "@express-worker/app": "^1.2.0",
     "debounce": "^1.2.1",
     "escape-string-regexp": "^5.0.0",
     "idb": "^7.1.1",
