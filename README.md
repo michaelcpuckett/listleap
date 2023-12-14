@@ -24,8 +24,9 @@ single-page web apps (SPAs) in terms of user experience.
 
 Additional goals of this project are to demonstrate:
 
-- **ExpressWorker** - The app is built with the ExpressWorker framework and is
-  designed to demonstrate its features.
+- **ExpressWorker** - The app is built with the
+  [ExpressWorker framework](https://github.com/michaelcpuckett/express-worker)
+  and is designed to demonstrate its features.
 - **React on the Server on the Client** - The app is built with the version of
   React for server-generated pages, except running inside a Service Worker.
 
