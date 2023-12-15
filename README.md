@@ -3,7 +3,7 @@
 ## Overview
 
 **ListLeap** is a local-only [Notion](https://www.notion.so/)-like web app for
-tracking To-Do Items. Built with Service Workers.
+tracking any kind of data. Built with Service Workers.
 
 [**Try it out!**](https://listleap.web.app)
 
@@ -104,14 +104,25 @@ number in `dist/version.txt`.
 npm install
 ```
 
-### Build and Run
+### Build
 
 ```sh
-npm start
+npm run build
+```
+
+### Watch
+
+```sh
+npm run watch
+```
+
+### Serve
+
+```sh
+npm run serve
 ```
 
 The `index.html` from the `dist/` directory will be served at `localhost:8080`.
-The service worker will be registered and the app will be available offline.
 
 ### Hosting
 

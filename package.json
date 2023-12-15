@@ -5,16 +5,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --config .prettierrc \"**/*.{ts,tsx}\" --write",
-    "build": "parcel build --no-scope-hoist",
-    "serve": "http-server dist -p 8080",
-    "start": "npm run build && npm run serve"
+    "build": "parcel build",
+    "serve": "http-server dist -p 8080"
   },
   "app": "dist/app.js",
   "client": "dist/client.js",
   "targets": {
     "app": {
       "source": "./src/app/index.tsx",
-      "distDir": "./dist"
+      "distDir": "./dist",
+      "scopeHoist": false
     },
     "client": {
       "source": "./src/client/index.ts",
@@ -40,8 +40,10 @@
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@types/uuid": "^9.0.7",
+    "http-server": "^14.1.1",
     "parcel": "^2.10.3",
     "prettier": "^3.1.0",
+    "process": "^0.11.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   }

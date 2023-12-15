@@ -51,11 +51,14 @@ export function HomePage(
         className="container"
         inert={isShowingModal ? '' : undefined}
       >
-        <nav className="layout--split">
-          <HyperLinkElement href="/settings">Settings</HyperLinkElement>
-        </nav>
         <main>
+          <p>
+            <HyperLinkElement href="https://github.com/michaelcpuckett/listleap">
+              Fork me on Github!
+            </HyperLinkElement>
+          </p>
           <h1>ListLeap</h1>
+          <h2>A data management tool.</h2>
           <ViewContainerElement>
             <aside aria-label="Actions">
               <DisclosureWidgetElement>
