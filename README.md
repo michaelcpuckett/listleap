@@ -59,6 +59,32 @@ requests inside the Service Worker.
 8. The remote server sends updates to clients via server-sent events or a
    similar protocol.
 
+## Special Considerations
+
+### Handling Frequent Page Reloads
+
+The application saves focus state and scroll position in SessionStorage and
+restores them after each page reload. This is necessary to override how the
+browser attempts to restore the scroll position. This is a common problem for
+SPAs, but it's more noticeable in this app because of the frequent page reloads.
+
+Accessibility appears to be an unsolved problem. Every page load will be
+announced to screen readers, along with the full announcement of where they are
+focused, potentially deep in the DOM. More investigation is needed.
+
+### Managing Modal States
+
+The user interface can be customized via query parameters. Modals dialogs can be
+shown on a page, gated by a query parameter, in an already open state. Closing
+the modal means redirecting to the same page without the query parameter.
+
+### Avoid Infinite Scroll
+
+Infinite scrolling by definition may not fit with this paradigm, as it requires
+appending HTML to the rendered page. Pagination should be used instead. This
+could be implemented by adding a query parameter to the URL, which is then
+parsed by the service worker to determine which page to render.
+
 ## Development
 
 **Important**: To force a reload of the service worker, change the version
