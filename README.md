@@ -53,10 +53,10 @@ requests inside the Service Worker.
 
 ### Future Work for Remote Server Support
 
-7. Send optimistic updates to the remote server as a side effect, only after
+6. Send optimistic updates to the remote server as a side effect, only after
    updating IndexedDB locally.
 
-8. The remote server sends updates to clients via server-sent events or a
+7. The remote server sends updates to clients via server-sent events or a
    similar protocol.
 
 ## Special Considerations
