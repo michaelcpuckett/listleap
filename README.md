@@ -3,7 +3,9 @@
 ## Overview
 
 **ListLeap** is a local-only [Notion](https://www.notion.so/)-like web app for
-tracking To-Do Items.
+tracking To-Do Items. Built with Service Workers.
+
+[**Try it out!**](https://listleap.web.app)
 
 ## Background
 
