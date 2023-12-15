@@ -49,7 +49,7 @@ requests inside the Service Worker.
 5. Encapsulate UI logic inside HTML Custom Elements without Shadow DOM, to
    progressively enhance native HTML elements, as described in Jim Nielsen's
    article
-   ["HTML Components"](https://blog.jim-nielsen.com/2023/html-web-components/).
+   ["HTML Web Components"](https://blog.jim-nielsen.com/2023/html-web-components/).
 
 ### Future Work for Remote Server Support
 
