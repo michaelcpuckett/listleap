@@ -9,11 +9,10 @@ tracking To-Do Items.
 
 This is a **proof-of-concept** multi-page web app (MPA) where most user
 interactions reload the page via HTML `<form>` submits. A Service Worker
-intercepts these requests and instantly returns a refreshed page. This makes
-them more similar to single-page web apps (SPAs) in terms of user experience.
-This technique also minimizes DOM manipulation, as the rendering mechanism is
-always the page refresh cycle. The result should be a highly performant web app
-with a small bundle size.
+intercepts these requests and instantly returns a refreshed page. This makes the
+user experience more similar to single-page web apps (SPAs). This technique
+minimizes DOM manipulation, as the rendering mechanism is always the page
+refresh cycle. The result should be a highly performant web app.
 
 A primary goal of this project is to demonstrate the features of the
 [**ExpressWorker** framework](https://github.com/michaelcpuckett/express-worker),
