@@ -85,6 +85,13 @@ appending HTML to the rendered page. Pagination should be used instead. This
 could be implemented by adding a query parameter to the URL, which is then
 parsed by the service worker to determine which page to render.
 
+### Initial Payload
+
+The size of the service worker file could be a concern as the application grows,
+as it needs to be downloaded and parsed before the app can be used. This could
+be mitigated by lazy-loading or dynamically importing parts of the service
+worker code.
+
 ## Development
 
 **Important**: To force a reload of the service worker, change the version
