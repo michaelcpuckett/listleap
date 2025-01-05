@@ -520,7 +520,7 @@ flyout-menu summary {
   place-content: center;
   place-items: center;
   opacity: 0;
-  transition: opacity 0.5s;
+  transition: opacity 0.25s;
 
   [role='row']:hover &,
   :is([role='gridcell'], [role='columnheader'], [role='rowheader']):is(
@@ -682,7 +682,7 @@ flyout-menu [role='menu'] {
 
 [form='select-multiple-rows-form'] {
   opacity: 0;
-  transition: opacity 0.5s;
+  transition: opacity 0.25s;
 
   [role='row']:hover &,
   :is([role='gridcell'], [role='columnheader'], [role='rowheader']):is(
