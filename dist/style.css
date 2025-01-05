@@ -107,7 +107,7 @@ details:not([open]) .summary svg {
 .button {
   padding: 1rem;
   margin: 0;
-  border: 1px solid;
+  border: none;
   border-radius: 0;
   font: inherit;
   box-shadow: none;
