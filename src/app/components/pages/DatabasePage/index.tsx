@@ -163,7 +163,7 @@ export function DatabasePage(
                   name="_method"
                   value="POST"
                 />
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ display: 'flex' }}>
                   <select
                     name="bulkAction"
                     className="button--full-width"
@@ -218,7 +218,6 @@ export function DatabasePage(
                 >
                   <ButtonElement
                     id="add-new-row-button"
-                    button={false}
                     full-width
                     bordered
                   >

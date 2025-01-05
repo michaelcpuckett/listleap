@@ -125,6 +125,10 @@ details:not([open]) .summary svg {
     opacity: 0.667;
     cursor: not-allowed;
   }
+
+  &:hover {
+    background-color: #1b3332;
+  }
 }
 
 flyout-menu .button {
@@ -389,8 +393,7 @@ button:has(svg:only-child) {
 nav {
   display: flex;
   flex-wrap: wrap;
-  max-width: calc(100% - 2rem);
-  margin: 0 auto;
+  width: 100%;
 
   & a[aria-current='page'] {
     font-weight: bold;
@@ -689,4 +692,8 @@ flyout-menu [role='menu'] {
     & {
     opacity: 1;
   }
+}
+
+hyper-link {
+  cursor: pointer;
 }
