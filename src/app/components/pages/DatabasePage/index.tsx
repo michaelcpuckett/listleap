@@ -3,14 +3,12 @@ import { DeleteRowModalDialog } from 'components/dialogs/DeleteRowModalDialog';
 import { EditPropertyModalDialog } from 'components/dialogs/EditPropertyModalDialog';
 import { EditRowModalDialog } from 'components/dialogs/EditRowModalDialog';
 import { ButtonElement } from 'components/elements/ButtonElement';
-import { DisclosureWidgetElement } from 'components/elements/DisclosureWidgetElement';
 import { HyperLinkElement } from 'components/elements/HyperLinkElement';
 import { ModalDialogElement } from 'components/elements/ModalDialogElement';
 import { PostFormElement } from 'components/elements/PostFormElement';
 import { ViewContainerElement } from 'components/elements/ViewContainerElement';
 import { EditDatabaseForm } from 'components/forms/EditDatabaseForm';
 import { SearchRowsForm } from 'components/forms/SearchRowsForm';
-import { Icon } from 'components/icons/Icon';
 import { PageShell } from 'components/pages/PageShell';
 import React from 'react';
 import { guardIsTable } from 'shared/assertions';
@@ -147,7 +145,6 @@ export function DatabasePage(
             query={props.query}
             url={props.url}
           />
-          <HyperLinkElement href="/settings">Settings</HyperLinkElement>
         </nav>
         <main>
           <header>
@@ -155,39 +152,29 @@ export function DatabasePage(
           </header>
           <ViewContainerElement>
             <aside aria-label="Actions">
-              <DisclosureWidgetElement>
-                <summary className="summary button--full-width">
-                  <Icon
-                    name="arrow-down"
-                    height={16}
-                    width={16}
-                  />
-                  Actions
-                </summary>
-                <form
-                  role="none"
-                  method="POST"
-                  action={`/databases/${props.database.id}/rows`}
-                  id="select-multiple-rows-form"
-                >
-                  <input
-                    type="hidden"
-                    name="_method"
-                    value="POST"
-                  />
-                  <div style={{ display: 'flex', gap: '1rem' }}>
-                    <select
-                      name="bulkAction"
-                      className="button--full-width"
-                      required
-                    >
-                      <option value="">Actions...</option>
-                      <option value="DELETE">Delete Selected Rows</option>
-                    </select>
-                    <ButtonElement>Submit</ButtonElement>
-                  </div>
-                </form>
-              </DisclosureWidgetElement>
+              <form
+                role="none"
+                method="POST"
+                action={`/databases/${props.database.id}/rows`}
+                id="select-multiple-rows-form"
+              >
+                <input
+                  type="hidden"
+                  name="_method"
+                  value="POST"
+                />
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <select
+                    name="bulkAction"
+                    className="button--full-width"
+                    required
+                  >
+                    <option value="">Actions...</option>
+                    <option value="DELETE">Delete Selected Rows</option>
+                  </select>
+                  <ButtonElement>Submit</ButtonElement>
+                </div>
+              </form>
             </aside>
             {guardIsTable(props.database) ? (
               <>

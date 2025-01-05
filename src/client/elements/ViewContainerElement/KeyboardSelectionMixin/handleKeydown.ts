@@ -1,11 +1,10 @@
-import { SelectionMixinBaseClass } from '../SelectionMixinBaseClass';
 import { IKeyboardSelectionMixin } from '.';
 import {
-  SELECTABLE_CELL_ELEMENT_SELECTOR,
   ANY_CELL_ELEMENT_SELECTOR,
-  INPUT_SELECTOR,
   isInFlyoutMenu,
+  SELECTABLE_CELL_ELEMENT_SELECTOR,
 } from '../constants';
+import { SelectionMixinBaseClass } from '../SelectionMixinBaseClass';
 
 export function handleKeydown(
   this: SelectionMixinBaseClass & IKeyboardSelectionMixin,
@@ -69,7 +68,10 @@ export function handleKeydown(
       break;
     case 'a':
       if (event.ctrlKey) {
-        if (cellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR)) {
+        if (
+          cellElement.matches(SELECTABLE_CELL_ELEMENT_SELECTOR) &&
+          !isEditingCellElement
+        ) {
           event.preventDefault();
           event.stopImmediatePropagation();
           event.stopPropagation();

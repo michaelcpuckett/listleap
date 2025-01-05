@@ -26,7 +26,7 @@ export function PageShell(
         <title>{props.pageTitle}</title>
         <meta
           name="theme-color"
-          content={props.settings.theme === 'light' ? '#ffffff' : '#000000'}
+          content="#ffffff"
         />
         <meta
           name="viewport"

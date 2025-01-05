@@ -89,6 +89,13 @@ export async function PostDatabase(
     await addBlankRowToIndexedDb(database, idb);
     await addBlankRowToIndexedDb(database, idb);
     await addBlankRowToIndexedDb(database, idb);
+    await addBlankRowToIndexedDb(database, idb);
+    await addBlankRowToIndexedDb(database, idb);
+    await addBlankRowToIndexedDb(database, idb);
+    await addBlankRowToIndexedDb(database, idb);
+    await addBlankRowToIndexedDb(database, idb);
+    await addBlankRowToIndexedDb(database, idb);
+    await addBlankRowToIndexedDb(database, idb);
 
     idb.close();
 

@@ -6,23 +6,13 @@
 html {
   font-size: 14px;
   --swatch-interactive: LinkText;
-  --swatch-gray-background: #ccc;
+  --swatch-gray-background: #e0e0e0;
   --swatch-gray-text: #333;
   --swatch-button-background: #666;
   --swatch-button-text: #fff;
   --swatch-table-border: #878787;
   --unsaved-color: yellow;
   --highlight-color: rgba(90, 190, 190, 0.333);
-
-  &.theme--dark {
-    color-scheme: dark;
-    --swatch-interactive: deepskyblue;
-    --swatch-gray-background: #333;
-    --swatch-gray-text: #ccc;
-    --swatch-button-background: #666;
-    --swatch-table-border: #a5a3a3;
-    --swatch-button-text: #fff;
-  }
 
   &:has(dialog[open]) {
     overflow: hidden;
@@ -60,10 +50,9 @@ body {
 
 :focus-visible {
   outline: 2px solid var(--swatch-interactive);
-  outline-offset: 2px;
 }
 
-.visually-hidden:not(:focus):not(:active) {
+.visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -77,11 +66,13 @@ body {
   text-decoration: underline;
 }
 
+/*
 .container {
   width: min(100% - 2rem, 1240px);
   margin-left: auto;
   margin-right: auto;
 }
+*/
 
 nav {
   margin-top: 1rem;
@@ -183,19 +174,19 @@ flyout-menu .button {
   width: 100%;
 }
 
-.view-scroll-container {
-  overflow: scroll;
+/*.view-scroll-container {
+   overflow: scroll; 
 }
 
 .prevent-scroll .view-scroll-container {
   overflow: hidden;
   padding-right: var(--scrollbar-width, 0px);
   padding-bottom: var(--scrollbar-width, 0px);
-}
+}*/
 
 .view {
-  width: max-content;
-  min-width: calc(100% - var(--scrollbar-width, 0px));
+  /*width: max-content;
+  min-width: calc(100% - var(--scrollbar-width, 0px));*/
   margin-bottom: var(--scrollbar-width, 0px);
   display: grid;
   grid-template-columns: var(--grid-columns);
@@ -206,6 +197,8 @@ flyout-menu .button {
 
   & [role='columnheader'] {
     font-weight: bold;
+    background-color: var(--swatch-gray-background);
+    color: black;
   }
 
   & [role='rowgroup'] {
@@ -220,7 +213,7 @@ flyout-menu .button {
 
   & [role='rowgroup']:first-of-type,
   [role='rowgroup']:first-of-type input[type='text'] {
-    color: var(--swatch-table-border);
+    color: black;
   }
 
   & [role='row'] {
@@ -250,12 +243,30 @@ flyout-menu .button {
     place-items: center;
 
     &:not(:last-child) {
-      border-right: 1px solid var(--swatch-table-border);
+      border-right: 1px solid var(--swatch-gray-background);
+
+      &[role='columnheader'] {
+        border-right-color: var(--swatch-table-border);
+      }
+    }
+
+    [role='row']:has([role='gridcell']:nth-child(4)) &:nth-child(2) {
+      font-weight: bold;
+    }
+
+    &:has([type='text']:not([data-read-only])) [type='text'] {
+      outline: 4px solid var(--swatch-interactive);
+      border-radius: 4px;
+      /* font-family: monospace; */
     }
 
     & input[type='text'] {
       height: 100%;
       padding: 1rem;
+    }
+
+    & [data-read-only] {
+      caret-color: transparent;
     }
 
     & .expand-touch-target {
@@ -289,6 +300,7 @@ flyout-menu .button {
     }
 
     &.align-center {
+      color: black;
       place-content: center;
     }
 
@@ -377,6 +389,8 @@ button:has(svg:only-child) {
 nav {
   display: flex;
   flex-wrap: wrap;
+  max-width: calc(100% - 2rem);
+  margin: 0 auto;
 
   & a[aria-current='page'] {
     font-weight: bold;
@@ -502,6 +516,17 @@ flyout-menu summary {
   display: flex;
   place-content: center;
   place-items: center;
+  opacity: 0;
+  transition: opacity 0.5s;
+
+  [role='row']:hover &,
+  :is([role='gridcell'], [role='columnheader'], [role='rowheader']):is(
+      :focus-within,
+      :has(:checked)
+    )
+    & {
+    opacity: 1;
+  }
 }
 
 flyout-menu summary::-webkit-details-marker {
@@ -602,10 +627,66 @@ flyout-menu [role='menu'] {
 
 :is(auto-save-search, auto-save-text) input[data-dirty]:not(:focus) {
   outline: 1px solid var(--unsaved-color);
-  outline-offset: 2px;
 }
 
-:is(auto-save-search, auto-save-text) input[type='text']:not([data-read-only]) {
-  background: CanvasText;
-  color: Canvas;
+#actions {
+  display: flex;
+  background-color: var(--swatch-gray-background);
+  position: relative;
+  z-index: 1;
+}
+
+#actions dialog {
+  all: inherit;
+  width: 100%;
+}
+
+#actions label:has([role='menuitemcheckbox']) {
+  padding: 1rem;
+  width: 100%;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#actions [role='group'] {
+  display: none;
+}
+
+#actions:has([role='menuitemcheckbox']:checked) [role='group'] {
+  position: absolute;
+  display: flex;
+  z-index: 2;
+  transform: translateY(100%);
+  width: 100%;
+}
+
+#actions button {
+  border: 0;
+  border-bottom: 1px solid var(--swatch-table-border);
+  width: 100%;
+  max-width: none;
+  text-align: start;
+  place-content: start;
+}
+
+#actions:has([role='menuitemcheckbox']:checked) #close-actions-button {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: transparent;
+}
+
+[form='select-multiple-rows-form'] {
+  opacity: 0;
+  transition: opacity 0.5s;
+
+  [role='row']:hover &,
+  :is([role='gridcell'], [role='columnheader'], [role='rowheader']):is(
+      :focus-within,
+      :has(:checked)
+    )
+    & {
+    opacity: 1;
+  }
 }
