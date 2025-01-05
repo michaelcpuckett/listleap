@@ -697,3 +697,36 @@ flyout-menu [role='menu'] {
 hyper-link {
   cursor: pointer;
 }
+
+@view-transition {
+  navigation: auto;
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Apply the custom animation to the old and new page states */
+::view-transition-old(root) {
+  animation: 0.25s ease-in both fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 0.25s ease-in both fade-in;
+}
