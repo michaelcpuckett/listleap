@@ -2,7 +2,17 @@ import {
   ExpressWorkerHandler,
   ExpressWorkerRequest,
 } from '@express-worker/app';
-import { NormalizedFormData } from 'shared/types';
+
+interface FormDataWithArrayValue {
+  [key: `${string}[]`]: string[] | undefined;
+}
+
+interface FormDataWithStringValue {
+  [key: string]: string | undefined;
+}
+
+export type NormalizedFormData = FormDataWithArrayValue &
+  FormDataWithStringValue;
 
 export const FormDataMiddleware: ExpressWorkerHandler = async function (req) {
   if (req.method !== 'POST') {

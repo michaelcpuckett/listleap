@@ -14,13 +14,12 @@
     "isolatedModules": true,
     "lib": ["ESNext", "webworker", "DOM.Iterable"],
     "target": "ESNext",
-    "outDir": "./",
+    "outDir": "../../dist",
     "paths": {
       "components/*": ["./components/*"],
       "endpoints/*": ["./endpoints/*"],
-      "utilities/*": ["./utilities/*"],
-      "shared/*": ["../shared/*"],
-      "middleware/*": ["./middleware/*"]
+      "middleware/*": ["./middleware/*"],
+      "config/*": ["./config/*"]
     }
   },
   "exclude": ["../../node_modules"],
@@ -29,7 +28,7 @@
     "install.ts",
     "components/**/*",
     "endpoints/**/*",
-    "utilities/**/*",
+    "config/**/*",
     "middleware/**/*"
   ]
 }

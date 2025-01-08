@@ -1,7 +1,6 @@
 declare var self: ServiceWorkerGlobalScope;
 
-import { getIdb, saveCacheVersionToIndexedDb } from 'utilities/idb';
-import { URLS_TO_CACHE } from 'utilities/urlsToCache';
+import { URLS_TO_CACHE } from 'config/urlsToCache';
 
 export function handleInstall(event: Event) {
   if (!(event instanceof ExtendableEvent)) {
@@ -12,28 +11,16 @@ export function handleInstall(event: Event) {
 
   event.waitUntil(
     (async () => {
-      return fetch('/version.txt', {
-        cache: 'no-cache',
-      })
-        .then((r) => r.text())
-        .then(async (latestCacheVersion) => {
-          const idb = await getIdb();
-
-          await saveCacheVersionToIndexedDb(Number(latestCacheVersion), idb);
-
-          idb.close();
-
-          const urlsToCache = URLS_TO_CACHE.map((url) => {
-            return new Request(new URL(url, self.location.origin).href, {
-              cache: 'no-cache',
-              headers: {
-                'Cache-Control': 'max-age=0, no-cache',
-              },
-            });
-          });
-          const cache = await caches.open(`v${latestCacheVersion}`);
-          await cache.addAll(urlsToCache);
+      const urlsToCache = URLS_TO_CACHE.map((url) => {
+        return new Request(new URL(url, self.location.origin).href, {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'max-age=0, no-cache',
+          },
         });
+      });
+      const cache = await caches.open(`v1`);
+      await cache.addAll(urlsToCache);
     })(),
   );
 }

@@ -1,7 +1,7 @@
 {
-  "name": "listleap",
+  "name": "service-worker-react-starter",
   "version": "1.0.0",
-  "description": "Local Notion-like app built with Service Workers",
+  "description": "Serve dynamic HTML with React inside a Service Worker",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --config .prettierrc \"**/*.{ts,tsx}\" --write",
@@ -25,14 +25,9 @@
   "license": "MIT",
   "dependencies": {
     "@express-worker/app": "^1.3.0",
-    "debounce": "^1.2.1",
-    "escape-string-regexp": "^5.0.0",
-    "idb": "^7.1.1",
-    "lexorank": "^1.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "uuid": "^9.0.1",
-    "yjs": "^13.6.8"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@parcel/transformer-typescript-tsc": "^2.10.3",
@@ -43,7 +38,6 @@
     "http-server": "^14.1.1",
     "parcel": "^2.10.3",
     "prettier": "^3.1.0",
-    "process": "^0.11.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   }
