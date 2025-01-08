@@ -9,20 +9,19 @@
     "declaration": true,
     "noImplicitAny": false,
     "removeComments": true,
-    "noLib": false,
     "jsx": "react-jsx",
+    "noLib": false,
+    "isolatedModules": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "target": "ESNext",
-    "outDir": "../dist",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "useDefineForClassFields": false,
-    "isolatedModules": true,
+    "outDir": "../../../dist",
     "paths": {
-      "app/*": ["../app/*"],
-      "components/*": ["../app/components/*"]
+      "components/*": ["./*"],
+      "endpoints/*": ["../endpoints/*"],
+      "middleware/*": ["../middleware/*"],
+      "config/*": ["../config/*"]
     }
   },
   "exclude": ["../../node_modules"],
-  "include": ["index.tsx", "./**/*"]
+  "include": ["./**/*"]
 }

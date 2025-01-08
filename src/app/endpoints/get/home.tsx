@@ -2,7 +2,10 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { HomePage } from 'components/pages/HomePage';
+import { getCounter } from 'components/elements/Counter';
+import { getNotes } from 'components/elements/Note';
+import HomePage, { metadata } from 'components/pages/HomePage';
+import { PageShell } from 'components/pages/PageShell';
 import { handleRequest } from 'middleware/index';
 import { renderToString } from 'react-dom/server';
 
@@ -11,14 +14,25 @@ export async function GetHome(
   res: ExpressWorkerResponse,
 ) {
   return handleRequest(async (req, res) => {
+    const initialCount = await getCounter();
+    const initialNotes = await getNotes();
+
+    console.log({
+      initialNotes,
+    });
+
     const renderResult = renderToString(
-      <HomePage
+      <PageShell
         version={req.version}
-        query={req.query}
-        url={req.url}
-      />,
+        {...metadata}
+      >
+        <HomePage
+          initialNotes={initialNotes}
+          initialCount={initialCount}
+        />
+      </PageShell>,
     );
 
-    res.send(`<!DOCTYPE html>${renderResult}`);
+    res.send(renderResult);
   })(req, res);
 }

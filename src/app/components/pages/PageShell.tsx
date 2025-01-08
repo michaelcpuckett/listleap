@@ -4,7 +4,8 @@ import React from 'react';
 export function PageShell(
   props: React.PropsWithChildren<{
     version: number;
-    pageTitle: string;
+    title: string;
+    description?: string;
   }>,
 ) {
   const cssUrls = URLS_TO_CACHE.filter((url) => url.endsWith('.css'));
@@ -17,7 +18,13 @@ export function PageShell(
           http-equiv="Cache-Control"
           content="no-store"
         />
-        <title>{props.pageTitle}</title>
+        <title>{props.title}</title>
+        {props.description && (
+          <meta
+            name="description"
+            content={props.description}
+          />
+        )}
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1"
@@ -34,7 +41,7 @@ export function PageShell(
         />
       </head>
       <body tabIndex={-1}>
-        {props.children}
+        <div id="root">{props.children}</div>
         <script src={`/client.js?v=${props.version}`}></script>
       </body>
     </html>
