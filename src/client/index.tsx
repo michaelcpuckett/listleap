@@ -1,27 +1,35 @@
-import { getCounter } from 'components/elements/Counter';
-import { getNotes } from 'components/elements/Note';
 import HomePage from 'components/pages/HomePage';
+import { createElement } from 'react';
 import { hydrateRoot } from 'react-dom/client';
+
+declare global {
+  interface Window {
+    __INITIAL_DATA__: any;
+  }
+}
 
 (async () => {
   const rootElement = document.getElementById('root');
 
   if (!rootElement) {
-    throw new Error('Root element not found');
+    throw new Error('Root element not found.');
   }
 
-  const initialCount = await getCounter();
-  const initialNotes = await getNotes();
+  const Component = (() => {
+    switch (window.location.pathname) {
+      case '/':
+        return HomePage;
+      default:
+        return null;
+    }
+  })();
 
-  console.log({
-    initialNotes,
-  });
+  if (!Component) {
+    throw new Error('Path not found.');
+  }
 
   hydrateRoot(
     rootElement,
-    <HomePage
-      initialNotes={initialNotes}
-      initialCount={initialCount}
-    />,
+    createElement(Component, { ...window.__INITIAL_DATA__ }),
   );
 })();

@@ -16,20 +16,18 @@ export async function GetHome(
   return handleRequest(async (req, res) => {
     const initialCount = await getCounter();
     const initialNotes = await getNotes();
-
-    console.log({
+    const initialData = {
       initialNotes,
-    });
+      initialCount,
+    };
 
     const renderResult = renderToString(
       <PageShell
         version={req.version}
         {...metadata}
+        initialData={initialData}
       >
-        <HomePage
-          initialNotes={initialNotes}
-          initialCount={initialCount}
-        />
+        <HomePage {...initialData} />
       </PageShell>,
     );
 

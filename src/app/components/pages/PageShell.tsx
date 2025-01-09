@@ -6,6 +6,7 @@ export function PageShell(
     version: number;
     title: string;
     description?: string;
+    initialData?: Record<string, unknown>;
   }>,
 ) {
   const cssUrls = URLS_TO_CACHE.filter((url) => url.endsWith('.css'));
@@ -38,6 +39,13 @@ export function PageShell(
         <link
           rel="manifest"
           href="/manifest.json"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__INITIAL_DATA__ = ${JSON.stringify(
+              props.initialData,
+            )}`,
+          }}
         />
       </head>
       <body tabIndex={-1}>
