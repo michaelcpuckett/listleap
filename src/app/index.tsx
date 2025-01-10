@@ -36,5 +36,3 @@ app.get('/', Endpoints.GetHome);
 app.get('/notes/:id', Endpoints.GetNote);
 
 // RESTful API endpoints.
-
-app.delete('/notes/:id', Endpoints.DeleteNote);

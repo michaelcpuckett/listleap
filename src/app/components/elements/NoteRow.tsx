@@ -59,6 +59,20 @@ export async function setNotesDb(value: Note[]) {
   return transaction.oncomplete;
 }
 
+async function deleteNote(note: Note): Promise<void> {
+  const db = await openDB();
+  const transaction = db.transaction('notes', 'readwrite');
+  const store = transaction.objectStore('notes');
+  const request = store.delete(note.id);
+
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  }).then(() => {
+    window.location.reload();
+  });
+}
+
 export async function getNotes(): Promise<Note[]> {
   const db = await openDB();
   const transaction = db.transaction('notes', 'readonly');
@@ -116,37 +130,33 @@ export default function NoteRow({
         return;
       }
 
-      await fetch(`/notes/${note.id}`, {
-        method: 'DELETE',
-      });
-
-      window.location.reload();
+      await deleteNote(note);
     },
     [note],
   );
 
   const handleMoveUp = useCallback<FormEventHandler<HTMLFormElement>>(
-    (event) => {
+    async (event) => {
       event.preventDefault();
 
       if (!prevNote) {
         return;
       }
 
-      reorderNote(note, prevNote);
+      await reorderNote(note, prevNote);
     },
     [note, prevNote],
   );
 
   const handleMoveDown = useCallback<FormEventHandler<HTMLFormElement>>(
-    (event) => {
+    async (event) => {
       event.preventDefault();
 
       if (!nextNote) {
         return;
       }
 
-      reorderNote(note, nextNote);
+      await reorderNote(note, nextNote);
     },
     [note, nextNote],
   );
