@@ -148,21 +148,11 @@ export default function NoteRow({
       </div>
       <div role="gridcell">
         <form onSubmit={handleMoveUp}>
-          <input
-            type="hidden"
-            value={note.id}
-            name="id"
-          />
           <button>Move Up</button>
         </form>
       </div>
       <div role="gridcell">
         <form onSubmit={handleMoveDown}>
-          <input
-            type="hidden"
-            value={note.id}
-            name="id"
-          />
           <button>Move Down</button>
         </form>
       </div>
