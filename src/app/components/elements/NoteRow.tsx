@@ -1,4 +1,4 @@
-import { FormEvent } from 'react';
+import { FormEvent, useCallback } from 'react';
 
 export interface Note {
   id: string;
@@ -71,6 +71,32 @@ export async function getNotes(): Promise<Note[]> {
   });
 }
 
+export async function reorderNote(
+  noteToReorder: Note,
+  noteToFlip: Note,
+): Promise<void> {
+  const db = await openDB();
+  const tx = db.transaction('notes', 'readwrite');
+  const store = tx.objectStore('notes');
+  const { position: oldPosition } = noteToReorder;
+  const { position: newPosition } = noteToFlip;
+
+  noteToReorder.position = newPosition;
+  noteToFlip.position = oldPosition;
+
+  store.delete(noteToReorder.id);
+  store.delete(noteToFlip.id);
+  store.put(noteToReorder);
+  store.put(noteToFlip);
+
+  return new Promise((resolve, reject) => {
+    tx.oncomplete = resolve;
+    tx.onerror = reject;
+  }).then(() => {
+    window.location.reload();
+  });
+}
+
 const handleDelete = async (event: FormEvent<HTMLFormElement>) => {
   event.preventDefault();
 
@@ -87,7 +113,31 @@ const handleDelete = async (event: FormEvent<HTMLFormElement>) => {
   window.location.reload();
 };
 
-export default function NoteRow({ note }: { note: Note }) {
+export default function NoteRow({
+  note,
+  prevNote,
+  nextNote,
+}: {
+  note: Note;
+  prevNote: Note;
+  nextNote: Note;
+}) {
+  const handleMoveUp = useCallback(() => {
+    if (!prevNote) {
+      return;
+    }
+
+    reorderNote(note, prevNote);
+  }, [note, prevNote]);
+
+  const handleMoveDown = useCallback(() => {
+    if (!nextNote) {
+      return;
+    }
+
+    reorderNote(note, nextNote);
+  }, [note, nextNote]);
+
   return (
     <div role="row">
       <div role="gridcell">
@@ -97,7 +147,7 @@ export default function NoteRow({ note }: { note: Note }) {
         <a href={`/notes/${note.id}`}>Edit</a>
       </div>
       <div role="gridcell">
-        <form>
+        <form onSubmit={handleMoveUp}>
           <input
             type="hidden"
             value={note.id}
@@ -107,7 +157,7 @@ export default function NoteRow({ note }: { note: Note }) {
         </form>
       </div>
       <div role="gridcell">
-        <form>
+        <form onSubmit={handleMoveDown}>
           <input
             type="hidden"
             value={note.id}

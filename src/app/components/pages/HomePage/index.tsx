@@ -28,6 +28,10 @@ export default function HomePage({ initialNotes }: { initialNotes: Note[] }) {
     setNotesDb(updatedNotes);
   }, [notes, setNotes]);
 
+  const orderedNotes = notes.sort((a, b) => {
+    return LexoRank.parse(a.position).compareTo(LexoRank.parse(b.position));
+  });
+
   return (
     <main>
       <h1>Notes</h1>
@@ -37,10 +41,12 @@ export default function HomePage({ initialNotes }: { initialNotes: Note[] }) {
         aria-label="Notes"
       >
         <div role="rowgroup">
-          {notes.map((note) => (
+          {orderedNotes.map((note, index) => (
             <NoteRow
               key={note.id}
               note={note}
+              prevNote={orderedNotes[index - 1]}
+              nextNote={orderedNotes[index + 1]}
             />
           ))}
         </div>
