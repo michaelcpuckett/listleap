@@ -1,4 +1,4 @@
-import { FormEvent, useCallback } from 'react';
+import { FormEventHandler, useCallback } from 'react';
 
 export interface Note {
   id: string;
@@ -97,22 +97,6 @@ export async function reorderNote(
   });
 }
 
-const handleDelete = async (event: FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-
-  const formElement = event.target;
-
-  if (!(formElement instanceof HTMLFormElement)) {
-    return;
-  }
-
-  await fetch(formElement.action, {
-    method: 'DELETE',
-  });
-
-  window.location.reload();
-};
-
 export default function NoteRow({
   note,
   prevNote,
@@ -122,21 +106,50 @@ export default function NoteRow({
   prevNote: Note;
   nextNote: Note;
 }) {
-  const handleMoveUp = useCallback(() => {
-    if (!prevNote) {
-      return;
-    }
+  const handleDelete = useCallback<FormEventHandler<HTMLFormElement>>(
+    async (event) => {
+      event.preventDefault();
 
-    reorderNote(note, prevNote);
-  }, [note, prevNote]);
+      const formElement = event.target;
 
-  const handleMoveDown = useCallback(() => {
-    if (!nextNote) {
-      return;
-    }
+      if (!(formElement instanceof HTMLFormElement)) {
+        return;
+      }
 
-    reorderNote(note, nextNote);
-  }, [note, nextNote]);
+      await fetch(`/notes/${note.id}`, {
+        method: 'DELETE',
+      });
+
+      window.location.reload();
+    },
+    [note],
+  );
+
+  const handleMoveUp = useCallback<FormEventHandler<HTMLFormElement>>(
+    (event) => {
+      event.preventDefault();
+
+      if (!prevNote) {
+        return;
+      }
+
+      reorderNote(note, prevNote);
+    },
+    [note, prevNote],
+  );
+
+  const handleMoveDown = useCallback<FormEventHandler<HTMLFormElement>>(
+    (event) => {
+      event.preventDefault();
+
+      if (!nextNote) {
+        return;
+      }
+
+      reorderNote(note, nextNote);
+    },
+    [note, nextNote],
+  );
 
   return (
     <div role="row">
@@ -157,10 +170,7 @@ export default function NoteRow({
         </form>
       </div>
       <div role="gridcell">
-        <form
-          onSubmit={handleDelete}
-          action={'/notes/' + note.id}
-        >
+        <form onSubmit={handleDelete}>
           <button>Delete</button>
         </form>
       </div>
