@@ -3,7 +3,6 @@ import React from 'react';
 
 export function PageShell(
   props: React.PropsWithChildren<{
-    version: number;
     title: string;
     description?: string;
     initialData?: Record<string, unknown>;
@@ -33,7 +32,7 @@ export function PageShell(
         {cssUrls.map((url) => (
           <link
             rel="stylesheet"
-            href={`${url}?v=${props.version}`}
+            href={url}
           />
         ))}
         <link
@@ -47,11 +46,9 @@ export function PageShell(
             )}`,
           }}
         />
+        <script src="/client.js"></script>
       </head>
-      <body tabIndex={-1}>
-        <div id="root">{props.children}</div>
-        <script src={`/client.js?v=${props.version}`}></script>
-      </body>
+      <body>{props.children}</body>
     </html>
   );
 }

@@ -16,8 +16,8 @@ window.addEventListener('pageshow', function (event: PageTransitionEvent) {
   }
 });
 
-(async () => {
-  const rootElement = window.document.getElementById('root');
+window.addEventListener('DOMContentLoaded', async () => {
+  const rootElement = window.document.body;
 
   if (!rootElement) {
     throw new Error('Root element not found.');
@@ -47,4 +47,4 @@ window.addEventListener('pageshow', function (event: PageTransitionEvent) {
     rootElement,
     createElement(Component as any, { ...window.__INITIAL_DATA__ }),
   );
-})();
+});

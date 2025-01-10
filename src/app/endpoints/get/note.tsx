@@ -29,7 +29,6 @@ export async function GetNote(
 
     const renderResult = renderToString(
       <PageShell
-        version={req.version}
         {...metadata}
         initialData={initialData}
       >

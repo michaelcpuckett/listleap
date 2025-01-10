@@ -20,7 +20,6 @@ export async function GetHome(
 
     const renderResult = renderToString(
       <PageShell
-        version={req.version}
         {...metadata}
         initialData={initialData}
       >

@@ -18,7 +18,7 @@ export default function NoteDetailPage({ initialNote }: { initialNote: Note }) {
   useEffect(() => {
     (async () => {
       const updatedNotes = Array.from(await getNotes());
-      const index = updatedNotes.findIndex(({ id }) => id === initialNote.id);
+      const index = updatedNotes.findIndex(({ id }) => id === note.id);
       updatedNotes[index] = note;
       setNotesDb(updatedNotes);
     })();
