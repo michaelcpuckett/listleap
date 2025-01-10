@@ -10,6 +10,12 @@ declare global {
   }
 }
 
+window.addEventListener('pageshow', function (event: PageTransitionEvent) {
+  if (event.persisted) {
+    window.location.reload();
+  }
+});
+
 (async () => {
   const rootElement = window.document.getElementById('root');
 

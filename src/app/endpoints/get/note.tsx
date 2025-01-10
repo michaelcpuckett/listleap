@@ -19,8 +19,7 @@ export async function GetNote(
     );
 
     if (!initialNote) {
-      res.status = 404;
-      res.send('Not found');
+      res.status(404).send('Not found');
       return;
     }
 

@@ -20,7 +20,6 @@ export async function DeleteNote(
       res.redirect(req.referrer || '/');
     })
     .catch((error) => {
-      res.status = 500;
-      res.send({ error: error.message });
+      res.status(500).send({ error: error.message });
     });
 }
