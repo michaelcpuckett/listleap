@@ -1,4 +1,6 @@
 import HomePage from 'components/pages/HomePage';
+import NoteDetailPage from 'components/pages/NoteDetailPage';
+import { pathToRegexp } from 'path-to-regexp';
 import { createElement } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 
@@ -9,19 +11,26 @@ declare global {
 }
 
 (async () => {
-  const rootElement = document.getElementById('root');
+  const rootElement = window.document.getElementById('root');
 
   if (!rootElement) {
     throw new Error('Root element not found.');
   }
 
   const Component = (() => {
-    switch (window.location.pathname) {
-      case '/':
-        return HomePage;
-      default:
-        return null;
+    if (window.location.pathname === '/') {
+      return HomePage;
     }
+
+    const notesPageMatch = pathToRegexp('/notes/:id').regexp.exec(
+      window.location.pathname,
+    );
+
+    if (notesPageMatch) {
+      return NoteDetailPage;
+    }
+
+    return null;
   })();
 
   if (!Component) {
@@ -30,6 +39,6 @@ declare global {
 
   hydrateRoot(
     rootElement,
-    createElement(Component, { ...window.__INITIAL_DATA__ }),
+    createElement(Component as any, { ...window.__INITIAL_DATA__ }),
   );
 })();

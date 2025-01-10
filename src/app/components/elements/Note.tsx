@@ -1,6 +1,3 @@
-import { FormEventHandler, useCallback, useEffect } from 'react';
-import MarkdownPreview from './MarkdownPreview';
-
 export interface Note {
   id: number;
   text: string;
@@ -46,7 +43,7 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 // Function to set the counter
-async function setNotesDb(value: Note[]) {
+export async function setNotesDb(value: Note[]) {
   const db = await openDB();
   const transaction = db.transaction('notes', 'readwrite');
   const store = transaction.objectStore('notes');
@@ -71,48 +68,14 @@ export async function getNotes(): Promise<Note[]> {
   });
 }
 
-export default function Note({
-  note,
-  notes,
-  setNotes,
-}: {
-  note: Note;
-  notes: Note[];
-  setNotes: (notes: Note[]) => void;
-}) {
-  const handleInput = useCallback<FormEventHandler<HTMLTextAreaElement>>(
-    (event) => {
-      const updatedNotes = Array.from(notes);
-
-      const index = updatedNotes.findIndex(({ id }) => note.id === id);
-
-      const target = event.target;
-
-      if (!(target instanceof HTMLTextAreaElement)) {
-        return;
-      }
-
-      updatedNotes[index].text = target.value;
-
-      setNotes(updatedNotes);
-    },
-    [notes, setNotes],
-  );
-
-  useEffect(() => {
-    setNotesDb(notes);
-  }, [notes]);
-
+export default function Note({ note }: { note: Note }) {
   return (
     <div role="row">
       <div role="gridcell">
-        <textarea
-          onInput={handleInput}
-          defaultValue={note.text}
-        />
+        <p>{note.text.slice(0, 20)}...</p>
       </div>
       <div role="gridcell">
-        <MarkdownPreview value={note.text} />
+        <a href={`/notes/${note.id}`}>Edit</a>
       </div>
     </div>
   );

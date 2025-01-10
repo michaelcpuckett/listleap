@@ -33,3 +33,4 @@ for (const url of URLS_TO_CACHE) {
 // Dynamically-generated HTML routes.
 
 app.get('/', Endpoints.GetHome);
+app.get('/notes/:id', Endpoints.GetNote);

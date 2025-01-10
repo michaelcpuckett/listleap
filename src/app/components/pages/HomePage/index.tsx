@@ -1,5 +1,4 @@
-import Counter from 'components/elements/Counter';
-import Note, { Note as INote } from 'components/elements/Note';
+import NoteRow, { getNotes, Note, setNotesDb } from 'components/elements/Note';
 import { useCallback, useState } from 'react';
 
 export const metadata = {
@@ -7,29 +6,23 @@ export const metadata = {
   description: 'The home page.',
 };
 
-export default function HomePage({
-  initialNotes,
-  initialCount,
-}: {
-  initialNotes: INote[];
-  initialCount: number;
-}) {
-  const [notes, setNotes] = useState<INote[]>(initialNotes);
+export default function HomePage({ initialNotes }: { initialNotes: Note[] }) {
+  const [notes, setNotes] = useState<Note[]>(initialNotes);
 
-  const createNote = useCallback(() => {
-    setNotes((prevNotes) => [
-      ...prevNotes,
-      {
-        id: prevNotes.length,
-        text: `Note ${prevNotes.length}`,
-      },
-    ]);
-  }, []);
+  const createNote = useCallback(async () => {
+    const updatedNotes = Array.from(await getNotes());
+    updatedNotes.push({
+      id: updatedNotes.length,
+      text: `Note ${updatedNotes.length}`,
+    });
+
+    setNotes(updatedNotes);
+    setNotesDb(updatedNotes);
+  }, [notes, setNotes]);
 
   return (
     <main>
-      <h1>Hello world!</h1>
-      <Counter initialCount={initialCount} />
+      <h1>Notes</h1>
       <button onClick={createNote}>Create Note</button>
       <div
         role="grid"
@@ -37,11 +30,9 @@ export default function HomePage({
       >
         <div role="rowgroup">
           {notes.map((note) => (
-            <Note
+            <NoteRow
               key={note.id}
               note={note}
-              notes={notes}
-              setNotes={setNotes}
             />
           ))}
         </div>

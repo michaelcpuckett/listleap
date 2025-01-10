@@ -3,19 +3,31 @@ import {
   ExpressWorkerResponse,
 } from '@express-worker/app';
 import { getNotes } from 'components/elements/Note';
-import HomePage, { metadata } from 'components/pages/HomePage';
+import { metadata } from 'components/pages/HomePage';
+import NoteDetailPage from 'components/pages/NoteDetailPage';
 import { PageShell } from 'components/pages/PageShell';
 import { handleRequest } from 'middleware/index';
 import { renderToString } from 'react-dom/server';
 
-export async function GetHome(
+export async function GetNote(
   req: ExpressWorkerRequest,
   res: ExpressWorkerResponse,
 ) {
   return handleRequest(async (req, res) => {
-    const initialNotes = await getNotes();
+    const initialNote = (await getNotes()).find(
+      ({ id }) => id === Number(req.params.id),
+    );
+
+    console.log(initialNote, await getNotes());
+
+    if (!initialNote) {
+      res.status = 404;
+      res.send('Not found');
+      return;
+    }
+
     const initialData = {
-      initialNotes,
+      initialNote,
     };
 
     const renderResult = renderToString(
@@ -24,7 +36,7 @@ export async function GetHome(
         {...metadata}
         initialData={initialData}
       >
-        <HomePage {...initialData} />
+        <NoteDetailPage {...initialData} />
       </PageShell>,
     );
 
