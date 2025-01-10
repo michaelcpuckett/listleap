@@ -1,5 +1,5 @@
 import {
-  applyAdditionalRequestProperties as ExpressWorkerApplyAdditionalRequestProperties,
+  ExpressWorker,
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
@@ -27,7 +27,7 @@ export function handleRequest(
     res: ExpressWorkerResponse,
   ) => Promise<void>,
 ) {
-  return ExpressWorkerApplyAdditionalRequestProperties<AdditionalRequestProperties>(
+  return ExpressWorker.applyAdditionalRequestProperties<AdditionalRequestProperties>(
     handler,
   );
 }
