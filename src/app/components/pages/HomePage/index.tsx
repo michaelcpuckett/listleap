@@ -1,8 +1,5 @@
-import NoteRow, {
-  getNotes,
-  Note,
-  setNotesDb,
-} from 'components/elements/NoteRow';
+import NoteRow, { Note, setNotesDb } from 'components/elements/NoteRow';
+import { LexoRank } from 'lexorank';
 import { useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 
@@ -15,11 +12,16 @@ export default function HomePage({ initialNotes }: { initialNotes: Note[] }) {
   const [notes, setNotes] = useState<Note[]>(initialNotes);
 
   const createNote = useCallback(async () => {
-    const updatedNotes = Array.from(await getNotes());
+    const updatedNotes = Array.from(notes);
+    const lastNote = updatedNotes[updatedNotes.length - 1];
+    const position = lastNote
+      ? LexoRank.parse(lastNote.position).genNext().toString()
+      : LexoRank.middle().toString();
+
     updatedNotes.push({
       id: uuid(),
-      position: '',
-      text: `Note ${updatedNotes.length}`,
+      position,
+      text: '',
     });
 
     setNotes(updatedNotes);
