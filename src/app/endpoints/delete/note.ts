@@ -12,7 +12,7 @@ export async function DeleteNote(
     const db = await openDB();
     const transaction = db.transaction('notes', 'readwrite');
     const store = transaction.objectStore('notes');
-    const request = store.delete(Number(req.params.id));
+    const request = store.delete(req.params.id);
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
   })

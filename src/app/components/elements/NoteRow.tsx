@@ -80,11 +80,7 @@ const handleDelete = async (event: FormEvent<HTMLFormElement>) => {
     return;
   }
 
-  const formData = new FormData(formElement);
-
-  const id = formData.get('id');
-
-  await fetch(`/notes/${id}`, {
+  await fetch(formElement.action, {
     method: 'DELETE',
   });
 
@@ -101,12 +97,30 @@ export default function NoteRow({ note }: { note: Note }) {
         <a href={`/notes/${note.id}`}>Edit</a>
       </div>
       <div role="gridcell">
-        <form onSubmit={handleDelete}>
+        <form>
           <input
             type="hidden"
             value={note.id}
             name="id"
           />
+          <button>Move Up</button>
+        </form>
+      </div>
+      <div role="gridcell">
+        <form>
+          <input
+            type="hidden"
+            value={note.id}
+            name="id"
+          />
+          <button>Move Down</button>
+        </form>
+      </div>
+      <div role="gridcell">
+        <form
+          onSubmit={handleDelete}
+          action={'/notes/' + note.id}
+        >
           <button>Delete</button>
         </form>
       </div>
