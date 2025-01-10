@@ -1,7 +1,8 @@
 import { FormEvent } from 'react';
 
 export interface Note {
-  id: number;
+  id: string;
+  position: string;
   text: string;
 }
 
@@ -19,8 +20,10 @@ export function openDB(): Promise<IDBDatabase> {
       if (!db.objectStoreNames.contains('notes')) {
         const notesObjectStore = db.createObjectStore('notes', {
           keyPath: 'id',
+          autoIncrement: false,
         });
         notesObjectStore.createIndex('id', 'id', { unique: true });
+        notesObjectStore.createIndex('position', 'position', { unique: true });
       }
     };
 

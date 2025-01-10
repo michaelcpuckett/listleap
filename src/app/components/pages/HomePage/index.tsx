@@ -4,6 +4,7 @@ import NoteRow, {
   setNotesDb,
 } from 'components/elements/NoteRow';
 import { useCallback, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 
 export const metadata = {
   title: 'Home',
@@ -16,7 +17,8 @@ export default function HomePage({ initialNotes }: { initialNotes: Note[] }) {
   const createNote = useCallback(async () => {
     const updatedNotes = Array.from(await getNotes());
     updatedNotes.push({
-      id: updatedNotes.length,
+      id: uuid(),
+      position: '',
       text: `Note ${updatedNotes.length}`,
     });
 

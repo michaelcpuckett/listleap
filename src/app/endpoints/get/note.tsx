@@ -15,7 +15,7 @@ export async function GetNote(
 ) {
   return handleRequest(async (req, res) => {
     const initialNote = (await getNotes()).find(
-      ({ id }) => id === Number(req.params.id),
+      ({ id }) => id === req.params.id,
     );
 
     if (!initialNote) {
