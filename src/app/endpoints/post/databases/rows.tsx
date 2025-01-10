@@ -1,21 +1,20 @@
-import { NormalizedFormData, PartialRow, AnyRow } from 'shared/types';
-import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
-import { getUniqueId } from 'shared/getUniqueId';
-import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
-import {
-  getIdb,
-  getDatabaseFromIndexedDb,
-  addRowToIndexedDb,
-  getRowByIdFromIndexedDb,
-  deleteRowByIdFromIndexedDb,
-  editRowInIndexedDb,
-} from 'utilities/idb';
-import { LexoRank } from 'lexorank';
 import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { AdditionalRequestProperties, handleRequest } from 'middleware/index';
+import { LexoRank } from 'lexorank';
+import { handleRequest } from 'middleware/index';
+import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
+import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
+import { getUniqueId } from 'shared/getUniqueId';
+import {
+  addRowToIndexedDb,
+  deleteRowByIdFromIndexedDb,
+  editRowInIndexedDb,
+  getDatabaseFromIndexedDb,
+  getIdb,
+  getRowByIdFromIndexedDb,
+} from 'utilities/idb';
 
 export async function PostDatabaseRows(
   req: ExpressWorkerRequest,
@@ -32,8 +31,7 @@ export async function PostDatabaseRows(
 
     if (!database) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 
@@ -80,8 +78,7 @@ export async function PostDatabaseRows(
             !guardIsTableRow(rowToPatch, database)
           ) {
             idb.close();
-            res.status = 404;
-            res.text('Not found');
+            res.status(404).text('Not found').end();
             return;
           }
 
@@ -89,8 +86,7 @@ export async function PostDatabaseRows(
         }
       } else {
         idb.close();
-        res.status = 404;
-        res.text('Not found');
+        res.status(404).text('Not found').end();
         return;
       }
 

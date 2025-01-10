@@ -2,13 +2,13 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
+import { handleRequest } from 'middleware/index';
 import { PartialDatabase } from 'shared/types';
 import {
-  getIdb,
-  getDatabaseFromIndexedDb,
   editPartialDatabaseInIndexedDb,
+  getDatabaseFromIndexedDb,
+  getIdb,
 } from 'utilities/idb';
-import { handleRequest } from 'middleware/index';
 
 export async function PatchDatabase(
   req: ExpressWorkerRequest,
@@ -25,8 +25,7 @@ export async function PatchDatabase(
 
     if (!database) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 

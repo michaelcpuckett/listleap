@@ -2,8 +2,8 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { getIdb, saveSettingsToIndexedDb } from 'utilities/idb';
 import { handleRequest } from 'middleware/index';
+import { getIdb, saveSettingsToIndexedDb } from 'utilities/idb';
 
 export async function PatchSettings(
   req: ExpressWorkerRequest,
@@ -20,8 +20,7 @@ export async function PatchSettings(
 
     if (!VALID_THEMES.includes(theme)) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 

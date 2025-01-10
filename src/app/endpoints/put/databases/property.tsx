@@ -2,16 +2,16 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
+import { handleRequest } from 'middleware/index';
 import { Property } from 'shared/types';
 import {
-  getIdb,
-  getDatabaseFromIndexedDb,
   editPropertyInIndexedDb,
+  getDatabaseFromIndexedDb,
+  getIdb,
+  getPropertyByPositionFromIndexedDb,
   getPropertyTypeFromString,
   reorderPropertyInIndexedDb,
-  getPropertyByPositionFromIndexedDb,
 } from 'utilities/idb';
-import { handleRequest } from 'middleware/index';
 
 export async function PutDatabaseProperty(
   req: ExpressWorkerRequest,
@@ -28,8 +28,7 @@ export async function PutDatabaseProperty(
 
     if (!database) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 
@@ -40,8 +39,7 @@ export async function PutDatabaseProperty(
 
     if (!property) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 

@@ -1,13 +1,13 @@
 import {
-  getIdb,
-  getDatabaseFromIndexedDb,
-  deleteDatabaseByIdFromIndexedDb,
-} from 'utilities/idb';
-import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
 import { handleRequest } from 'middleware/index';
+import {
+  deleteDatabaseByIdFromIndexedDb,
+  getDatabaseFromIndexedDb,
+  getIdb,
+} from 'utilities/idb';
 
 export async function DeleteDatabase(
   req: ExpressWorkerRequest,
@@ -24,8 +24,7 @@ export async function DeleteDatabase(
     idb.close();
 
     if (!database) {
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found');
       return;
     }
 

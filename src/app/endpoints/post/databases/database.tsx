@@ -46,8 +46,7 @@ export async function PostDatabase(
         res.redirect(redirectUrl.href);
         return;
       } else {
-        res.status = 404;
-        res.text('Not found');
+        res.status(404).text('Not found').end();
         return;
       }
     }
@@ -81,8 +80,7 @@ export async function PostDatabase(
 
     if (!database) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 

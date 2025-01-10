@@ -6,7 +6,6 @@ import { URLS_TO_CACHE } from 'utilities/urlsToCache';
 import { handleInstall } from './install';
 import { FormDataMiddleware } from './middleware/FormDataMiddleware';
 import { QueryParamsMiddleware } from './middleware/QueryParamsMiddleware';
-import { VersionMiddleware } from './middleware/VersionMiddleware';
 
 // Populates the cache on install.
 self.addEventListener('install', handleInstall);
@@ -20,7 +19,7 @@ self.addEventListener('activate', () => {
 const app = new ExpressWorker();
 
 // Fetches the current version as `req.version` for cache-busting.
-app.use(VersionMiddleware);
+// app.use(VersionMiddleware);
 
 // Parses query params as `req.query`.
 app.use(QueryParamsMiddleware);

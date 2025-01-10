@@ -698,6 +698,7 @@ hyper-link {
   cursor: pointer;
 }
 
+/*
 @view-transition {
   navigation: auto;
 }
@@ -730,3 +731,4 @@ hyper-link {
 ::view-transition-new(root) {
   animation: 0.25s ease-in both fade-in;
 }
+*/

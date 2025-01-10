@@ -25,8 +25,7 @@ export async function DeleteDatabaseProperty(
 
     if (!database) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 

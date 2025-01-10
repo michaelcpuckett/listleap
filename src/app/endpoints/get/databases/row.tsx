@@ -23,8 +23,7 @@ export async function GetDatabaseRow(
 
     if (!database) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 
@@ -32,8 +31,7 @@ export async function GetDatabaseRow(
 
     if (!row) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 

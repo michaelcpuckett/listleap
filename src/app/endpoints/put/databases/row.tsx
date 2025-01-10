@@ -1,18 +1,18 @@
-import { Database, AnyProperty } from 'shared/types';
-import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
-import {
-  getIdb,
-  getDatabaseFromIndexedDb,
-  editRowInIndexedDb,
-  getRowByPositionFromIndexedDb,
-  reorderRowInIndexedDb,
-} from 'utilities/idb';
-import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
 import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
 import { handleRequest } from 'middleware/index';
+import { guardIsChecklistRow, guardIsTableRow } from 'shared/assertions';
+import { formatPropertyValueFromFormData } from 'shared/formatPropertyValueFromFormData';
+import { AnyProperty, Database } from 'shared/types';
+import {
+  editRowInIndexedDb,
+  getDatabaseFromIndexedDb,
+  getIdb,
+  getRowByPositionFromIndexedDb,
+  reorderRowInIndexedDb,
+} from 'utilities/idb';
 
 export async function PutDatabaseRow(
   req: ExpressWorkerRequest,
@@ -30,8 +30,7 @@ export async function PutDatabaseRow(
 
     if (!database) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 
@@ -40,8 +39,7 @@ export async function PutDatabaseRow(
 
     if (!existingRow) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 
@@ -71,8 +69,7 @@ export async function PutDatabaseRow(
       )
     ) {
       idb.close();
-      res.status = 404;
-      res.text('Not found');
+      res.status(404).text('Not found').end();
       return;
     }
 

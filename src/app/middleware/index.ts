@@ -1,7 +1,7 @@
 import {
+  ExpressWorker,
   ExpressWorkerRequest,
   ExpressWorkerResponse,
-  applyAdditionalRequestProperties as ExpressWorkerApplyAdditionalRequestProperties,
 } from '@express-worker/app';
 import { NormalizedFormData } from 'shared/types';
 
@@ -17,7 +17,7 @@ export function handleRequest(
     res: ExpressWorkerResponse,
   ) => Promise<void>,
 ) {
-  return ExpressWorkerApplyAdditionalRequestProperties<AdditionalRequestProperties>(
+  return ExpressWorker.applyAdditionalRequestProperties<AdditionalRequestProperties>(
     handler,
   );
 }
