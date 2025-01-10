@@ -1,9 +1,11 @@
+import { FormEvent } from 'react';
+
 export interface Note {
   id: number;
   text: string;
 }
 
-function openDB(): Promise<IDBDatabase> {
+export function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('notesDB', 1);
 
@@ -42,7 +44,6 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
-// Function to set the counter
 export async function setNotesDb(value: Note[]) {
   const db = await openDB();
   const transaction = db.transaction('notes', 'readwrite');
@@ -55,7 +56,6 @@ export async function setNotesDb(value: Note[]) {
   return transaction.oncomplete;
 }
 
-// Function to get the counter
 export async function getNotes(): Promise<Note[]> {
   const db = await openDB();
   const transaction = db.transaction('notes', 'readonly');
@@ -68,7 +68,27 @@ export async function getNotes(): Promise<Note[]> {
   });
 }
 
-export default function Note({ note }: { note: Note }) {
+const handleDelete = async (event: FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+
+  const formElement = event.target;
+
+  if (!(formElement instanceof HTMLFormElement)) {
+    return;
+  }
+
+  const formData = new FormData(formElement);
+
+  const id = formData.get('id');
+
+  await fetch(`/notes/${id}`, {
+    method: 'DELETE',
+  });
+
+  window.location.reload();
+};
+
+export default function NoteRow({ note }: { note: Note }) {
   return (
     <div role="row">
       <div role="gridcell">
@@ -76,6 +96,16 @@ export default function Note({ note }: { note: Note }) {
       </div>
       <div role="gridcell">
         <a href={`/notes/${note.id}`}>Edit</a>
+      </div>
+      <div role="gridcell">
+        <form onSubmit={handleDelete}>
+          <input
+            type="hidden"
+            value={note.id}
+            name="id"
+          />
+          <button>Delete</button>
+        </form>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import MarkdownPreview from 'components/elements/MarkdownPreview';
 import { FormEventHandler, useCallback, useEffect, useState } from 'react';
-import { Note, getNotes, setNotesDb } from '../../elements/Note';
+import { Note, getNotes, setNotesDb } from '../../elements/NoteRow';
 
 export default function NoteDetailPage({ initialNote }: { initialNote: Note }) {
   const [note, setNote] = useState<Note>(initialNote);

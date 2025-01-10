@@ -2,7 +2,7 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { getNotes } from 'components/elements/Note';
+import { getNotes } from 'components/elements/NoteRow';
 import { metadata } from 'components/pages/HomePage';
 import NoteDetailPage from 'components/pages/NoteDetailPage';
 import { PageShell } from 'components/pages/PageShell';
@@ -17,8 +17,6 @@ export async function GetNote(
     const initialNote = (await getNotes()).find(
       ({ id }) => id === Number(req.params.id),
     );
-
-    console.log(initialNote, await getNotes());
 
     if (!initialNote) {
       res.status = 404;

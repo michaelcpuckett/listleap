@@ -1,4 +1,8 @@
-import NoteRow, { getNotes, Note, setNotesDb } from 'components/elements/Note';
+import NoteRow, {
+  getNotes,
+  Note,
+  setNotesDb,
+} from 'components/elements/NoteRow';
 import { useCallback, useState } from 'react';
 
 export const metadata = {
