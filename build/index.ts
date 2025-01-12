@@ -5,28 +5,33 @@ function getAppRoutes() {
   const routes = {};
 
   const appDir = path.resolve(__dirname, '../', 'src', 'app');
-  const pageFiles = fs.readdirSync(appDir);
 
-  pageFiles.forEach((file) => {
-    const pagePath = path.resolve(appDir, file);
+  function traverseDirectory(currentDir: string) {
+    const files = fs.readdirSync(currentDir);
 
-    // Check if the file is a directory
-    if (fs.lstatSync(pagePath).isDirectory()) {
-      return;
-    }
+    files.forEach((file) => {
+      const filePath = path.resolve(currentDir, file);
 
-    const pageName = file.replace(/\.tsx$/, '');
+      if (fs.lstatSync(filePath).isDirectory()) {
+        traverseDirectory(filePath);
+      } else if (file.endsWith('.tsx')) {
+        const pageName = path
+          .relative(appDir, filePath)
+          .replace(/\\/g, '/')
+          .replace(/\.tsx$/, '');
+        const pageModule = require(filePath);
+        const { default: Component, getInitialProps, metadata } = pageModule;
 
-    const pageModule = require(pagePath);
-    const { default: Component, getInitialProps, metadata } = pageModule;
+        routes[`/${pageName}`] = {
+          Component,
+          getInitialProps,
+          metadata,
+        };
+      }
+    });
+  }
 
-    routes[`/${pageName}`] = {
-      Component,
-      getInitialProps,
-      metadata,
-    };
-  });
-
+  traverseDirectory(appDir);
   return routes;
 }
 
@@ -66,7 +71,9 @@ function writeAppRoutesToFile() {
               metadata as ${Component.name}Metadata,
             } from 'app${route}';
 
-            Routes['${route.replace('index', '')}'] = {
+            Routes['${
+              route.replace('index', '').replace(/\/$/, '') || '/'
+            }'] = {
               Component: ${Component.name},
               getInitialProps: get${Component.name}Props,
               metadata: ${Component.name}Metadata,

@@ -54,6 +54,10 @@ for (const url of URLS_TO_CACHE) {
   );
 }
 
+function convertPath(path: string) {
+  return path.replace(/\[([^\]]+)\]/g, ':$1');
+}
+
 for (const [path, { Component, getInitialProps, metadata }] of Object.entries<{
   Component: React.ComponentType<any>;
   getInitialProps: (
@@ -64,8 +68,9 @@ for (const [path, { Component, getInitialProps, metadata }] of Object.entries<{
     description?: string;
   };
 }>(Routes)) {
+  console.log(path, convertPath(path));
   app.get(
-    path,
+    convertPath(path),
     async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
       const initialProps = await getInitialProps(req.params);
 

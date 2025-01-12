@@ -12,6 +12,18 @@ const Routes = {};
               metadata: HomePageMetadata,
             };
           
+
+            import NoteDetailPage, {
+              getInitialProps as getNoteDetailPageProps,
+              metadata as NoteDetailPageMetadata,
+            } from 'app/notes/[id]/index';
+
+            Routes['/notes/[id]'] = {
+              Component: NoteDetailPage,
+              getInitialProps: getNoteDetailPageProps,
+              metadata: NoteDetailPageMetadata,
+            };
+          
         
         export default Routes;
       

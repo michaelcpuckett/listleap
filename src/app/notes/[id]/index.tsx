@@ -8,6 +8,20 @@ import {
 import MarkdownPreview from '../../../components/MarkdownPreview';
 import { Note, getNotes, setNotesDb } from '../../../components/NoteRow';
 
+export const metadata = {
+  title: 'Note Detail',
+  description: 'The note detail page.',
+};
+
+export async function getInitialProps(params: Record<string, string>) {
+  const notes = await getNotes();
+  const note = notes.find(({ id }) => id === params.id);
+
+  return {
+    initialNote: note,
+  };
+}
+
 export default function NoteDetailPage({ initialNote }: { initialNote: Note }) {
   const [note, setNote] = useState<Note>(initialNote);
 
