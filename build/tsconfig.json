@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "declaration": true,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "jsx": "react-jsx",
+    "noLib": false,
+    "isolatedModules": true,
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "outDir": "../dist",
+    "paths": {
+      "src/*": ["../src/*"]
+    }
+  },
+  "include": ["./index.ts"]
+}

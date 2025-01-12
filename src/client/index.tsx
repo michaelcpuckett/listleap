@@ -1,5 +1,5 @@
-import HomePage from 'components/pages/HomePage';
-import NoteDetailPage from 'components/pages/NoteDetailPage';
+import HomePage from 'app/index';
+import NoteDetailPage from 'app/notes/[id]';
 import { pathToRegexp } from 'path-to-regexp';
 import { createElement } from 'react';
 import { hydrateRoot } from 'react-dom/client';

@@ -12,16 +12,16 @@
     "jsx": "react-jsx",
     "noLib": false,
     "isolatedModules": true,
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "resolveJsonModule": true,
+    "lib": ["ESNext", "webworker", "DOM.Iterable"],
     "target": "ESNext",
-    "outDir": "../../../dist",
+    "outDir": "../../dist",
     "paths": {
-      "components/*": ["./*"],
-      "endpoints/*": ["../endpoints/*"],
-      "middleware/*": ["../middleware/*"],
-      "config/*": ["../config/*"]
+      "components/*": ["./src/sw/components/*"],
+      "middleware/*": ["./src/sw/middleware/*"],
+      "dist/*": ["./dist/*"],
+      "app/*": ["./src/app/*"]
     }
   },
-  "exclude": ["../../node_modules"],
-  "include": ["./**/*"]
+  "include": ["./src/**/*", "./dist/*.json"]
 }

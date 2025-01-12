@@ -6,15 +6,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --config .prettierrc \"**/*.{ts,tsx}\" --write",
     "build": "parcel build",
-    "serve": "http-server dist -p 8080"
+    "serve": "http-server dist -p 8080",
+    "prepare": "ts-node build/index.ts"
   },
   "app": "dist/app.js",
   "client": "dist/client.js",
   "targets": {
     "app": {
-      "source": "./src/app/index.tsx",
+      "source": "./src/sw/index.tsx",
       "distDir": "./dist",
-      "scopeHoist": false
+      "context": "service-worker"
     },
     "client": {
       "source": "./src/client/index.tsx",

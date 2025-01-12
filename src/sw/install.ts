@@ -1,6 +1,6 @@
 declare var self: ServiceWorkerGlobalScope;
 
-import { URLS_TO_CACHE } from 'config/urlsToCache';
+import URLS_TO_CACHE from 'dist/static.json';
 
 export function handleInstall(event: Event) {
   if (!(event instanceof ExtendableEvent)) {

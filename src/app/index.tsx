@@ -1,38 +1,64 @@
-declare var self: ServiceWorkerGlobalScope;
+import NoteRow, { getNotes, Note, setNotesDb } from 'components/NoteRow';
+import { LexoRank } from 'lexorank';
+import { useCallback, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 
-import { ExpressWorker } from '@express-worker/app';
-import { URLS_TO_CACHE } from 'config/urlsToCache';
-import * as Endpoints from 'endpoints/index';
-import { handleInstall } from './install';
-import { FormDataMiddleware } from './middleware/FormDataMiddleware';
-import { QueryParamsMiddleware } from './middleware/QueryParamsMiddleware';
+export const metadata = {
+  title: 'Home',
+  description: 'The home page.',
+};
 
-// Populates the cache on install.
-self.addEventListener('install', handleInstall);
-
-// Immediately takes control of the page on activation.
-self.addEventListener('activate', () => {
-  self.clients.claim();
-});
-
-// Creates a new ExpressWorker instance, which handles all requests.
-const app = new ExpressWorker();
-
-// Parses query params as `req.query`.
-app.use(QueryParamsMiddleware);
-
-// Parses form data as `req.data`.
-app.use(FormDataMiddleware);
-
-// Static files get served from cache.
-
-for (const url of URLS_TO_CACHE) {
-  app.get(url, Endpoints.GetStaticFile);
+export async function getInitialProps(params: Record<string, string>) {
+  return {
+    initialNotes: await getNotes(),
+  };
 }
 
-// Dynamically-generated HTML routes.
+export default function HomePage({ initialNotes }: { initialNotes: Note[] }) {
+  const [notes, setNotes] = useState<Note[]>(initialNotes);
 
-app.get('/', Endpoints.GetHome);
-app.get('/notes/:id', Endpoints.GetNote);
+  const createNote = useCallback(async () => {
+    const updatedNotes = Array.from(notes);
+    const position = '1';
 
-// RESTful API endpoints.
+    updatedNotes.push({
+      id: uuid(),
+      position,
+      text: '',
+    });
+
+    setNotes(updatedNotes);
+    setNotesDb(updatedNotes);
+  }, [notes, setNotes]);
+
+  const orderedNotes = notes.sort((a, b) => {
+    return LexoRank.parse(a.position).compareTo(LexoRank.parse(b.position));
+  });
+
+  return (
+    <main>
+      <h1>Notes</h1>
+      <button
+        className="button"
+        onClick={createNote}
+      >
+        Create Note
+      </button>
+      <div
+        role="grid"
+        aria-label="Notes"
+      >
+        <div role="rowgroup">
+          {orderedNotes.map((note, index) => (
+            <NoteRow
+              key={note.id}
+              note={note}
+              prevNote={orderedNotes[index - 1]}
+              nextNote={orderedNotes[index + 1]}
+            />
+          ))}
+        </div>
+      </div>
+    </main>
+  );
+}

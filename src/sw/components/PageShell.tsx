@@ -1,4 +1,4 @@
-import { URLS_TO_CACHE } from 'config/urlsToCache';
+import URLS_TO_CACHE from 'dist/static.json';
 import React from 'react';
 
 export function PageShell(
