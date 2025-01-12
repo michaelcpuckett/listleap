@@ -35,7 +35,12 @@ export default function HomePage({ initialNotes }: { initialNotes: Note[] }) {
   return (
     <main>
       <h1>Notes</h1>
-      <button onClick={createNote}>Create Note</button>
+      <button
+        className="button"
+        onClick={createNote}
+      >
+        Create Note
+      </button>
       <div
         role="grid"
         aria-label="Notes"

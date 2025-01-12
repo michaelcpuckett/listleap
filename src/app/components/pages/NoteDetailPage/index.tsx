@@ -1,5 +1,11 @@
 import MarkdownPreview from 'components/elements/MarkdownPreview';
-import { FormEventHandler, useCallback, useEffect, useState } from 'react';
+import {
+  FormEventHandler,
+  Fragment,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { Note, getNotes, setNotesDb } from '../../elements/NoteRow';
 
 export default function NoteDetailPage({ initialNote }: { initialNote: Note }) {
@@ -25,12 +31,25 @@ export default function NoteDetailPage({ initialNote }: { initialNote: Note }) {
   }, [note]);
 
   return (
-    <main>
-      <textarea
-        defaultValue={note.text}
-        onInput={handleInput}
-      />
-      <MarkdownPreview value={note.text} />
-    </main>
+    <Fragment>
+      <header>
+        <h1>Note Detail</h1>
+      </header>
+      <nav>
+        <a
+          className="button"
+          href="/"
+        >
+          Back
+        </a>
+      </nav>
+      <main>
+        <textarea
+          defaultValue={note.text}
+          onInput={handleInput}
+        />
+        <MarkdownPreview value={note.text} />
+      </main>
+    </Fragment>
   );
 }

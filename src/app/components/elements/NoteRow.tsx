@@ -1,4 +1,4 @@
-import { FormEventHandler, useCallback } from 'react';
+import { useCallback } from 'react';
 
 export interface Note {
   id: string;
@@ -120,46 +120,25 @@ export default function NoteRow({
   prevNote: Note;
   nextNote: Note;
 }) {
-  const handleDelete = useCallback<FormEventHandler<HTMLFormElement>>(
-    async (event) => {
-      event.preventDefault();
+  const handleDelete = useCallback(async () => {
+    await deleteNote(note);
+  }, [note]);
 
-      const formElement = event.target;
+  const handleMoveUp = useCallback(async () => {
+    if (!prevNote) {
+      return;
+    }
 
-      if (!(formElement instanceof HTMLFormElement)) {
-        return;
-      }
+    await reorderNote(note, prevNote);
+  }, [note, prevNote]);
 
-      await deleteNote(note);
-    },
-    [note],
-  );
+  const handleMoveDown = useCallback(async () => {
+    if (!nextNote) {
+      return;
+    }
 
-  const handleMoveUp = useCallback<FormEventHandler<HTMLFormElement>>(
-    async (event) => {
-      event.preventDefault();
-
-      if (!prevNote) {
-        return;
-      }
-
-      await reorderNote(note, prevNote);
-    },
-    [note, prevNote],
-  );
-
-  const handleMoveDown = useCallback<FormEventHandler<HTMLFormElement>>(
-    async (event) => {
-      event.preventDefault();
-
-      if (!nextNote) {
-        return;
-      }
-
-      await reorderNote(note, nextNote);
-    },
-    [note, nextNote],
-  );
+    await reorderNote(note, nextNote);
+  }, [note, nextNote]);
 
   return (
     <div role="row">
@@ -167,22 +146,38 @@ export default function NoteRow({
         <p>{note.text.slice(0, 20)}...</p>
       </div>
       <div role="gridcell">
-        <a href={`/notes/${note.id}`}>Edit</a>
+        <a
+          className="button"
+          href={`/notes/${note.id}`}
+        >
+          Edit
+        </a>
       </div>
       <div role="gridcell">
-        <form onSubmit={handleMoveUp}>
-          <button>Move Up</button>
-        </form>
+        <button
+          className="button"
+          onClick={handleMoveUp}
+          disabled={!prevNote}
+        >
+          Move Up
+        </button>
       </div>
       <div role="gridcell">
-        <form onSubmit={handleMoveDown}>
-          <button>Move Down</button>
-        </form>
+        <button
+          className="button"
+          onClick={handleMoveDown}
+          disabled={!nextNote}
+        >
+          Move Down
+        </button>
       </div>
       <div role="gridcell">
-        <form onSubmit={handleDelete}>
-          <button>Delete</button>
-        </form>
+        <button
+          className="button"
+          onClick={handleDelete}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );
