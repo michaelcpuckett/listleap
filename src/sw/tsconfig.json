@@ -17,11 +17,11 @@
     "target": "ESNext",
     "outDir": "../../dist",
     "paths": {
-      "components/*": ["./src/sw/components/*"],
-      "middleware/*": ["./src/sw/middleware/*"],
-      "dist/*": ["./dist/*"],
-      "app/*": ["./src/app/*"]
+      "components/*": ["../components/*"],
+      "middleware/*": ["./middleware/*"],
+      "dist/*": ["../../dist/*"],
+      "app/*": ["../app/*"]
     }
   },
-  "include": ["./src/**/*", "./dist/*.json"]
+  "include": ["../../dist/*.json", "./**/*"]
 }

@@ -1,7 +1,7 @@
-import NoteRow, { getNotes, Note, setNotesDb } from 'components/NoteRow';
 import { LexoRank } from 'lexorank';
 import { useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
+import NoteRow, { getNotes, Note, setNotesDb } from '../components/NoteRow';
 
 export const metadata = {
   title: 'Home',
@@ -19,7 +19,12 @@ export default function HomePage({ initialNotes }: { initialNotes: Note[] }) {
 
   const createNote = useCallback(async () => {
     const updatedNotes = Array.from(notes);
-    const position = '1';
+    const position =
+      notes.length === 0
+        ? LexoRank.middle().toString()
+        : LexoRank.parse(notes[notes.length - 1].position)
+            .genNext()
+            .toString();
 
     updatedNotes.push({
       id: uuid(),

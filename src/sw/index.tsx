@@ -5,9 +5,9 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { PageShell } from 'components/PageShell';
 import URLS_TO_CACHE from 'dist/static.json';
 import { renderToString } from 'react-dom/server';
+import { PageShell } from '../components/PageShell';
 import { handleInstall } from './install';
 import { FormDataMiddleware } from './middleware/FormDataMiddleware';
 import { QueryParamsMiddleware } from './middleware/QueryParamsMiddleware';
@@ -30,15 +30,12 @@ app.use(QueryParamsMiddleware);
 // Parses form data as `req.data`.
 app.use(FormDataMiddleware);
 
-// Static files get served from cache.
-
-// useStaticFiles(app);
 for (const url of URLS_TO_CACHE) {
   app.get(
     url,
     async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
       const cache = await caches.open('v1');
-      const cachedResponse = await cache.match(new URL(req.url).pathname);
+      const cachedResponse = await cache.match(url);
 
       if (cachedResponse) {
         res.status(cachedResponse.status);
@@ -57,12 +54,16 @@ for (const url of URLS_TO_CACHE) {
   );
 }
 
-// Dynamically-generated HTML routes.
-
-// useAppRouter(app);
-for (const [path, { Component, getInitialProps, metadata }] of Object.entries(
-  Routes,
-)) {
+for (const [path, { Component, getInitialProps, metadata }] of Object.entries<{
+  Component: React.ComponentType<any>;
+  getInitialProps: (
+    params: Record<string, string>,
+  ) => Promise<Record<string, any>>;
+  metadata: {
+    title: string;
+    description?: string;
+  };
+}>(Routes)) {
   app.get(
     path,
     async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
@@ -83,9 +84,6 @@ for (const [path, { Component, getInitialProps, metadata }] of Object.entries(
 }
 
 app.get('*', async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
+  console.log(req.body);
   res.status(404).send('Not found.');
 });
-
-// app.get('/notes/:id', Endpoints.GetNote);
-
-// RESTful API endpoints.

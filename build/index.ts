@@ -1,63 +1,95 @@
 import fs from 'fs';
 import path from 'path';
 
-// Paths
-const srcDirectory = path.resolve(__dirname, '../', 'src');
-const appDirectory = path.resolve(srcDirectory, 'app');
+function getAppRoutes() {
+  const routes = {};
 
-/**
- * Recursively generates a route manifest for the app directory.
- * @param directory - The current directory to scan.
- * @param baseRoute - The base route for generating paths.
- * @returns A route manifest object.
- */
-function generateRoutes(
-  directory: string,
-  baseRoute: string = '',
-): Record<string, string> {
-  const entries = fs.readdirSync(directory, { withFileTypes: true });
-  const routes: Record<string, string> = {};
+  const appDir = path.resolve(__dirname, '../', 'src', 'app');
+  const pageFiles = fs.readdirSync(appDir);
 
-  for (const entry of entries) {
-    const entryPath = path.join(directory, entry.name);
-    const routePath = path.join(baseRoute, entry.name);
+  pageFiles.forEach((file) => {
+    const pagePath = path.resolve(appDir, file);
 
-    if (entry.isDirectory()) {
-      // Recursively process subdirectories
-      Object.assign(routes, generateRoutes(entryPath, routePath));
-    } else if (entry.isFile() && entry.name === 'index.tsx') {
-      // Convert directory path to a route
-      const route = routePath
-        .replace(/\/index\.tsx$/, '') // Remove /index.tsx
-        .replace(/\\/g, '/'); // Normalize slashes
-
-      routes[route || '/'] = `.${entryPath.replace(srcDirectory, '')}`;
+    // Check if the file is a directory
+    if (fs.lstatSync(pagePath).isDirectory()) {
+      return;
     }
-  }
+
+    const pageName = file.replace(/\.tsx$/, '');
+
+    const pageModule = require(pagePath);
+    const { default: Component, getInitialProps, metadata } = pageModule;
+
+    routes[`/${pageName}`] = {
+      Component,
+      getInitialProps,
+      metadata,
+    };
+  });
 
   return routes;
 }
 
-/**
- * Writes the route manifest to a JSON file.
- */
-function writeRoutesToFile() {
-  try {
-    const routes = generateRoutes(appDirectory);
-    const outputPath = path.resolve(__dirname, '../', 'dist', 'routes.json');
+/*
+Format:
+import HomePage, {
+  getInitialProps as getHomePageProps,
+  metadata as homePageMetadata,
+} from 'app/index';
 
-    fs.writeFileSync(outputPath, JSON.stringify(routes, null, 2));
-    console.log(`✅ Route manifest generated: ${outputPath}`);
+Routes['/'] = {
+  Component: HomePage,
+  getInitialProps: getHomePageProps,
+  metadata: homePageMetadata,
+};
+
+export default Routes;
+*/
+function writeAppRoutesToFile() {
+  try {
+    const routes = getAppRoutes();
+    const outputPath = path.resolve(__dirname, '../', 'src', 'sw', 'routes.ts');
+
+    fs.writeFileSync(
+      outputPath,
+      `const Routes = {};
+
+      ${Object.entries<{
+        Component: Function;
+        getInitialProps: Function;
+        metadata: Record<string, string>;
+      }>(routes)
+        .map(([route, { Component }]) => {
+          return `
+            import ${Component.name}, {
+              getInitialProps as get${Component.name}Props,
+              metadata as ${Component.name}Metadata,
+            } from 'app${route}';
+
+            Routes['${route.replace('index', '')}'] = {
+              Component: ${Component.name},
+              getInitialProps: get${Component.name}Props,
+              metadata: ${Component.name}Metadata,
+            };
+          `;
+        })
+        .join('\n')}
+        
+        export default Routes;
+      `,
+    );
+    console.log(`✅ Routes generated successfully! See ${outputPath}`);
   } catch (error) {
     console.error('❌ Error generating routes:', error);
   }
 }
 
-// Run the script
-writeRoutesToFile();
+writeAppRoutesToFile();
 
 function getStaticFiles() {
-  return fs.readdirSync(path.resolve(__dirname, '../', 'dist'));
+  return fs.readdirSync(path.resolve(__dirname, '../', 'dist')).map((file) => {
+    return '/' + file;
+  });
 }
 
 function writeStaticFilesToFile() {

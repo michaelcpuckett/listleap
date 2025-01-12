@@ -12,7 +12,7 @@
     "jsx": "react-jsx",
     "noLib": false,
     "isolatedModules": true,
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "target": "ESNext",
     "outDir": "../dist",
     "paths": {

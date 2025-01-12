@@ -19,10 +19,10 @@
     "useDefineForClassFields": false,
     "isolatedModules": true,
     "paths": {
-      "app/*": ["../app/*"],
-      "components/*": ["../app/components/*"]
+      "app/*": ["./app/*"],
+      "components/*": ["./components/*"],
+      "dist/*": ["../dist/*"]
     }
   },
-  "exclude": ["../../node_modules"],
-  "include": ["index.tsx", "./**/*"]
+  "include": ["client/index.tsx", "../dist/*.json", "components/*", "app/*"]
 }

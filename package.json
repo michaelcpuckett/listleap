@@ -19,7 +19,8 @@
     },
     "client": {
       "source": "./src/client/index.tsx",
-      "distDir": "./dist"
+      "distDir": "./dist",
+      "context": "browser"
     }
   },
   "author": "Michael Puckett <michael@puckett.contact>",
