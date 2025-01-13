@@ -16,7 +16,6 @@ export type NormalizedFormData = FormDataWithArrayValue &
   FormDataWithStringValue;
 
 export interface AdditionalRequestProperties {
-  version: number;
   query: Record<string, string>;
   data: NormalizedFormData;
 }

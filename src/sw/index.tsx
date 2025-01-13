@@ -68,7 +68,6 @@ for (const [path, { Component, getStaticProps, metadata }] of Object.entries<{
     description?: string;
   };
 }>(Routes)) {
-  console.log(path, convertPath(path));
   app.get(
     convertPath(path),
     async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
@@ -89,6 +88,5 @@ for (const [path, { Component, getStaticProps, metadata }] of Object.entries<{
 }
 
 app.get('*', async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
-  console.log(req.body);
   res.status(404).send('Not found.');
 });
