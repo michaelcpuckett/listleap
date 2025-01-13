@@ -25,20 +25,24 @@ export default function useAppRouter(app: ExpressWorker) {
     app.get(
       convertPath(path),
       async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
-        const initialProps = getStaticProps
-          ? await getStaticProps(req.params)
-          : {};
+        try {
+          const initialProps = getStaticProps
+            ? await getStaticProps(req.params)
+            : {};
 
-        const renderResult = renderToString(
-          <PageShell
-            {...(metadata || {})}
-            initialData={initialProps}
-          >
-            <Component {...initialProps} />
-          </PageShell>,
-        );
+          const renderResult = renderToString(
+            <PageShell
+              {...(metadata || {})}
+              initialData={initialProps}
+            >
+              <Component {...initialProps} />
+            </PageShell>,
+          );
 
-        res.send(renderResult);
+          res.send(renderResult);
+        } catch (error) {
+          res.status(404).send('Not found');
+        }
       },
     );
   }

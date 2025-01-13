@@ -17,6 +17,10 @@ export async function getStaticProps(params: Record<string, string>) {
   const notes = await getNotes();
   const note = notes.find(({ id }) => id === params.id);
 
+  if (!note) {
+    throw new Error('Note not found.');
+  }
+
   return {
     initialNote: note,
   };

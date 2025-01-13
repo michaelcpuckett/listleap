@@ -28,13 +28,14 @@
     role="status"
     id="loading"
   >
-    <h1>Loading...</h1>
+    Loading...
   </div>
   <div
     hidden
     id="error"
   >
     <h1>Something went wrong.</h1>
+    <p>Please try again later.</p>
   </div>
   <script type="module">
     window.addEventListener('DOMContentLoaded', (event) => {
@@ -64,9 +65,7 @@
           });
 
           // Fetch the generated HTML for this URL from the service worker.
-          const response = await window
-            .fetch(window.location.pathname)
-            .then((res) => res.text());
+          const response = await window.fetch('/').then((res) => res.text());
           const parser = new DOMParser();
           const htmlDocument = parser.parseFromString(response, 'text/html');
           const newDocument = htmlDocument.cloneNode(true);
