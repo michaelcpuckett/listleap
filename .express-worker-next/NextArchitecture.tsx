@@ -2,8 +2,9 @@ declare var self: ServiceWorkerGlobalScope;
 
 import { ExpressWorker } from '@express-worker/app';
 import useAppRouter from './AppRouter';
+import { FormDataMiddleware } from './FormDataMiddleware';
 import { handleInstall } from './install';
-import useMiddleware from './Middleware';
+import { QueryParamsMiddleware } from './QueryParamsMiddleware';
 import useStaticFiles from './StaticFiles';
 
 export default function useNextArchitecture() {
@@ -17,8 +18,11 @@ export default function useNextArchitecture() {
 
   const app = new ExpressWorker();
 
-  // Apply `.data` and `.query` to the request object.
-  useMiddleware(app);
+  // Parses query params as `req.query`.
+  app.use(QueryParamsMiddleware);
+
+  // Parses form data as `req.data`.
+  app.use(FormDataMiddleware);
 
   // Serve HTML pages via the App Router.
   useAppRouter(app);
