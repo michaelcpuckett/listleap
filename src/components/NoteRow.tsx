@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { Dispatch, SetStateAction, useCallback } from 'react';
 
 export interface Note {
   id: string;
@@ -68,8 +68,6 @@ async function deleteNote(note: Note): Promise<void> {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
-  }).then(() => {
-    window.location.reload();
   });
 }
 
@@ -104,10 +102,10 @@ export async function reorderNote(
   store.put(noteToFlip);
 
   return new Promise((resolve, reject) => {
-    tx.oncomplete = resolve;
+    tx.oncomplete = () => {
+      resolve();
+    };
     tx.onerror = reject;
-  }).then(() => {
-    window.location.reload();
   });
 }
 
@@ -115,30 +113,41 @@ export default function NoteRow({
   note,
   prevNote,
   nextNote,
+  setNotes,
 }: {
   note: Note;
   prevNote: Note;
   nextNote: Note;
+  setNotes: Dispatch<SetStateAction<Note[]>>;
 }) {
   const handleDelete = useCallback(async () => {
-    await deleteNote(note);
-  }, [note]);
+    await deleteNote(note).then(async () => {
+      const notes = await getNotes();
+      setNotes(notes);
+    });
+  }, [note, setNotes]);
 
   const handleMoveUp = useCallback(async () => {
     if (!prevNote) {
       return;
     }
 
-    await reorderNote(note, prevNote);
-  }, [note, prevNote]);
+    await reorderNote(note, prevNote).then(async () => {
+      const notes = await getNotes();
+      setNotes(notes);
+    });
+  }, [note, prevNote, setNotes]);
 
   const handleMoveDown = useCallback(async () => {
     if (!nextNote) {
       return;
     }
 
-    await reorderNote(note, nextNote);
-  }, [note, nextNote]);
+    await reorderNote(note, nextNote).then(async () => {
+      const notes = await getNotes();
+      setNotes(notes);
+    });
+  }, [note, nextNote, setNotes]);
 
   return (
     <div role="row">

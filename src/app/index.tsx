@@ -60,6 +60,7 @@ export default function HomePage({ initialNotes }: { initialNotes: Note[] }) {
               note={note}
               prevNote={orderedNotes[index - 1]}
               nextNote={orderedNotes[index + 1]}
+              setNotes={setNotes}
             />
           ))}
         </div>
