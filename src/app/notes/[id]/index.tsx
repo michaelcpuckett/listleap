@@ -1,3 +1,5 @@
+import MarkdownPreview from 'components/MarkdownPreview';
+import { Note, getNotes, setNotesDb } from 'components/NoteRow';
 import {
   FormEventHandler,
   Fragment,
@@ -5,8 +7,6 @@ import {
   useEffect,
   useState,
 } from 'react';
-import MarkdownPreview from '../../../components/MarkdownPreview';
-import { Note, getNotes, setNotesDb } from '../../../components/NoteRow';
 
 export const metadata = {
   title: 'Note Detail',

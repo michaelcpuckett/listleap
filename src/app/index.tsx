@@ -1,7 +1,7 @@
+import NoteRow, { getNotes, Note, setNotesDb } from 'components/NoteRow';
 import { LexoRank } from 'lexorank';
 import { ChangeEventHandler, useCallback, useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import NoteRow, { getNotes, Note, setNotesDb } from '../components/NoteRow';
 
 function openImagesDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {

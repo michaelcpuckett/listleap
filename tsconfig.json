@@ -22,13 +22,11 @@
     "paths": {
       "app/*": ["./src/app/*"],
       "components/*": ["./src/components/*"],
-      "dist/*": ["./dist/*"],
       "sw/*": ["./src/sw/*"],
       "@express-worker/next/*": ["./.express-worker-next/*"]
     }
   },
   "include": [
-    "../dist/*.json",
     "./src/app/*",
     "./src/client/*",
     "./src/components/*",
