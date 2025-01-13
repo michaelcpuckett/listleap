@@ -1,3 +1,5 @@
+declare var self: ServiceWorkerGlobalScope;
+
 import { ExpressWorker } from '@express-worker/app';
 import { handleInstall } from '../install';
 import use404Handler from './404Handler';
@@ -5,7 +7,7 @@ import useAppRouter from './AppRouter';
 import useMiddleware from './Middleware';
 import useStaticFiles from './StaticFiles';
 
-export default function useNextArchitecture(self: ServiceWorkerGlobalScope) {
+export default function useNextArchitecture() {
   // Populates the cache on install.
   self.addEventListener('install', handleInstall);
 

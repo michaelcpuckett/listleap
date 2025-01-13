@@ -5,7 +5,7 @@ import {
 } from '@express-worker/app';
 import { PageShell } from 'components/PageShell';
 import { renderToString } from 'react-dom/server';
-import Routes from '../routes';
+const Routes = () => require('../routes');
 
 function convertPath(path: string) {
   return path.replace(/\[([^\]]+)\]/g, ':$1');
@@ -21,7 +21,7 @@ export default function useAppRouter(app: ExpressWorker) {
       title: string;
       description?: string;
     };
-  }>(Routes)) {
+  }>(Routes())) {
     app.get(
       convertPath(path),
       async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
