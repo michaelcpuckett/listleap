@@ -1,3 +1,7 @@
 node_modules/
 .firebase
 .parcel-cache
+dist/app.js
+dist/app.js.map
+dist/client.js
+dist/client.js.map

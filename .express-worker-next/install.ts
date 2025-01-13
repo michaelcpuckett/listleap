@@ -1,6 +1,6 @@
 declare var self: ServiceWorkerGlobalScope;
 
-import URLS_TO_CACHE from './static.json';
+import URLS_TO_CACHE from '@express-worker/next/static.json';
 
 export function handleInstall(event: Event) {
   if (!(event instanceof ExtendableEvent)) {
