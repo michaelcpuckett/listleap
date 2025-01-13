@@ -34,5 +34,8 @@
     "./src/utils/*",
     "./src/sw/*",
     "./.express-worker-next/*"
-  ]
+  ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 }

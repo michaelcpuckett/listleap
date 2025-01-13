@@ -5,6 +5,7 @@
   "/client.js",
   "/client.js.map",
   "/index.html",
+  "/install.js",
   "/manifest.json",
   "/style.css",
   "/version.txt"
