@@ -31,7 +31,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       <Routes>
         {Object.entries<{
           Component: React.ComponentType<any>;
-          getInitialProps: (
+          getStaticProps: (
             params: Record<string, string>,
           ) => Promise<Record<string, any>>;
           metadata: {

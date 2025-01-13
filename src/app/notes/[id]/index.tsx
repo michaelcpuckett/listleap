@@ -13,7 +13,7 @@ export const metadata = {
   description: 'The note detail page.',
 };
 
-export async function getInitialProps(params: Record<string, string>) {
+export async function getStaticProps(params: Record<string, string>) {
   const notes = await getNotes();
   const note = notes.find(({ id }) => id === params.id);
 

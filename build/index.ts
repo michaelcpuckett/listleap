@@ -20,11 +20,11 @@ function getAppRoutes() {
           .replace(/\\/g, '/')
           .replace(/\.tsx$/, '');
         const pageModule = require(filePath);
-        const { default: Component, getInitialProps, metadata } = pageModule;
+        const { default: Component, getStaticProps, metadata } = pageModule;
 
         routes[`/${pageName}`] = {
           Component,
-          getInitialProps,
+          getStaticProps,
           metadata,
         };
       }
@@ -38,13 +38,13 @@ function getAppRoutes() {
 /*
 Format:
 import HomePage, {
-  getInitialProps as getHomePageProps,
+  getStaticProps as getHomePageProps,
   metadata as homePageMetadata,
 } from 'app/index';
 
 Routes['/'] = {
   Component: HomePage,
-  getInitialProps: getHomePageProps,
+  getStaticProps: getHomePageProps,
   metadata: homePageMetadata,
 };
 
@@ -61,13 +61,13 @@ function writeAppRoutesToFile() {
 
       ${Object.entries<{
         Component: Function;
-        getInitialProps: Function;
+        getStaticProps: Function;
         metadata: Record<string, string>;
       }>(routes)
         .map(([route, { Component }]) => {
           return `
             import ${Component.name}, {
-              getInitialProps as get${Component.name}Props,
+              getStaticProps as get${Component.name}Props,
               metadata as ${Component.name}Metadata,
             } from 'app${route}';
 
@@ -75,7 +75,7 @@ function writeAppRoutesToFile() {
               route.replace('index', '').replace(/\/$/, '') || '/'
             }'] = {
               Component: ${Component.name},
-              getInitialProps: get${Component.name}Props,
+              getStaticProps: get${Component.name}Props,
               metadata: ${Component.name}Metadata,
             };
           `;

@@ -58,9 +58,9 @@ function convertPath(path: string) {
   return path.replace(/\[([^\]]+)\]/g, ':$1');
 }
 
-for (const [path, { Component, getInitialProps, metadata }] of Object.entries<{
+for (const [path, { Component, getStaticProps, metadata }] of Object.entries<{
   Component: React.ComponentType<any>;
-  getInitialProps: (
+  getStaticProps: (
     params: Record<string, string>,
   ) => Promise<Record<string, any>>;
   metadata: {
@@ -72,7 +72,7 @@ for (const [path, { Component, getInitialProps, metadata }] of Object.entries<{
   app.get(
     convertPath(path),
     async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
-      const initialProps = await getInitialProps(req.params);
+      const initialProps = await getStaticProps(req.params);
 
       const renderResult = renderToString(
         <PageShell

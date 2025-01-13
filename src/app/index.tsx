@@ -8,7 +8,7 @@ export const metadata = {
   description: 'The home page.',
 };
 
-export async function getInitialProps(params: Record<string, string>) {
+export async function getStaticProps(params: Record<string, string>) {
   return {
     initialNotes: await getNotes(),
   };
