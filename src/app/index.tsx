@@ -3,7 +3,7 @@ import { ChangeEventHandler, useCallback, useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import NoteRow, { getNotes, Note, setNotesDb } from '../components/NoteRow';
 
-export function openImagesDB(): Promise<IDBDatabase> {
+function openImagesDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('imagesDB', 1);
 
