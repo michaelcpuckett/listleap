@@ -21,7 +21,8 @@
     "paths": {
       "app/*": ["./app/*"],
       "components/*": ["./components/*"],
-      "dist/*": ["../dist/*"]
+      "dist/*": ["../dist/*"],
+      "sw/*": ["./sw/*"]
     }
   },
   "include": ["client/index.tsx", "../dist/*.json", "components/*", "app/*"]
