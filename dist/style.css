@@ -36,11 +36,17 @@ body {
   white-space: nowrap;
 }
 
+main {
+  padding-left: 12px;
+  padding-right: 12px;
+  display: grid;
+  place-items: start;
+}
+
 [role='grid'] {
   display: grid;
   grid-template-columns: minmax(0px, 1fr) repeat(4, auto);
-  padding-left: 12px;
-  padding-right: 12px;
+  width: 100%;
 }
 
 [role='rowgroup'],
@@ -78,11 +84,4 @@ body {
 
 .button[disabled] {
   cursor: not-allowed;
-}
-
-textarea {
-  resize: vertical;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 3;
 }

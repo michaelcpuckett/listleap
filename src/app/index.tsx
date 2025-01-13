@@ -43,7 +43,8 @@ export default function HomePage({ initialNotes }: { initialNotes: Note[] }) {
 
   return (
     <main>
-      <h1>Notes</h1>
+      <h1>Notes App</h1>
+      <p>This is a simple notes app. Notes are saved locally (to IndexedDB).</p>
       <button
         className="button"
         onClick={addNote}
