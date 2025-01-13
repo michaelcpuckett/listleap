@@ -1,8 +1,8 @@
 declare var self: ServiceWorkerGlobalScope;
 
 import { ExpressWorker } from '@express-worker/app';
-import { handleInstall } from '../install';
 import useAppRouter from './AppRouter';
+import { handleInstall } from './install';
 import useMiddleware from './Middleware';
 import useStaticFiles from './StaticFiles';
 

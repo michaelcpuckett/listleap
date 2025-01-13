@@ -11,7 +11,7 @@
     "removeComments": true,
     "noLib": false,
     "jsx": "react-jsx",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "lib": ["ESNext", "DOM", "WebWorker", "DOM.Iterable"],
     "target": "ESNext",
     "outDir": "../dist",
     "experimentalDecorators": true,
@@ -20,11 +20,19 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "paths": {
-      "app/*": ["./app/*"],
-      "components/*": ["./components/*"],
-      "dist/*": ["../dist/*"],
-      "sw/*": ["./sw/*"]
+      "app/*": ["./src/app/*"],
+      "components/*": ["./src/components/*"],
+      "dist/*": ["./dist/*"],
+      "sw/*": ["./src/sw/*"],
+      "@express-worker/next/*": ["./.express-worker-next/*"]
     }
   },
-  "include": ["client/index.tsx", "../dist/*.json", "components/*", "app/*"]
+  "include": [
+    "../dist/*.json",
+    "./src/app/*",
+    "./src/client/*",
+    "./src/components/*",
+    "./src/sw/*",
+    "./.express-worker-next/*"
+  ]
 }

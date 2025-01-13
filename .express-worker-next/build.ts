@@ -53,7 +53,7 @@ export default Routes;
 function writeAppRoutesToFile() {
   try {
     const routes = getAppRoutes();
-    const outputPath = path.resolve(__dirname, '../', 'src', 'sw', 'routes.ts');
+    const outputPath = path.resolve(__dirname, 'routes.ts');
 
     fs.writeFileSync(
       outputPath,
@@ -102,7 +102,7 @@ function getStaticFiles() {
 function writeStaticFilesToFile() {
   try {
     const staticFiles = getStaticFiles();
-    const outputPath = path.resolve(__dirname, '../', 'dist', 'static.json');
+    const outputPath = path.resolve(__dirname, 'static.json');
 
     fs.writeFileSync(outputPath, JSON.stringify(staticFiles, null, 2));
 

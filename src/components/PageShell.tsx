@@ -1,4 +1,4 @@
-import URLS_TO_CACHE from 'dist/static.json';
+import URLS_TO_CACHE from '@express-worker/next/static.json';
 import React from 'react';
 
 export function PageShell(

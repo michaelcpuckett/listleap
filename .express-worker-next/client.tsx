@@ -1,7 +1,7 @@
+import RoutesConfig from '@express-worker/next/routes';
 import { createElement } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
-import RoutesConfig from 'sw/routes';
 
 declare global {
   interface Window {
