@@ -1,5 +1,4 @@
 import MarkdownPreview from 'components/MarkdownPreview';
-import { Note, getNotes, setNotesDb } from 'components/NoteRow';
 import {
   FormEventHandler,
   Fragment,
@@ -7,6 +6,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+import { getNotes, Note, setNotesDb } from 'utils/db';
 
 export const metadata = {
   title: 'Note Detail',
@@ -44,6 +44,7 @@ export default function NoteDetailPage({ initialNote }: { initialNote: Note }) {
       const updatedNotes = Array.from(await getNotes());
       const index = updatedNotes.findIndex(({ id }) => id === note.id);
       updatedNotes[index] = note;
+
       setNotesDb(updatedNotes);
     })();
   }, [note]);
