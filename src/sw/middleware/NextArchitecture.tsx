@@ -2,7 +2,6 @@ declare var self: ServiceWorkerGlobalScope;
 
 import { ExpressWorker } from '@express-worker/app';
 import { handleInstall } from '../install';
-import use404Handler from './404Handler';
 import useAppRouter from './AppRouter';
 import useMiddleware from './Middleware';
 import useStaticFiles from './StaticFiles';
@@ -26,9 +25,6 @@ export default function useNextArchitecture() {
 
   // Serve static files.
   useStaticFiles(app);
-
-  // Catch-all 404 handler.
-  use404Handler(app);
 
   return app;
 }

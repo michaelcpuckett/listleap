@@ -6,7 +6,7 @@ export interface Note {
   text: string;
 }
 
-export function openDB(): Promise<IDBDatabase> {
+export function openNotesDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('notesDB', 1);
 
@@ -48,7 +48,7 @@ export function openDB(): Promise<IDBDatabase> {
 }
 
 export async function setNotesDb(value: Note[]) {
-  const db = await openDB();
+  const db = await openNotesDB();
   const transaction = db.transaction('notes', 'readwrite');
   const store = transaction.objectStore('notes');
 
@@ -60,7 +60,7 @@ export async function setNotesDb(value: Note[]) {
 }
 
 async function deleteNote(note: Note): Promise<void> {
-  const db = await openDB();
+  const db = await openNotesDB();
   const transaction = db.transaction('notes', 'readwrite');
   const store = transaction.objectStore('notes');
   const request = store.delete(note.id);
@@ -72,7 +72,7 @@ async function deleteNote(note: Note): Promise<void> {
 }
 
 export async function getNotes(): Promise<Note[]> {
-  const db = await openDB();
+  const db = await openNotesDB();
   const transaction = db.transaction('notes', 'readonly');
   const store = transaction.objectStore('notes');
   const request = store.getAll();
@@ -87,7 +87,7 @@ export async function reorderNote(
   noteToReorder: Note,
   noteToFlip: Note,
 ): Promise<void> {
-  const db = await openDB();
+  const db = await openNotesDB();
   const tx = db.transaction('notes', 'readwrite');
   const store = tx.objectStore('notes');
   const { position: oldPosition } = noteToReorder;

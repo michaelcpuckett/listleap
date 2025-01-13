@@ -26,7 +26,7 @@
   "author": "Michael Puckett <michael@puckett.contact>",
   "license": "MIT",
   "dependencies": {
-    "@express-worker/app": "^1.4.3",
+    "@express-worker/app": "^1.5.0",
     "@types/marked": "^6.0.0",
     "lexorank": "^1.0.5",
     "marked": "^15.0.6",
