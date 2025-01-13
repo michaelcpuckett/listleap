@@ -3,7 +3,7 @@ import React from 'react';
 
 export function PageShell(
   props: React.PropsWithChildren<{
-    title: string;
+    title?: string;
     description?: string;
     initialData?: Record<string, unknown>;
   }>,
@@ -18,7 +18,7 @@ export function PageShell(
           http-equiv="Cache-Control"
           content="no-store"
         />
-        <title>{props.title}</title>
+        {props.title && <title>{props.title}</title>}
         {props.description && (
           <meta
             name="description"

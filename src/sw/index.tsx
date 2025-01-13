@@ -1,17 +1,11 @@
 declare var self: ServiceWorkerGlobalScope;
 
-import {
-  ExpressWorker,
-  ExpressWorkerRequest,
-  ExpressWorkerResponse,
-} from '@express-worker/app';
-import URLS_TO_CACHE from 'dist/static.json';
-import { renderToString } from 'react-dom/server';
-import { PageShell } from '../components/PageShell';
+import { ExpressWorker } from '@express-worker/app';
+import use404Handler from 'middleware/404Handler';
+import useAppRouter from 'middleware/AppRouter';
+import useMiddleware from 'middleware/Middleware';
+import useStaticFiles from 'middleware/StaticFiles';
 import { handleInstall } from './install';
-import { FormDataMiddleware } from './middleware/FormDataMiddleware';
-import { QueryParamsMiddleware } from './middleware/QueryParamsMiddleware';
-import Routes from './routes';
 
 // Populates the cache on install.
 self.addEventListener('install', handleInstall);
@@ -21,72 +15,17 @@ self.addEventListener('activate', () => {
   self.clients.claim();
 });
 
-// Creates a new ExpressWorker instance, which handles all requests.
+// The ExpressWorker instance handles all requests.
 const app = new ExpressWorker();
 
-// Parses query params as `req.query`.
-app.use(QueryParamsMiddleware);
+// Apply `.data` and `.query` to the request object.
+useMiddleware(app);
 
-// Parses form data as `req.data`.
-app.use(FormDataMiddleware);
+// Serve HTML pages via the App Router.
+useAppRouter(app);
 
-for (const url of URLS_TO_CACHE) {
-  app.get(
-    url,
-    async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
-      const cache = await caches.open('v1');
-      const cachedResponse = await cache.match(url);
+// Serve static files.
+useStaticFiles(app);
 
-      if (cachedResponse) {
-        res.status(cachedResponse.status);
-
-        for (const [key, value] of cachedResponse.headers.entries()) {
-          res.set(key, value);
-        }
-
-        const body = await cachedResponse.text();
-
-        res.send(body);
-      } else {
-        res.status(404).send('Not found in cache.');
-      }
-    },
-  );
-}
-
-function convertPath(path: string) {
-  return path.replace(/\[([^\]]+)\]/g, ':$1');
-}
-
-for (const [path, { Component, getStaticProps, metadata }] of Object.entries<{
-  Component: React.ComponentType<any>;
-  getStaticProps: (
-    params: Record<string, string>,
-  ) => Promise<Record<string, any>>;
-  metadata: {
-    title: string;
-    description?: string;
-  };
-}>(Routes)) {
-  app.get(
-    convertPath(path),
-    async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
-      const initialProps = await getStaticProps(req.params);
-
-      const renderResult = renderToString(
-        <PageShell
-          {...metadata}
-          initialData={initialProps}
-        >
-          <Component {...initialProps} />
-        </PageShell>,
-      );
-
-      res.send(renderResult);
-    },
-  );
-}
-
-app.get('*', async (req: ExpressWorkerRequest, res: ExpressWorkerResponse) => {
-  res.status(404).send('Not found.');
-});
+// Catch-all 404 handler.
+use404Handler(app);
