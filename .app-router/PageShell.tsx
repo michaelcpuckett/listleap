@@ -35,10 +35,6 @@ export function PageShell(
             href={url}
           />
         ))}
-        <link
-          rel="manifest"
-          href="/manifest.json"
-        />
         <script
           dangerouslySetInnerHTML={{
             __html: `window.__INITIAL_DATA__ = ${JSON.stringify(
