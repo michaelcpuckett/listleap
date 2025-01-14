@@ -28,7 +28,7 @@
     }
   },
   "include": [
-    "./src/app/*",
+    "./src/app/**/*",
     "./src/client/*",
     "./src/components/*",
     "./src/utils/*",

@@ -1,29 +1,25 @@
 const Routes = {};
 
-      
-            import HomePage, {
-              getStaticProps as getHomePageProps,
-              metadata as HomePageMetadata,
-            } from 'app/index';
+import NoteDetailPage, {
+  getStaticProps as getNoteDetailPageProps,
+  metadata as NoteDetailPageMetadata,
+} from 'app/notes/[id]/page';
 
-            Routes['/'] = {
-              Component: HomePage,
-              getStaticProps: getHomePageProps,
-              metadata: HomePageMetadata,
-            };
-          
+Routes['/notes/[id]'] = {
+  Component: NoteDetailPage,
+  getStaticProps: getNoteDetailPageProps,
+  metadata: NoteDetailPageMetadata,
+};
 
-            import NoteDetailPage, {
-              getStaticProps as getNoteDetailPageProps,
-              metadata as NoteDetailPageMetadata,
-            } from 'app/notes/[id]/index';
+import HomePage, {
+  getStaticProps as getHomePageProps,
+  metadata as HomePageMetadata,
+} from 'app/page';
 
-            Routes['/notes/[id]'] = {
-              Component: NoteDetailPage,
-              getStaticProps: getNoteDetailPageProps,
-              metadata: NoteDetailPageMetadata,
-            };
-          
-        
-        export default Routes;
-      
+Routes['/'] = {
+  Component: HomePage,
+  getStaticProps: getHomePageProps,
+  metadata: HomePageMetadata,
+};
+
+export default Routes;

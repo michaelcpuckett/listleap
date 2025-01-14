@@ -55,9 +55,7 @@ function writeAppRoutesToFile() {
               metadata as ${Component.name}Metadata,
             } from 'app${route}';
 
-            Routes['${
-              route.replace('index', '').replace(/\/$/, '') || '/'
-            }'] = {
+            Routes['${route.replace('page', '').replace(/\/$/, '') || '/'}'] = {
               Component: ${Component.name},
               getStaticProps: get${Component.name}Props,
               metadata: ${Component.name}Metadata,
