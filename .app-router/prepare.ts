@@ -3,7 +3,6 @@ import path from 'path';
 
 function getAppRoutes() {
   const routes = {};
-
   const appDir = path.resolve(__dirname, '../', 'src', 'app');
 
   function traverseDirectory(currentDir: string) {
@@ -35,21 +34,6 @@ function getAppRoutes() {
   return routes;
 }
 
-/*
-Format:
-import HomePage, {
-  getStaticProps as getHomePageProps,
-  metadata as homePageMetadata,
-} from 'app/index';
-
-Routes['/'] = {
-  Component: HomePage,
-  getStaticProps: getHomePageProps,
-  metadata: homePageMetadata,
-};
-
-export default Routes;
-*/
 function writeAppRoutesToFile() {
   try {
     const routes = getAppRoutes();

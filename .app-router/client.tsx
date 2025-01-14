@@ -1,4 +1,4 @@
-import RoutesConfig from '@express-worker/app-router/routes';
+import routesConfig from 'app-router/routes';
 import { createElement } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';
@@ -38,7 +38,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             title: string;
             description?: string;
           };
-        }>(RoutesConfig).map(([path, { Component }]) => (
+        }>(routesConfig).map(([path, { Component }]) => (
           <Route
             key={path}
             path={convertPath(path.replace(/\/$/, ''))}

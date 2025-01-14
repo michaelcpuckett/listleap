@@ -1,4 +1,4 @@
-import staticFiles from '@express-worker/app-router/static.json';
+import staticFiles from 'app-router/static.json';
 import React from 'react';
 
 export function PageShell(
