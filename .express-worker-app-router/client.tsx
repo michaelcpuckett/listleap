@@ -1,4 +1,4 @@
-import RoutesConfig from '@express-worker/next/routes';
+import RoutesConfig from '@express-worker/app-router/routes';
 import { createElement } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router';

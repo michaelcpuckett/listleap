@@ -1,6 +1,6 @@
 declare var self: ServiceWorkerGlobalScope;
 
-import staticFiles from '@express-worker/next/static.json';
+import staticFiles from '@express-worker/app-router/static.json';
 
 export function handleInstall(event: Event) {
   if (!(event instanceof ExtendableEvent)) {

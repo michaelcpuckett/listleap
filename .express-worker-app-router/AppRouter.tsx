@@ -3,7 +3,7 @@ import {
   ExpressWorkerRequest,
   ExpressWorkerResponse,
 } from '@express-worker/app';
-import { PageShell } from '@express-worker/next/PageShell';
+import { PageShell } from '@express-worker/app-router/PageShell';
 import { renderToString } from 'react-dom/server';
 import Routes from './routes';
 

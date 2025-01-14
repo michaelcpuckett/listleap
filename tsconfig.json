@@ -24,7 +24,7 @@
       "components/*": ["./src/components/*"],
       "sw/*": ["./src/sw/*"],
       "utils/*": ["./src/utils/*"],
-      "@express-worker/next/*": ["./.express-worker-next/*"]
+      "@express-worker/app-router/*": ["./.express-worker-app-router/*"]
     }
   },
   "include": [
@@ -33,7 +33,7 @@
     "./src/components/*",
     "./src/utils/*",
     "./src/sw/*",
-    "./.express-worker-next/*"
+    ".express-worker-app-router/*"
   ],
   "ts-node": {
     "require": ["tsconfig-paths/register"]

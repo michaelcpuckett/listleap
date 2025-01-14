@@ -1,11 +1,11 @@
 declare var self: ServiceWorkerGlobalScope;
 
 import { ExpressWorker } from '@express-worker/app';
-import useAppRouter from '@express-worker/next/AppRouter';
-import { FormDataMiddleware } from '@express-worker/next/FormDataMiddleware';
-import { handleInstall } from '@express-worker/next/install';
-import { QueryParamsMiddleware } from '@express-worker/next/QueryParamsMiddleware';
-import useStaticFiles from '@express-worker/next/StaticFiles';
+import useAppRouter from '@express-worker/app-router/AppRouter';
+import { FormDataMiddleware } from '@express-worker/app-router/FormDataMiddleware';
+import { handleInstall } from '@express-worker/app-router/install';
+import { QueryParamsMiddleware } from '@express-worker/app-router/QueryParamsMiddleware';
+import useStaticFiles from '@express-worker/app-router/StaticFiles';
 
 export default (function useNextArchitecture() {
   // Populates the cache on install.

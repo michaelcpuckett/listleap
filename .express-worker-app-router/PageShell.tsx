@@ -1,4 +1,4 @@
-import URLS_TO_CACHE from '@express-worker/next/static.json';
+import staticFiles from '@express-worker/app-router/static.json';
 import React from 'react';
 
 export function PageShell(
@@ -8,7 +8,7 @@ export function PageShell(
     initialData?: Record<string, unknown>;
   }>,
 ) {
-  const cssUrls = URLS_TO_CACHE.filter((url) => url.endsWith('.css'));
+  const cssUrls = staticFiles.filter((url) => url.endsWith('.css'));
 
   return (
     <html lang="en">
