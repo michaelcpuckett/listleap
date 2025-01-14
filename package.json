@@ -7,18 +7,18 @@
     "format": "prettier --config .prettierrc \"**/*.{ts,tsx}\" --write",
     "build": "parcel build",
     "serve": "http-server dist -p 8080",
-    "prepare": "ts-node ./.express-worker-next/prepare.ts"
+    "prepare": "ts-node ./.express-worker-app-router/prepare.ts"
   },
   "app": "dist/app.js",
   "client": "dist/client.js",
   "targets": {
     "app": {
-      "source": "./.express-worker-next/sw.ts",
+      "source": "./.express-worker-app-router/index.ts",
       "distDir": "./dist",
       "context": "service-worker"
     },
     "client": {
-      "source": "./.express-worker-next/client.tsx",
+      "source": "./.express-worker-app-router/client.tsx",
       "distDir": "./dist",
       "context": "browser"
     }

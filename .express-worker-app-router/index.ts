@@ -1,32 +1,34 @@
-import {
-  ExpressWorker,
-  ExpressWorkerRequest,
-  ExpressWorkerResponse,
-} from '@express-worker/app';
+declare var self: ServiceWorkerGlobalScope;
 
-interface FormDataWithArrayValue {
-  [key: `${string}[]`]: string[] | undefined;
-}
+import { ExpressWorker } from '@express-worker/app';
+import { FormDataMiddleware } from '@express-worker/app-router/FormDataMiddleware';
+import { handleInstall } from '@express-worker/app-router/install';
+import { QueryParamsMiddleware } from '@express-worker/app-router/QueryParamsMiddleware';
+import useRouter from '@express-worker/app-router/Router';
+import useStaticFiles from '@express-worker/app-router/StaticFiles';
 
-interface FormDataWithStringValue {
-  [key: string]: string | undefined;
-}
+export default (function useAppRouterArchitecture() {
+  // Populates the cache on install.
+  self.addEventListener('install', handleInstall);
 
-export type NormalizedFormData = FormDataWithArrayValue &
-  FormDataWithStringValue;
+  // Immediately takes control of the page on activation.
+  self.addEventListener('activate', () => {
+    self.clients.claim();
+  });
 
-export interface AdditionalRequestProperties {
-  query: Record<string, string>;
-  data: NormalizedFormData;
-}
+  const app = new ExpressWorker();
 
-export function handleRequest(
-  handler: (
-    req: ExpressWorkerRequest & AdditionalRequestProperties,
-    res: ExpressWorkerResponse,
-  ) => Promise<void>,
-) {
-  return ExpressWorker.applyAdditionalRequestProperties<AdditionalRequestProperties>(
-    handler,
-  );
-}
+  // Parses query params as `req.query`.
+  app.use(QueryParamsMiddleware);
+
+  // Parses form data as `req.data`.
+  app.use(FormDataMiddleware);
+
+  // Serve HTML pages via the App Router.
+  useRouter(app);
+
+  // Serve static files.
+  useStaticFiles(app);
+
+  return app;
+})();
