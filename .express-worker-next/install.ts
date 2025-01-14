@@ -1,6 +1,6 @@
 declare var self: ServiceWorkerGlobalScope;
 
-import URLS_TO_CACHE from '@express-worker/next/static.json';
+import staticFiles from '@express-worker/next/static.json';
 
 export function handleInstall(event: Event) {
   if (!(event instanceof ExtendableEvent)) {
@@ -11,7 +11,7 @@ export function handleInstall(event: Event) {
 
   event.waitUntil(
     (async () => {
-      const urlsToCache = URLS_TO_CACHE.map((url) => {
+      const urlsToCache = staticFiles.map((url) => {
         return new Request(new URL(url, self.location.origin).href, {
           cache: 'no-cache',
           headers: {

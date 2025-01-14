@@ -7,7 +7,7 @@
     "format": "prettier --config .prettierrc \"**/*.{ts,tsx}\" --write",
     "build": "parcel build",
     "serve": "http-server dist -p 8080",
-    "prepare": "ts-node ./.express-worker-next/build.ts"
+    "prepare": "ts-node ./.express-worker-next/prepare.ts"
   },
   "app": "dist/app.js",
   "client": "dist/client.js",
@@ -26,6 +26,7 @@
   "author": "Michael Puckett <michael@puckett.contact>",
   "license": "MIT",
   "dependencies": {
+    "@everapi/ipbase-js": "^1.0.8",
     "@express-worker/app": "^1.5.0",
     "@types/marked": "^6.0.0",
     "lexorank": "^1.0.5",
